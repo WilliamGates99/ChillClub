@@ -1,0 +1,10 @@
+/build
+/release
+/prodPlayStore
+/prodGitHub
+/prodCafeBazaar
+/prodMyket
+/devPlayStore
+/obfuscation
+/src/main/dbschemas
+google-services.json
