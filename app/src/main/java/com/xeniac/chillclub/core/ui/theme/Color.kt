@@ -2,6 +2,11 @@ package com.xeniac.chillclub.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+val StatusBarColorV21 = Color(0x33000000)
+val NavigationBarColorV26 = Color(0x63FFFFFF)
+
+val GreenNotificationLight = Color(0xFF00E560)
+
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)

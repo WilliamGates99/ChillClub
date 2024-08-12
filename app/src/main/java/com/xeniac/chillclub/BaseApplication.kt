@@ -7,7 +7,6 @@ import android.app.NotificationChannelGroup
 import android.app.NotificationManager
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import coil.ImageLoader
 import coil.ImageLoaderFactory
@@ -19,6 +18,7 @@ import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import coil.util.DebugLogger
 import com.xeniac.chillclub.core.domain.models.AppTheme
+import com.xeniac.chillclub.core.ui.theme.GreenNotificationLight
 import dagger.hilt.android.HiltAndroidApp
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
@@ -74,7 +74,7 @@ class BaseApplication : Application(), ImageLoaderFactory {
         ).apply {
             group = NOTIFICATION_CHANNEL_GROUP_ID_FCM
             lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-            lightColor = Color.Magenta.toArgb() // TODO: CHANGE COLOR BASED ON APP ICON
+            lightColor = GreenNotificationLight.toArgb() // TODO: CHANGE COLOR BASED ON APP ICON
             enableLights(true)
         }
 
