@@ -1,5 +1,6 @@
 package com.xeniac.chillclub.core.di
 
+import android.app.NotificationManager
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
@@ -9,6 +10,8 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import com.xeniac.chillclub.core.domain.models.AppTheme
+import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,6 +41,14 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 internal object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideNotificationManager(
+        @ApplicationContext context: Context
+    ): NotificationManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        context.getSystemService(NotificationManager::class.java)
+    } else context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     @Provides
     @Singleton
@@ -87,6 +98,11 @@ internal object AppModule {
             produceFile = { context.preferencesDataStoreFile(name = "settings") }
         )
     }
+
+    @Provides
+    fun provideCurrentAppTheme(
+        preferencesRepository: PreferencesRepository
+    ): AppTheme = preferencesRepository.getCurrentAppThemeSynchronously()
 
     @Provides
     @Singleton

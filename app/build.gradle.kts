@@ -102,7 +102,7 @@ android {
             resValue(
                 type = "color",
                 name = "appIconBackground",
-                value = "#FF0C160D" // Dark Green
+                value = "#FF0C160D" // Dark Green // TODO: UPDATE ICON BACKGROUND COLOR
             )
         }
 

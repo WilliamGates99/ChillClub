@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Chill Club</string>
+
+
+    <string name="notification_fcm_channel_group_name">Other</string>
+    <string name="notification_fcm_channel_name_miscellaneous">Miscellaneous</string>
+
+
+    <string name="permissions_error_notification_declined">This app requires notifications permission to receive notifications.</string>
+    <string name="permissions_error_notification_declined_permanently">It looks like you\'ve permanently denied notifications permission. You can go to the app settings to grant it.</string>
+    <string name="permissions_error_btn_open_settings">App Settings</string>
+    <string name="permissions_error_btn_confirm">Confirm</string>
+
+
+    <string name="error_something_went_wrong">Something went wrong. Please try again later.</string>
+    <string name="error_network_connection_unavailable">Unable to connect to the internet.</string>
+    <string name="error_network_failure">You\'re having network issues. Please try again later.</string>
+    <string name="error_network_serialization">Something went wrong while trying to process the data.</string>
+    <string name="error_intent_app_not_found">There is no app on the phone to handle this action.</string>
+    <string name="error_btn_retry">Retry</string>
+    <string name="error_btn_confirm">Confirm</string>
+
+
+    <string name="core_content_description_back">Return</string>
+
 </resources>
