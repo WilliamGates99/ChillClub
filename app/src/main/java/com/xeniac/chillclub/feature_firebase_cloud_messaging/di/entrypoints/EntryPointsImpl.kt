@@ -1,4 +1,4 @@
-package com.xeniac.chillclub.core.feature_firebase_cloud_messaging.di.entrypoints
+package com.xeniac.chillclub.feature_firebase_cloud_messaging.di.entrypoints
 
 import android.app.NotificationManager
 import android.content.Context

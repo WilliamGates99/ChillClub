@@ -1,4 +1,4 @@
-package com.xeniac.chillclub.core.feature_firebase_cloud_messaging.services
+package com.xeniac.chillclub.feature_firebase_cloud_messaging.services
 
 import android.app.PendingIntent
 import android.content.Intent
@@ -11,8 +11,8 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.xeniac.chillclub.BaseApplication
 import com.xeniac.chillclub.R
-import com.xeniac.chillclub.core.feature_firebase_cloud_messaging.di.entrypoints.requireNotificationManager
-import com.xeniac.chillclub.core.feature_firebase_cloud_messaging.services.utils.getBitmapFromUrl
+import com.xeniac.chillclub.feature_firebase_cloud_messaging.di.entrypoints.requireNotificationManager
+import com.xeniac.chillclub.feature_firebase_cloud_messaging.services.utils.getBitmapFromUrl
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import kotlin.random.Random

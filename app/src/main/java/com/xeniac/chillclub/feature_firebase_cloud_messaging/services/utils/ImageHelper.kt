@@ -1,4 +1,4 @@
-package com.xeniac.chillclub.core.feature_firebase_cloud_messaging.services.utils
+package com.xeniac.chillclub.feature_firebase_cloud_messaging.services.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

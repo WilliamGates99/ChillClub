@@ -43,7 +43,7 @@
         </service>
 
         <service
-            android:name=".core.feature_firebase_cloud_messaging.services.FirebaseCloudMessagingService"
+            android:name=".feature_firebase_cloud_messaging.services.FirebaseCloudMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
