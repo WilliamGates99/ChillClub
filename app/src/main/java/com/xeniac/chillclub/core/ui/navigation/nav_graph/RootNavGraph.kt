@@ -11,7 +11,7 @@ import com.xeniac.chillclub.feature_settings.presentation.SettingsScreen
 @Composable
 fun SetupRootNavGraph(
     rootNavController: NavHostController,
-    startDestination: Screen
+    startDestination: Screen = Screen.MusicPlayerScreen
 ) {
     NavHost(
         navController = rootNavController,
