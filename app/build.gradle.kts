@@ -33,7 +33,7 @@ android {
         // Keeps language resources for only the locales specified below.
         resourceConfigurations.addAll(listOf("en-rUS"))
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.xeniac.chillclub.HiltTestRunner"
 
         vectorDrawables {
             useSupportLibrary = true
