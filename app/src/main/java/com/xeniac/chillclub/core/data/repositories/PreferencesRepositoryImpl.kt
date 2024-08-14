@@ -5,6 +5,7 @@ import androidx.core.os.LocaleListCompat
 import androidx.core.text.layoutDirection
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
@@ -20,6 +21,7 @@ import com.xeniac.chillclub.core.domain.models.AppLocale
 import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.models.RateAppOption
 import com.xeniac.chillclub.core.domain.repositories.IsActivityRestartNeeded
+import com.xeniac.chillclub.core.domain.repositories.IsBackgroundPlayEnabled
 import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import com.xeniac.chillclub.core.domain.repositories.PreviousRateAppRequestTimeInMs
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +38,9 @@ class PreferencesRepositoryImpl @Inject constructor(
 
     private object PreferencesKeys {
         val CURRENT_APP_THEME = intPreferencesKey(name = "theme")
+        val IS_PLAY_IN_BACKGROUND_ENABLED = booleanPreferencesKey(
+            name = "isPlayInBackgroundEnabled"
+        )
         val NOTIFICATION_PERMISSION_COUNT = intPreferencesKey(name = "notificationPermissionCount")
         val SELECTED_RATE_APP_OPTION = stringPreferencesKey(name = "selectedRateAppOption")
         val PREVIOUS_RATE_APP_REQUEST_TIME_IN_MS = longPreferencesKey(
@@ -76,7 +81,6 @@ class PreferencesRepositoryImpl @Inject constructor(
     }.catch { e ->
         Timber.e("getCurrentAppTheme failed:")
         e.printStackTrace()
-        AppThemeDto.Default.toAppTheme()
     }
 
     override suspend fun getCurrentAppLocale(): AppLocale = try {
@@ -105,6 +109,14 @@ class PreferencesRepositoryImpl @Inject constructor(
         AppLocaleDto.Default.toAppLocale()
     }
 
+    override fun isPlayInBackgroundEnabled(): Flow<IsBackgroundPlayEnabled> = settingsDataStore.data
+        .map {
+            it[PreferencesKeys.IS_PLAY_IN_BACKGROUND_ENABLED] ?: true
+        }.catch { e ->
+            Timber.e("get isPlayInBackgroundEnabled failed:")
+            e.printStackTrace()
+        }
+
     override suspend fun getNotificationPermissionCount(): Int = try {
         settingsDataStore.data.first()[PreferencesKeys.NOTIFICATION_PERMISSION_COUNT] ?: 0
     } catch (e: Exception) {
@@ -125,7 +137,6 @@ class PreferencesRepositoryImpl @Inject constructor(
         }.catch { e ->
             Timber.e("getSelectedRateAppOption failed:")
             e.printStackTrace()
-            RateAppOptionDto.NOT_SHOWN_YET.toRateAppOption()
         }
 
     override suspend fun getPreviousRateAppRequestTimeInMs(): Flow<PreviousRateAppRequestTimeInMs?> =
@@ -134,7 +145,6 @@ class PreferencesRepositoryImpl @Inject constructor(
         }.catch { e ->
             Timber.e("getPreviousRateAppRequestTimeInMs failed:")
             e.printStackTrace()
-            emit(null)
         }
 
     override suspend fun setCurrentAppTheme(appThemeDto: AppThemeDto) {
@@ -163,6 +173,18 @@ class PreferencesRepositoryImpl @Inject constructor(
         Timber.e("setCurrentAppLocale failed:")
         e.printStackTrace()
         false
+    }
+
+    override suspend fun isPlayInBackgroundEnabled(isEnabled: Boolean) {
+        try {
+            settingsDataStore.edit {
+                it[PreferencesKeys.IS_PLAY_IN_BACKGROUND_ENABLED] = isEnabled
+                Timber.i("isPlayInBackgroundEnabled edited to $isEnabled")
+            }
+        } catch (e: Exception) {
+            Timber.e("set isPlayInBackgroundEnabled failed:")
+            e.printStackTrace()
+        }
     }
 
     override suspend fun setNotificationPermissionCount(count: Int) {

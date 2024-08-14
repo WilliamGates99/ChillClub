@@ -76,6 +76,7 @@ class PreferencesRepositoryImplTest {
     getCurrentAppThemeSynchronously -> AppTheme.Default
     getCurrentAppTheme -> AppTheme.Default
     getCurrentAppLocale -> AppLocale.Default
+    isPlayInBackgroundEnabled -> true
     getNotificationPermissionCount -> 0
     getSelectedRateAppOption -> RateAppOption.NOT_SHOWN_YET
     getPreviousRateAppRequestTimeInMs -> null
@@ -85,6 +86,7 @@ class PreferencesRepositoryImplTest {
         val initialAppThemeSynchronously = testRepository.getCurrentAppThemeSynchronously()
         val initialAppTheme = testRepository.getCurrentAppTheme().first()
         val initialAppLocale = testRepository.getCurrentAppLocale()
+        val initialIsPlayInBackgroundEnabled = testRepository.isPlayInBackgroundEnabled().first()
         val initialNotificationPermissionCount = testRepository.getNotificationPermissionCount()
         val initialSelectedRateAppOption = testRepository.getSelectedRateAppOption().first()
         val initialPreviousRateAppRequestTime =
@@ -93,6 +95,7 @@ class PreferencesRepositoryImplTest {
         assertThat(initialAppThemeSynchronously).isEqualTo(AppTheme.Default)
         assertThat(initialAppTheme).isEqualTo(AppTheme.Default)
         assertThat(initialAppLocale).isEqualTo(AppLocale.Default)
+        assertThat(initialIsPlayInBackgroundEnabled).isTrue()
         assertThat(initialNotificationPermissionCount).isEqualTo(0)
         assertThat(initialSelectedRateAppOption).isEqualTo(RateAppOption.NOT_SHOWN_YET)
         assertThat(initialPreviousRateAppRequestTime).isNull()
@@ -105,6 +108,15 @@ class PreferencesRepositoryImplTest {
 
         val currentAppTheme = testRepository.getCurrentAppTheme().first()
         assertThat(currentAppTheme).isEqualTo(testValue)
+    }
+
+    @Test
+    fun writeIsPlayInBackgroundEnabled() = testScope.runBlockingTest {
+        val testValue = false
+        testRepository.isPlayInBackgroundEnabled(testValue)
+
+        val isPlayInBackgroundEnabled = testRepository.isPlayInBackgroundEnabled().first()
+        assertThat(isPlayInBackgroundEnabled).isEqualTo(testValue)
     }
 
     @Test

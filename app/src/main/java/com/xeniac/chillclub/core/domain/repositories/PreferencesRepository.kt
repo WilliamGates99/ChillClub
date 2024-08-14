@@ -8,6 +8,7 @@ import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.models.RateAppOption
 import kotlinx.coroutines.flow.Flow
 
+typealias IsBackgroundPlayEnabled = Boolean
 typealias IsActivityRestartNeeded = Boolean
 typealias PreviousRateAppRequestTimeInMs = Long
 
@@ -19,6 +20,8 @@ interface PreferencesRepository {
 
     suspend fun getCurrentAppLocale(): AppLocale
 
+    fun isPlayInBackgroundEnabled(): Flow<IsBackgroundPlayEnabled>
+
     suspend fun getNotificationPermissionCount(): Int
 
     suspend fun getSelectedRateAppOption(): Flow<RateAppOption>
@@ -28,6 +31,8 @@ interface PreferencesRepository {
     suspend fun setCurrentAppTheme(appThemeDto: AppThemeDto)
 
     suspend fun setCurrentAppLocale(appLocaleDto: AppLocaleDto): IsActivityRestartNeeded
+
+    suspend fun isPlayInBackgroundEnabled(isEnabled: Boolean)
 
     suspend fun setNotificationPermissionCount(count: Int)
 

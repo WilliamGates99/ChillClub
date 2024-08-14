@@ -1,5 +1,7 @@
 package com.xeniac.chillclub.core.data.repositories
 
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.xeniac.chillclub.core.data.dto.AppLocaleDto
 import com.xeniac.chillclub.core.data.dto.AppThemeDto
 import com.xeniac.chillclub.core.data.dto.RateAppOptionDto
@@ -11,6 +13,7 @@ import com.xeniac.chillclub.core.domain.models.AppLocale
 import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.models.RateAppOption
 import com.xeniac.chillclub.core.domain.repositories.IsActivityRestartNeeded
+import com.xeniac.chillclub.core.domain.repositories.IsBackgroundPlayEnabled
 import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import com.xeniac.chillclub.core.domain.repositories.PreviousRateAppRequestTimeInMs
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +24,9 @@ class FakePreferencesRepositoryImpl @Inject constructor() : PreferencesRepositor
 
     var appTheme: AppTheme = AppTheme.Default
     var appLocale: AppLocale = AppLocale.Default
-    var isOnBoardingCompleted = false
+    var isPlayInBackgroundEnabled = SnapshotStateList<Boolean>().apply {
+        add(true)
+    }
     var notificationPermissionCount = 0
     var selectedRateAppOption: RateAppOption = RateAppOption.NOT_SHOWN_YET
     var previousRateAppRequestTime: PreviousRateAppRequestTimeInMs? = null
@@ -31,6 +36,10 @@ class FakePreferencesRepositoryImpl @Inject constructor() : PreferencesRepositor
     override fun getCurrentAppTheme(): Flow<AppTheme> = flow { emit(appTheme) }
 
     override suspend fun getCurrentAppLocale(): AppLocale = appLocale
+
+    override fun isPlayInBackgroundEnabled(): Flow<IsBackgroundPlayEnabled> = snapshotFlow {
+        isPlayInBackgroundEnabled.first()
+    }
 
     override suspend fun getNotificationPermissionCount(): Int = notificationPermissionCount
 
@@ -48,8 +57,20 @@ class FakePreferencesRepositoryImpl @Inject constructor() : PreferencesRepositor
     override suspend fun setCurrentAppLocale(
         appLocaleDto: AppLocaleDto
     ): IsActivityRestartNeeded {
+        val isActivityRestartNeeded = isActivityRestartNeeded(
+            newLayoutDirection = appLocaleDto.layoutDirection
+        )
+
         appLocale = appLocaleDto.toAppLocale()
-        return false
+
+        return isActivityRestartNeeded
+    }
+
+    override suspend fun isPlayInBackgroundEnabled(isEnabled: Boolean) {
+        isPlayInBackgroundEnabled.apply {
+            clear()
+            add(isEnabled)
+        }
     }
 
     override suspend fun setNotificationPermissionCount(count: Int) {
@@ -63,4 +84,8 @@ class FakePreferencesRepositoryImpl @Inject constructor() : PreferencesRepositor
     override suspend fun setPreviousRateAppRequestTimeInMs() {
         previousRateAppRequestTime = DateHelper.getCurrentTimeInMillis()
     }
+
+    private fun isActivityRestartNeeded(
+        newLayoutDirection: Int
+    ): Boolean = appLocale.layoutDirection != newLayoutDirection
 }
