@@ -26,7 +26,9 @@ fun SetupRootNavGraph(
         }
 
         composable<Screen.SettingsScreen> {
-            SettingsScreen()
+            SettingsScreen(
+                onNavigateUp = rootNavController::navigateUp
+            )
         }
     }
 }

@@ -23,4 +23,7 @@
 
     <string name="core_content_description_back">Return</string>
 
+
+    <string name="settings_app_bar_title">Settings</string>
+
 </resources>
