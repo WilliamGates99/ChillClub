@@ -37,7 +37,7 @@ class PreferencesRepositoryImpl @Inject constructor(
 ) : PreferencesRepository {
 
     private object PreferencesKeys {
-        val CURRENT_APP_THEME = intPreferencesKey(name = "theme")
+        val IS_DARK_THEME_ENABLED = booleanPreferencesKey(name = "isDarkThemeEnabled")
         val IS_PLAY_IN_BACKGROUND_ENABLED = booleanPreferencesKey(
             name = "isPlayInBackgroundEnabled"
         )
@@ -50,12 +50,13 @@ class PreferencesRepositoryImpl @Inject constructor(
 
     override fun getCurrentAppThemeSynchronously(): AppTheme = runBlocking {
         try {
-            val appThemeIndex = settingsDataStore.data.first()[PreferencesKeys.CURRENT_APP_THEME]
+            val isDarkThemeEnabled = settingsDataStore.data
+                .first()[PreferencesKeys.IS_DARK_THEME_ENABLED]
 
-            val appThemeDto = when (appThemeIndex) {
-                AppThemeDto.Light.index -> AppThemeDto.Light
-                AppThemeDto.Dark.index -> AppThemeDto.Dark
-                else -> AppThemeDto.Dark
+            val appThemeDto = when (isDarkThemeEnabled) {
+                true -> AppThemeDto.Dark
+                false -> AppThemeDto.Light
+                null -> AppThemeDto.Dark
             }
 
             appThemeDto.toAppTheme()
@@ -67,12 +68,12 @@ class PreferencesRepositoryImpl @Inject constructor(
     }
 
     override fun getCurrentAppTheme(): Flow<AppTheme> = settingsDataStore.data.map {
-        val appThemeIndex = it[PreferencesKeys.CURRENT_APP_THEME]
+        val isDarkThemeEnabled = it[PreferencesKeys.IS_DARK_THEME_ENABLED]
 
-        val appThemeDto = when (appThemeIndex) {
-            AppThemeDto.Light.index -> AppThemeDto.Light
-            AppThemeDto.Dark.index -> AppThemeDto.Dark
-            else -> AppThemeDto.Dark
+        val appThemeDto = when (isDarkThemeEnabled) {
+            true -> AppThemeDto.Dark
+            false -> AppThemeDto.Light
+            null -> AppThemeDto.Dark
         }
 
         appThemeDto.toAppTheme()
@@ -148,8 +149,11 @@ class PreferencesRepositoryImpl @Inject constructor(
     override suspend fun setCurrentAppTheme(appThemeDto: AppThemeDto) {
         try {
             settingsDataStore.edit {
-                it[PreferencesKeys.CURRENT_APP_THEME] = appThemeDto.index
-                Timber.i("AppTheme edited to ${appThemeDto.index}")
+                it[PreferencesKeys.IS_DARK_THEME_ENABLED] = when (appThemeDto) {
+                    AppThemeDto.Light -> false
+                    AppThemeDto.Dark -> true
+                }
+                Timber.i("AppTheme edited to $appThemeDto")
             }
         } catch (e: Exception) {
             Timber.e("setCurrentAppTheme failed:")
