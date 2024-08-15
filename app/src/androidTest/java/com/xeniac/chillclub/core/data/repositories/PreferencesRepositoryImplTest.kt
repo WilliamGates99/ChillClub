@@ -92,8 +92,8 @@ class PreferencesRepositoryImplTest {
         val initialPreviousRateAppRequestTime =
             testRepository.getPreviousRateAppRequestTimeInMs().first()
 
-        assertThat(initialAppThemeSynchronously).isEqualTo(AppTheme.Default)
-        assertThat(initialAppTheme).isEqualTo(AppTheme.Default)
+        assertThat(initialAppThemeSynchronously).isEqualTo(AppTheme.Dark)
+        assertThat(initialAppTheme).isEqualTo(AppTheme.Dark)
         assertThat(initialAppLocale).isEqualTo(AppLocale.Default)
         assertThat(initialIsPlayInBackgroundEnabled).isTrue()
         assertThat(initialNotificationPermissionCount).isEqualTo(0)
@@ -103,7 +103,7 @@ class PreferencesRepositoryImplTest {
 
     @Test
     fun writeCurrentAppTheme() = testScope.runBlockingTest {
-        val testValue = AppTheme.Dark
+        val testValue = AppTheme.Light
         testRepository.setCurrentAppTheme(testValue.toAppThemeDto())
 
         val currentAppTheme = testRepository.getCurrentAppTheme().first()

@@ -53,17 +53,16 @@ class PreferencesRepositoryImpl @Inject constructor(
             val appThemeIndex = settingsDataStore.data.first()[PreferencesKeys.CURRENT_APP_THEME]
 
             val appThemeDto = when (appThemeIndex) {
-                AppThemeDto.Default.index -> AppThemeDto.Default
                 AppThemeDto.Light.index -> AppThemeDto.Light
                 AppThemeDto.Dark.index -> AppThemeDto.Dark
-                else -> AppThemeDto.Default
+                else -> AppThemeDto.Dark
             }
 
             appThemeDto.toAppTheme()
         } catch (e: Exception) {
             Timber.e("getCurrentAppThemeSynchronously failed:")
             e.printStackTrace()
-            AppThemeDto.Default.toAppTheme()
+            AppThemeDto.Dark.toAppTheme()
         }
     }
 
@@ -71,10 +70,9 @@ class PreferencesRepositoryImpl @Inject constructor(
         val appThemeIndex = it[PreferencesKeys.CURRENT_APP_THEME]
 
         val appThemeDto = when (appThemeIndex) {
-            AppThemeDto.Default.index -> AppThemeDto.Default
             AppThemeDto.Light.index -> AppThemeDto.Light
             AppThemeDto.Dark.index -> AppThemeDto.Dark
-            else -> AppThemeDto.Default
+            else -> AppThemeDto.Dark
         }
 
         appThemeDto.toAppTheme()

@@ -42,14 +42,14 @@ class SetCurrentAppThemeUseCaseTest {
 
     @Test
     fun setCurrentAppTheme_returnsSuccess() = runTest {
-        val testValue = AppTheme.Dark
+        val testValue = AppTheme.Light
         val result = setCurrentAppThemeUseCase(testValue)
         assertThat(result).isInstanceOf(Result.Success::class.java)
     }
 
     @Test
     fun setCurrentAppTheme_returnsNewAppTheme() = runTest {
-        val testValue = AppTheme.Dark
+        val testValue = AppTheme.Light
         setCurrentAppThemeUseCase(testValue)
 
         val appTheme = getCurrentAppThemeUseCase().first()

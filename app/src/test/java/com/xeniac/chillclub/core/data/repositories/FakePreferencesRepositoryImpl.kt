@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 class FakePreferencesRepositoryImpl @Inject constructor() : PreferencesRepository {
 
-    var appTheme: AppTheme = AppTheme.Default
+    var appTheme: AppTheme = AppTheme.Dark
     var appLocale: AppLocale = AppLocale.Default
     var isPlayInBackgroundEnabled = SnapshotStateList<Boolean>().apply {
         add(true)

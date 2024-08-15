@@ -6,11 +6,6 @@ sealed class AppThemeDto(
     val index: Int,
     val setAppTheme: () -> Unit
 ) {
-    data object Default : AppThemeDto(
-        index = 0,
-        setAppTheme = { AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) }
-    )
-
     data object Light : AppThemeDto(
         index = 1,
         setAppTheme = { AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO) }
