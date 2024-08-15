@@ -1,6 +1,5 @@
 package com.xeniac.chillclub.feature_settings.presentation
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xeniac.chillclub.R
@@ -18,16 +17,12 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val settingsUseCases: SettingsUseCases,
-    private val savedStateHandle: SavedStateHandle
+    private val settingsUseCases: SettingsUseCases
 ) : ViewModel() {
-
-    private val mutex: Mutex = Mutex()
 
     val appTheme = settingsUseCases.getCurrentAppThemeUseCase.get()()
     val isPlayInBackgroundEnabled = settingsUseCases.getIsPlayInBackgroundEnabledUseCase.get()()
