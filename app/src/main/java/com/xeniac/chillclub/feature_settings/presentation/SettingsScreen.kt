@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -209,11 +210,9 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            AppVersionSection(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
+            Spacer(modifier = Modifier.weight(1f))
+
+            AppVersionSection(modifier = Modifier.fillMaxWidth())
         }
     }
 }

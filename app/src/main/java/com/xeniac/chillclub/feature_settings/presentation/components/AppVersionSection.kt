@@ -1,12 +1,9 @@
 package com.xeniac.chillclub.feature_settings.presentation.components
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -25,7 +22,6 @@ fun AppVersionSection(
     paddingValues: PaddingValues = PaddingValues(
         start = 16.dp,
         end = 16.dp,
-        top = 4.dp,
         bottom = 8.dp
     ),
     fontSize: TextUnit = 14.sp,
@@ -34,22 +30,16 @@ fun AppVersionSection(
     color: Color = Gray40,
     maxLines: Int = 1
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Text(
+        text = stringResource(
+            id = R.string.settings_app_version,
+            BuildConfig.VERSION_NAME
+        ),
+        fontSize = fontSize,
+        fontWeight = fontWeight,
+        textAlign = textAlign,
+        color = color,
+        maxLines = maxLines,
         modifier = modifier.padding(paddingValues)
-    ) {
-        Spacer(modifier = Modifier.weight(1f))
-
-        Text(
-            text = stringResource(
-                id = R.string.settings_app_version,
-                BuildConfig.VERSION_NAME
-            ),
-            fontSize = fontSize,
-            fontWeight = fontWeight,
-            textAlign = textAlign,
-            color = color,
-            maxLines = maxLines
-        )
-    }
+    )
 }
