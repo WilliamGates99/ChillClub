@@ -10,8 +10,9 @@ val GreenNotificationLight = Color(0xFF00E560)
 val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)
 
-val Gray80 = Color(0xFFD3D3D3)
+val Gray5 = Color(0xFF0E0E0E)
 val Gray60 = Color(0xFF9F9F9F)
+val Gray80 = Color(0xFFD3D3D3)
 
 val primaryLight = Color(0xFF2E48C9)
 val onPrimaryLight = Color(0xFFFFFFFF)

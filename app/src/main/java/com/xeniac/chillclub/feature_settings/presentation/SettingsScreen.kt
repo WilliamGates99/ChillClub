@@ -1,5 +1,6 @@
 package com.xeniac.chillclub.feature_settings.presentation
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -46,6 +47,7 @@ import com.xeniac.chillclub.core.presentation.utils.ObserverAsEvent
 import com.xeniac.chillclub.core.presentation.utils.UiEvent
 import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeightDp
 import com.xeniac.chillclub.core.ui.components.SwipeableSnackbar
+import com.xeniac.chillclub.feature_settings.presentation.components.AboutSection
 import com.xeniac.chillclub.feature_settings.presentation.components.GeneralSettings
 import com.xeniac.chillclub.feature_settings.presentation.utils.SettingsUiEvent
 import kotlinx.coroutines.launch
@@ -177,7 +179,23 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // TODO: ABOUT
+            AboutSection(
+                onAboutUsClick = {
+                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                },
+                onContactUsClick = {
+                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                },
+                onSourceClick = {
+                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                },
+                onDonateClick = {
+                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                },
+                onShareClick = {
+                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                },
+            )
 
             // TODO: SUPPORT
 

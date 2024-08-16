@@ -31,7 +31,7 @@
     <string name="settings_general_background_player_title">Background Player</string>
     <string name="settings_general_background_play_description">Keep listening when the app is in the background.</string>
     <string name="settings_about_title">About</string>
-    <string name="settings_about_about_title">About Us</string>
+    <string name="settings_about_about_us_title">About Us</string>
     <string name="settings_about_contact_us_title">Contact Us</string>
     <string name="settings_about_source_title">Source</string>
     <string name="settings_about_donate_title">Donate</string>

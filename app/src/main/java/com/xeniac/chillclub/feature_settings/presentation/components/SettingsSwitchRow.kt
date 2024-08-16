@@ -1,6 +1,7 @@
 package com.xeniac.chillclub.feature_settings.presentation.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -54,6 +55,7 @@ fun SettingsSwitchRow(
     titleFontSize: TextUnit = 16.sp,
     titleFontWeight: FontWeight = FontWeight.ExtraBold,
     titleColor: Color = MaterialTheme.colorScheme.onSurface,
+    titleMaxLines: Int = 1,
     description: String? = null,
     descriptionFontSize: TextUnit = 12.sp,
     descriptionFontWeight: FontWeight = FontWeight.Normal,
@@ -96,7 +98,10 @@ fun SettingsSwitchRow(
                 fontSize = titleFontSize,
                 fontWeight = titleFontWeight,
                 color = titleColor,
-                modifier = Modifier.weight(1f)
+                maxLines = titleMaxLines,
+                modifier = Modifier
+                    .weight(1f)
+                    .basicMarquee()
             )
 
             Switch(
