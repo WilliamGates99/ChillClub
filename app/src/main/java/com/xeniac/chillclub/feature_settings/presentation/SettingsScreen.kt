@@ -210,7 +210,9 @@ fun SettingsScreen(
             )
 
             AppVersionSection(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
         }
     }
