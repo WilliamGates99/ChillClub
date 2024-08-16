@@ -56,6 +56,13 @@
     <string name="settings_about_source_title">Source</string>
     <string name="settings_about_donate_title">Donate</string>
     <string name="settings_about_share_title">Share</string>
+    <!--
+    Placeholders:
+    • %1$s: App Title
+    • %2$s: Download Link
+    -->
+    <string name="settings_about_share_message">I\'m using %1$s app and thought you might like it too. Download it from here:\n\n%2$s</string>
+    <string name="settings_about_share_app_chooser_title">Share via…</string>
     <string name="settings_support_title">Support</string>
     <string name="settings_support_ask_question_title">Ask a Question</string>
     <string name="settings_support_privacy_policy_title">Privacy Policy</string>

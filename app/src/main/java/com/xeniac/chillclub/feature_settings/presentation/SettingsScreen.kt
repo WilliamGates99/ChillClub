@@ -1,6 +1,5 @@
 package com.xeniac.chillclub.feature_settings.presentation
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -193,8 +192,7 @@ fun SettingsScreen(
                     isIntentAppNotFoundErrorVisible = IntentHelper.sendEmail(context)
                 },
                 onShareClick = {
-                    // TODO: IMPLEMENT SHARE LINK
-                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                    isIntentAppNotFoundErrorVisible = IntentHelper.sendShareMessage(context)
                 },
                 modifier = Modifier.fillMaxWidth()
             )

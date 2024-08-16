@@ -106,4 +106,36 @@ object IntentHelper {
     } catch (e: ActivityNotFoundException) {
         true
     }
+
+    /**
+     * returns true if email app was not found
+     */
+    fun sendShareMessage(context: Context): AppNotFound = try {
+        val shareMessage = context.getString(
+            R.string.settings_about_share_message,
+            context.getString(R.string.app_name),
+            BuildConfig.URL_APP_STORE
+        )
+
+        Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "text/plain"
+
+            putExtra(
+                /* name = */ Intent.EXTRA_TEXT,
+                /* value = */ shareMessage
+            )
+
+            context.startActivity(
+                Intent.createChooser(
+                    /* target = */ this,
+                    /* title = */
+                    context.getString(R.string.settings_about_share_app_chooser_title)
+                )
+            )
+        }
+        false
+    } catch (e: ActivityNotFoundException) {
+        true
+    }
 }
