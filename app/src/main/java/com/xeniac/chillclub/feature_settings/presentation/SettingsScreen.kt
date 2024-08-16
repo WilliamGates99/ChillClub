@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -48,11 +47,13 @@ import com.xeniac.chillclub.core.presentation.utils.UiEvent
 import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeightDp
 import com.xeniac.chillclub.core.ui.components.SwipeableSnackbar
 import com.xeniac.chillclub.feature_settings.presentation.components.AboutSection
+import com.xeniac.chillclub.feature_settings.presentation.components.AppVersionSection
 import com.xeniac.chillclub.feature_settings.presentation.components.GeneralSettings
+import com.xeniac.chillclub.feature_settings.presentation.components.SupportSection
 import com.xeniac.chillclub.feature_settings.presentation.utils.SettingsUiEvent
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     onNavigateUp: () -> Unit,
@@ -195,11 +196,22 @@ fun SettingsScreen(
                 onShareClick = {
                     Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
                 },
+                modifier = Modifier.fillMaxWidth()
             )
 
-            // TODO: SUPPORT
+            SupportSection(
+                onAskQuestionClick = {
+                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                },
+                onPrivacyPolicyClick = {
+                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
 
-            // TODO: VERSION
+            AppVersionSection(
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

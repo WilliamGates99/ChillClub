@@ -39,5 +39,7 @@
     <string name="settings_support_title">Support</string>
     <string name="settings_support_ask_question_title">Ask a Question</string>
     <string name="settings_support_privacy_policy_title">Privacy Policy</string>
+    <!--Placeholder is for the App Version-->
+    <string name="settings_app_version">v%s</string>
 
 </resources>

@@ -20,18 +20,15 @@ import androidx.compose.ui.unit.sp
 import com.xeniac.chillclub.R
 
 @Composable
-fun AboutSection(
+fun SupportSection(
     modifier: Modifier = Modifier,
     background: Color = MaterialTheme.colorScheme.surface,
-    title: String = stringResource(id = R.string.settings_about_title).uppercase(),
+    title: String = stringResource(id = R.string.settings_support_title).uppercase(),
     titleFontSize: TextUnit = 20.sp,
     titleLineHeight: TextUnit = 20.sp,
     titleFontWeight: FontWeight = FontWeight.Normal,
-    onAboutUsClick: () -> Unit,
-    onContactUsClick: () -> Unit,
-    onSourceClick: () -> Unit,
-    onDonateClick: () -> Unit,
-    onShareClick: () -> Unit
+    onAskQuestionClick: () -> Unit,
+    onPrivacyPolicyClick: () -> Unit
 ) {
     Column(modifier = modifier.background(background)) {
         Text(
@@ -51,41 +48,17 @@ fun AboutSection(
         Spacer(modifier = Modifier.height(4.dp))
 
         SettingsClickableItem(
-            icon = painterResource(id = R.drawable.ic_settings_about_us),
-            title = stringResource(id = R.string.settings_about_about_us_title),
-            onClick = onAboutUsClick
+            icon = painterResource(id = R.drawable.ic_settings_ask_question),
+            title = stringResource(id = R.string.settings_support_ask_question_title),
+            onClick = onAskQuestionClick
         )
 
         SettingsHorizontalDivider()
 
         SettingsClickableItem(
-            icon = painterResource(id = R.drawable.ic_settings_contact_us),
-            title = stringResource(id = R.string.settings_about_contact_us_title),
-            onClick = onContactUsClick
-        )
-
-        SettingsHorizontalDivider()
-
-        SettingsClickableItem(
-            icon = painterResource(id = R.drawable.ic_settings_source),
-            title = stringResource(id = R.string.settings_about_source_title),
-            onClick = onSourceClick
-        )
-
-        SettingsHorizontalDivider()
-
-        SettingsClickableItem(
-            icon = painterResource(id = R.drawable.ic_settings_donate),
-            title = stringResource(id = R.string.settings_about_donate_title),
-            onClick = onDonateClick
-        )
-
-        SettingsHorizontalDivider()
-
-        SettingsClickableItem(
-            icon = painterResource(id = R.drawable.ic_settings_share),
-            title = stringResource(id = R.string.settings_about_share_title),
-            onClick = onShareClick
+            icon = painterResource(id = R.drawable.ic_settings_privacy_policy),
+            title = stringResource(id = R.string.settings_support_privacy_policy_title),
+            onClick = onPrivacyPolicyClick
         )
     }
 }
