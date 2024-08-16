@@ -113,7 +113,7 @@ android {
             buildConfigField(
                 type = "String",
                 name = "URL_APP_STORE",
-                value = "\"https://play.google.com/store/apps/details?id=com.xeniac.chillclubt\""
+                value = "\"https://play.google.com/store/apps/details?id=com.xeniac.chillclub\""
             )
 
             buildConfigField(
@@ -129,7 +129,7 @@ android {
             buildConfigField(
                 type = "String",
                 name = "URL_APP_STORE",
-                value = "\"https://github.com/WilliamGates99/FUTSale\""
+                value = "\"https://github.com/WilliamGates99/ChillClub\""
             )
 
             buildConfigField(
@@ -145,7 +145,7 @@ android {
             buildConfigField(
                 type = "String",
                 name = "URL_APP_STORE",
-                value = "\"https://cafebazaar.ir/app/com.xeniac.chillclubt\""
+                value = "\"https://cafebazaar.ir/app/com.xeniac.chillclub\""
             )
 
             buildConfigField(
@@ -161,7 +161,7 @@ android {
             buildConfigField(
                 type = "String",
                 name = "URL_APP_STORE",
-                value = "\"https://myket.ir/app/com.xeniac.chillclubt\""
+                value = "\"https://myket.ir/app/com.xeniac.chillclub\""
             )
 
             buildConfigField(
