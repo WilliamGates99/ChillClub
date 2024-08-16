@@ -32,6 +32,26 @@
     <string name="settings_about_title">About</string>
     <string name="settings_about_about_us_title">About Us</string>
     <string name="settings_about_contact_us_title">Contact Us</string>
+    <!--Placeholder is for the Device Model-->
+    <string name="settings_support_contact_us_email_device_model">Device Model: %s</string>
+    <!--Placeholder is for the Android Version-->
+    <string name="settings_support_contact_us_email_android_version">Android Version: %s</string>
+    <!--Placeholder is for the App Version-->
+    <string name="settings_support_contact_us_email_app_version">App Version: %s</string>
+    <!--
+    Placeholders:
+    • %1$s: Device Model
+    • %2$s: Android Version
+    • %3$s: App Version
+    Sample:
+    Device Model: Pixel 9
+    Android Version: 15
+    App Version: 1.0.0
+    ..................
+    Feedback:
+    -->
+    <string name="settings_support_contact_us_email_text">%1$s\n%2$s\n%3$s\n--------------------------------------\nFeedback:</string>
+    <string name="settings_about_contact_us_app_chooser_title">Contact us via…</string>
     <string name="settings_about_source_title">Source</string>
     <string name="settings_about_donate_title">Donate</string>
     <string name="settings_about_share_title">Share</string>

@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xeniac.chillclub.R
+import com.xeniac.chillclub.core.presentation.utils.IntentHelper
 import com.xeniac.chillclub.core.presentation.utils.ObserverAsEvent
 import com.xeniac.chillclub.core.presentation.utils.UiEvent
 import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeightDp
@@ -182,30 +183,28 @@ fun SettingsScreen(
             )
 
             AboutSection(
-                onAboutUsClick = {
-                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                openUrlInInAppBrowser = { url ->
+                    IntentHelper.openLinkInInAppBrowser(
+                        context = context,
+                        urlString = url
+                    )
                 },
                 onContactUsClick = {
-                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
-                },
-                onSourceClick = {
-                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
-                },
-                onDonateClick = {
-                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                    isIntentAppNotFoundErrorVisible = IntentHelper.sendEmail(context)
                 },
                 onShareClick = {
+                    // TODO: IMPLEMENT SHARE LINK
                     Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.fillMaxWidth()
             )
 
             SupportSection(
-                onAskQuestionClick = {
-                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
-                },
-                onPrivacyPolicyClick = {
-                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                openUrlInInAppBrowser = { url ->
+                    IntentHelper.openLinkInInAppBrowser(
+                        context = context,
+                        urlString = url
+                    )
                 },
                 modifier = Modifier.fillMaxWidth()
             )

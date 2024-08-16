@@ -4,8 +4,11 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.browser.customtabs.CustomTabsIntent
 import com.xeniac.chillclub.BuildConfig
+import com.xeniac.chillclub.R
+import com.xeniac.chillclub.feature_settings.presentation.utils.Constants
 
 typealias AppNotFound = Boolean
 
@@ -23,7 +26,7 @@ object IntentHelper {
     }
 
     /**
-     * returns true if app was not found
+     * returns true if browser app was not found
      */
     fun openLinkInBrowser(context: Context, urlString: String): AppNotFound = try {
         Intent().apply {
@@ -49,5 +52,58 @@ object IntentHelper {
             context = context,
             urlString = BuildConfig.URL_APP_STORE
         )
+    }
+
+    /**
+     * returns true if email app was not found
+     */
+    fun sendEmail(context: Context): AppNotFound = try {
+        val deviceModel = context.getString(
+            R.string.settings_support_contact_us_email_device_model,
+            Build.MODEL
+        )
+        val androidVersion = context.getString(
+            R.string.settings_support_contact_us_email_device_model,
+            Build.VERSION.RELEASE
+        )
+        val appVersion = context.getString(
+            R.string.settings_support_contact_us_email_app_version,
+            BuildConfig.VERSION_NAME
+        )
+        val emailText = context.getString(
+            R.string.settings_support_contact_us_email_text,
+            deviceModel,
+            androidVersion,
+            appVersion
+        )
+
+        Intent().apply {
+            action = Intent.ACTION_SENDTO
+            data = Uri.parse("mailto:")
+
+            putExtra(
+                /* name = */ Intent.EXTRA_EMAIL,
+                /* value = */ arrayOf(Constants.EMAIL_CONTACT_US)
+            )
+            putExtra(
+                /* name = */ Intent.EXTRA_SUBJECT,
+                /* value = */ context.getString(R.string.app_name)
+            )
+            putExtra(
+                /* name = */ Intent.EXTRA_TEXT,
+                /* value = */ emailText
+            )
+
+            context.startActivity(
+                Intent.createChooser(
+                    /* target = */ this,
+                    /* title = */
+                    context.getString(R.string.settings_about_contact_us_app_chooser_title)
+                )
+            )
+        }
+        false
+    } catch (e: ActivityNotFoundException) {
+        true
     }
 }

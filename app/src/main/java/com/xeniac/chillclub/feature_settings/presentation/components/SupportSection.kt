@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xeniac.chillclub.R
+import com.xeniac.chillclub.feature_settings.presentation.utils.Constants
 
 @Composable
 fun SupportSection(
@@ -27,8 +28,7 @@ fun SupportSection(
     titleFontSize: TextUnit = 20.sp,
     titleLineHeight: TextUnit = 20.sp,
     titleFontWeight: FontWeight = FontWeight.Normal,
-    onAskQuestionClick: () -> Unit,
-    onPrivacyPolicyClick: () -> Unit
+    openUrlInInAppBrowser: (url: String) -> Unit,
 ) {
     Column(modifier = modifier.background(background)) {
         Text(
@@ -50,7 +50,7 @@ fun SupportSection(
         SettingsClickableItem(
             icon = painterResource(id = R.drawable.ic_settings_ask_question),
             title = stringResource(id = R.string.settings_support_ask_question_title),
-            onClick = onAskQuestionClick
+            onClick = { openUrlInInAppBrowser(Constants.URL_ASK_QUESTION) }
         )
 
         SettingsHorizontalDivider()
@@ -58,7 +58,7 @@ fun SupportSection(
         SettingsClickableItem(
             icon = painterResource(id = R.drawable.ic_settings_privacy_policy),
             title = stringResource(id = R.string.settings_support_privacy_policy_title),
-            onClick = onPrivacyPolicyClick
+            onClick = { openUrlInInAppBrowser(Constants.URL_PRIVACY_POLICY) }
         )
     }
 }

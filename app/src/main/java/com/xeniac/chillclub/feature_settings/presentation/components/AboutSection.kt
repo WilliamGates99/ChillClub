@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xeniac.chillclub.R
+import com.xeniac.chillclub.feature_settings.presentation.utils.Constants
 
 @Composable
 fun AboutSection(
@@ -27,10 +28,8 @@ fun AboutSection(
     titleFontSize: TextUnit = 20.sp,
     titleLineHeight: TextUnit = 20.sp,
     titleFontWeight: FontWeight = FontWeight.Normal,
-    onAboutUsClick: () -> Unit,
+    openUrlInInAppBrowser: (url: String) -> Unit,
     onContactUsClick: () -> Unit,
-    onSourceClick: () -> Unit,
-    onDonateClick: () -> Unit,
     onShareClick: () -> Unit
 ) {
     Column(modifier = modifier.background(background)) {
@@ -53,7 +52,7 @@ fun AboutSection(
         SettingsClickableItem(
             icon = painterResource(id = R.drawable.ic_settings_about_us),
             title = stringResource(id = R.string.settings_about_about_us_title),
-            onClick = onAboutUsClick
+            onClick = { openUrlInInAppBrowser(Constants.URL_ABOUT_US) }
         )
 
         SettingsHorizontalDivider()
@@ -69,7 +68,7 @@ fun AboutSection(
         SettingsClickableItem(
             icon = painterResource(id = R.drawable.ic_settings_source),
             title = stringResource(id = R.string.settings_about_source_title),
-            onClick = onSourceClick
+            onClick = { openUrlInInAppBrowser(Constants.URL_SOURCE) }
         )
 
         SettingsHorizontalDivider()
@@ -77,7 +76,7 @@ fun AboutSection(
         SettingsClickableItem(
             icon = painterResource(id = R.drawable.ic_settings_donate),
             title = stringResource(id = R.string.settings_about_donate_title),
-            onClick = onDonateClick
+            onClick = { openUrlInInAppBrowser(Constants.URL_DONATE) }
         )
 
         SettingsHorizontalDivider()
