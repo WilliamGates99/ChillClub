@@ -41,43 +41,43 @@ class MusicPlayerRepositoryImpl @Inject constructor(
             else -> Result.Error(GetRadiosError.Network.SomethingWentWrong)
         }
     } catch (e: CancellationException) {
-        Timber.e("Pick up player CancellationException:")
+        Timber.e("Get radios CancellationException:")
         e.printStackTrace()
         Result.Error(GetRadiosError.CancellationException)
     } catch (e: UnresolvedAddressException) { // When device is offline
-        Timber.e("Pick up player UnresolvedAddressException:}")
+        Timber.e("Get radios UnresolvedAddressException:}")
         e.printStackTrace()
         Result.Error(GetRadiosError.Network.Offline)
     } catch (e: ConnectTimeoutException) {
-        Timber.e("Pick up player ConnectTimeoutException:")
+        Timber.e("Get radios ConnectTimeoutException:")
         e.printStackTrace()
         Result.Error(GetRadiosError.Network.ConnectTimeoutException)
     } catch (e: HttpRequestTimeoutException) {
-        Timber.e("Pick up player HttpRequestTimeoutException:")
+        Timber.e("Get radios HttpRequestTimeoutException:")
         e.printStackTrace()
         Result.Error(GetRadiosError.Network.HttpRequestTimeoutException)
     } catch (e: SocketTimeoutException) {
-        Timber.e("Pick up player SocketTimeoutException:")
+        Timber.e("Get radios SocketTimeoutException:")
         e.printStackTrace()
         Result.Error(GetRadiosError.Network.SocketTimeoutException)
     } catch (e: RedirectResponseException) { // 3xx responses
-        Timber.e("Pick up player RedirectResponseException:")
+        Timber.e("Get radios RedirectResponseException:")
         e.printStackTrace()
         Result.Error(GetRadiosError.Network.RedirectResponseException)
     } catch (e: ClientRequestException) { // 4xx responses
-        Timber.e("Pick up player ClientRequestException:")
+        Timber.e("Get radios ClientRequestException:")
         e.printStackTrace()
         Result.Error(GetRadiosError.Network.ClientRequestException)
     } catch (e: ServerResponseException) { // 5xx responses
-        Timber.e("Pick up player ServerResponseException:")
+        Timber.e("Get radios ServerResponseException:")
         e.printStackTrace()
         Result.Error(GetRadiosError.Network.ServerResponseException)
     } catch (e: SerializationException) {
-        Timber.e("Pick up player SerializationException:")
+        Timber.e("Get radios SerializationException:")
         e.printStackTrace()
         Result.Error(GetRadiosError.Network.SerializationException)
     } catch (e: Exception) {
-        Timber.e("Pick up player Exception:")
+        Timber.e("Get radios Exception:")
         e.printStackTrace()
         if (e.message?.lowercase(Locale.US)?.contains("unable to resolve host") == true) {
             Result.Error(GetRadiosError.Network.Offline)
