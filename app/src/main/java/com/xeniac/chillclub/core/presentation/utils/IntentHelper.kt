@@ -97,8 +97,9 @@ object IntentHelper {
             context.startActivity(
                 Intent.createChooser(
                     /* target = */ this,
-                    /* title = */
-                    context.getString(R.string.settings_about_contact_us_app_chooser_title)
+                    /* title = */ context.getString(
+                        R.string.settings_about_contact_us_app_chooser_title
+                    )
                 )
             )
         }
@@ -129,8 +130,9 @@ object IntentHelper {
             context.startActivity(
                 Intent.createChooser(
                     /* target = */ this,
-                    /* title = */
-                    context.getString(R.string.settings_about_share_app_chooser_title)
+                    /* title = */ context.getString(
+                        R.string.settings_about_share_app_chooser_title
+                    )
                 )
             )
         }
