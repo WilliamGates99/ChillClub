@@ -8,6 +8,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import com.xeniac.chillclub.core.presentation.utils.TestTags.BTN_SETTINGS
 
 @Composable
 fun MusicPlayerScreen(
@@ -21,7 +23,8 @@ fun MusicPlayerScreen(
         Text(text = "MusicPlayerScreen")
 
         Button(
-            onClick = onNavigateToSettingsScreen
+            onClick = onNavigateToSettingsScreen,
+            modifier = Modifier.testTag(BTN_SETTINGS)
         ) {
             Text(text = "Settings")
         }
