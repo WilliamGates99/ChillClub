@@ -346,7 +346,7 @@ class SettingsScreenTest {
                 IntentMatchers.hasExtra(
                     /* key = */ Intent.EXTRA_TITLE,
                     /* value = */ context.getString(
-                        R.string.settings_about_contact_us_app_chooser_title
+                        R.string.settings_about_share_app_chooser_title
                     )
                 )
             )
