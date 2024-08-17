@@ -1,4 +1,4 @@
-package com.xeniac.chillclub.core.domain.states
+package com.xeniac.chillclub.core.presentation.states
 
 import android.os.Parcelable
 import com.xeniac.chillclub.core.domain.models.AppLocale
