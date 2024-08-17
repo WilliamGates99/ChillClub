@@ -9,11 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.xeniac.chillclub.core.presentation.utils.TestTags.BTN_SETTINGS
 
 @Composable
 fun MusicPlayerScreen(
-    onNavigateToSettingsScreen: () -> Unit
+    onNavigateToSettingsScreen: () -> Unit,
+    viewModel: MusicPlayerViewModel = hiltViewModel()
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
