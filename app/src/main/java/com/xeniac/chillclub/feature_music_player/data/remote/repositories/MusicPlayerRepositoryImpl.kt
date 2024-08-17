@@ -34,8 +34,9 @@ class MusicPlayerRepositoryImpl @Inject constructor(
 
         when (response.status) {
             HttpStatusCode.OK -> {
-                val getRadiosResponseDto = response.body<GetRadiosResponseDto>()
-                val radios = getRadiosResponseDto.toList().map { it.toRadio() }
+                val radios = response.body<GetRadiosResponseDto>()
+                    .toGetRadiosResponse()
+                    .radios
                 Result.Success(radios)
             }
             else -> Result.Error(GetRadiosError.Network.SomethingWentWrong)

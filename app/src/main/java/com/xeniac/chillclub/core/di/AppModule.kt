@@ -25,7 +25,9 @@ import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.serialization.kotlinx.KotlinxSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -69,10 +71,20 @@ internal object AppModule {
         }
         install(HttpCache)
         install(ContentNegotiation) {
+            register(
+                contentType = ContentType.Text.Plain,
+                converter = KotlinxSerializationConverter(Json {
+                    ignoreUnknownKeys = true
+                    prettyPrint = true
+                    coerceInputValues = true
+                    isLenient = true
+                })
+            )
             json(Json {
                 ignoreUnknownKeys = true
                 prettyPrint = true
                 coerceInputValues = true
+                isLenient = true
             })
         }
         install(HttpRequestRetry) {
