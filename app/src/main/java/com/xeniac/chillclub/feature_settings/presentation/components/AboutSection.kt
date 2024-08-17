@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.xeniac.chillclub.BuildConfig
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.feature_settings.presentation.utils.Constants
 
@@ -73,13 +74,16 @@ fun AboutSection(
 
         SettingsHorizontalDivider()
 
-        SettingsClickableItem(
-            icon = painterResource(id = R.drawable.ic_settings_donate),
-            title = stringResource(id = R.string.settings_about_donate_title),
-            onClick = { openUrlInInAppBrowser(Constants.URL_DONATE) }
-        )
+        @Suppress("KotlinConstantConditions")
+        if (BuildConfig.FLAVOR_market != "myket") {
+            SettingsClickableItem(
+                icon = painterResource(id = R.drawable.ic_settings_donate),
+                title = stringResource(id = R.string.settings_about_donate_title),
+                onClick = { openUrlInInAppBrowser(Constants.URL_DONATE) }
+            )
 
-        SettingsHorizontalDivider()
+            SettingsHorizontalDivider()
+        }
 
         SettingsClickableItem(
             icon = painterResource(id = R.drawable.ic_settings_share),
