@@ -1,14 +1,14 @@
 package com.xeniac.chillclub.feature_music_player.domain.models
 
 import android.os.Parcelable
-import com.xeniac.chillclub.feature_music_player.data.remote.dto.LinksDto
+import com.xeniac.chillclub.feature_music_player.data.remote.dto.SocialLinksDto
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Links(
+data class SocialLinks(
     val youtube: String
 ) : Parcelable {
-    fun toLinksDto(): LinksDto = LinksDto(
+    fun toSocialLinksDto(): SocialLinksDto = SocialLinksDto(
         youtube = youtube
     )
 }

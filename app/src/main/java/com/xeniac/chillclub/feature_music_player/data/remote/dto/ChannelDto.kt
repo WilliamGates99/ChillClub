@@ -11,11 +11,11 @@ data class ChannelDto(
     @SerialName("avatar")
     val avatarUrl: String? = null,
     @SerialName("social")
-    val linksDto: LinksDto? = null
+    val socialLinksDto: SocialLinksDto? = null
 ) {
     fun toChannel(): Channel = Channel(
         name = name,
         avatarUrl = avatarUrl,
-        links = linksDto?.toLinks()
+        socialLinks = socialLinksDto?.toSocialLinks()
     )
 }

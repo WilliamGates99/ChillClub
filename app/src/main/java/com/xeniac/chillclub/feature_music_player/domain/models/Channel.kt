@@ -8,11 +8,11 @@ import kotlinx.parcelize.Parcelize
 data class Channel(
     val name: String,
     val avatarUrl: String? = null,
-    val links: Links? = null
+    val socialLinks: SocialLinks? = null
 ) : Parcelable {
     fun toChannelDto(): ChannelDto = ChannelDto(
         name = name,
         avatarUrl = avatarUrl,
-        linksDto = links?.toLinksDto()
+        socialLinksDto = socialLinks?.toSocialLinksDto()
     )
 }
