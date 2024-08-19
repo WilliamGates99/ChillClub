@@ -1,10 +1,13 @@
 package com.xeniac.chillclub.feature_music_player.data.remote.repositories
 
+import androidx.room.withTransaction
 import com.xeniac.chillclub.core.domain.utils.Result
+import com.xeniac.chillclub.feature_music_player.data.db.ChillClubDatabase
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadiosResponseDto
 import com.xeniac.chillclub.feature_music_player.domain.models.Radio
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
 import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadiosError
+import dagger.Lazy
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.network.sockets.ConnectTimeoutException
@@ -24,7 +27,8 @@ import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 class MusicPlayerRepositoryImpl @Inject constructor(
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
+    private val db: Lazy<ChillClubDatabase>
 ) : MusicPlayerRepository {
 
     override suspend fun getRadios(): Result<List<Radio>, GetRadiosError> = try {
@@ -34,9 +38,27 @@ class MusicPlayerRepositoryImpl @Inject constructor(
 
         when (response.status) {
             HttpStatusCode.OK -> {
-                val radios = response.body<GetRadiosResponseDto>()
-                    .toGetRadiosResponse()
-                    .radios
+                val getRadiosResponseDto = response.body<GetRadiosResponseDto>()
+
+                val radios = db.get().run {
+                    withTransaction {
+                        val radioEntities = getRadiosResponseDto.radioDtos.map {
+                            it.toRadioEntity()
+                        }
+
+                        val shouldReplaceRadiosInDb = dao().getRadiosCount() != radioEntities.size
+                        if (shouldReplaceRadiosInDb) {
+                            dao().clearRadios()
+
+                            radioEntities.forEach { radioEntity ->
+                                dao().insertRadios(radioEntity)
+                            }
+                        }
+
+                        dao().getRadios().map { it.toRadio() }
+                    }
+                }
+
                 Result.Success(radios)
             }
             else -> Result.Error(GetRadiosError.Network.SomethingWentWrong)

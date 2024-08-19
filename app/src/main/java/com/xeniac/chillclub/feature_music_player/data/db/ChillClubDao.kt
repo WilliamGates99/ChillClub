@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ChillClubDao {
 
+    @Query("SELECT COUNT(id) FROM radios")
+    suspend fun getRadiosCount(): Int
+
     @Upsert
     suspend fun insertRadios(vararg radioEntity: RadioEntity)
 
@@ -23,7 +26,7 @@ interface ChillClubDao {
     suspend fun deleteRadio(radioId: Long)
 
     @Query("SELECT * FROM radios")
-    fun observeRadios(): Flow<List<RadioEntity>>
+    fun getRadios(): List<RadioEntity>
 
     @Query("SELECT * FROM radios WHERE id = :id")
     fun observeRadio(id: Long): Flow<RadioEntity>
