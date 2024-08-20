@@ -12,5 +12,5 @@ import com.xeniac.chillclub.feature_music_player.data.db.entities.RadioEntity
 )
 @TypeConverters(RadioEntityConverters::class)
 abstract class ChillClubDatabase : RoomDatabase() {
-    abstract fun dao(): ChillClubDao
+    abstract val dao: ChillClubDao
 }

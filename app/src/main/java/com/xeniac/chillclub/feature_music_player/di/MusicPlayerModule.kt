@@ -35,7 +35,7 @@ object MusicPlayerModule {
     @ViewModelScoped
     fun provideChillClubDao(
         database: ChillClubDatabase
-    ): ChillClubDao = database.dao()
+    ): ChillClubDao = database.dao
 
     @Provides
     @ViewModelScoped
