@@ -28,7 +28,7 @@ object MusicPlayerModule {
     ): ChillClubDatabase = Room.databaseBuilder(
         context = context,
         klass = ChillClubDatabase::class.java,
-        name = "ChillClub_db"
+        name = "ChillClub.db"
     ).build()
 
     @Provides
