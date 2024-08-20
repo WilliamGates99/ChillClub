@@ -1,6 +1,5 @@
 package com.xeniac.chillclub.feature_settings.presentation
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xeniac.chillclub.R
@@ -28,8 +27,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val settingsUseCases: SettingsUseCases,
-    private val savedStateHandle: SavedStateHandle
+    private val settingsUseCases: SettingsUseCases
 ) : ViewModel() {
 
     private val _appTheme = settingsUseCases.getCurrentAppThemeUseCase.get()().stateIn(
