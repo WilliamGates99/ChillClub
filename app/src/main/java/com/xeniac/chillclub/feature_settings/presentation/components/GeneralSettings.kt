@@ -18,12 +18,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.domain.models.AppTheme
+import com.xeniac.chillclub.feature_settings.presentation.states.SettingsState
 import com.xeniac.chillclub.feature_settings.presentation.utils.TestTags
 
 @Composable
 fun GeneralSettings(
-    appTheme: AppTheme?,
-    isPlayInBackgroundEnabled: Boolean?,
+    settingsState: SettingsState,
     modifier: Modifier = Modifier,
     background: Color = MaterialTheme.colorScheme.surface,
     title: String = stringResource(id = R.string.settings_general_title).uppercase(),
@@ -53,7 +53,7 @@ fun GeneralSettings(
         SettingsSwitchRow(
             icon = painterResource(id = R.drawable.ic_settings_theme),
             title = stringResource(id = R.string.settings_general_theme_title),
-            isChecked = when (appTheme) {
+            isChecked = when (settingsState.currentAppTheme) {
                 AppTheme.Dark -> true
                 AppTheme.Light -> false
                 null -> null
@@ -71,7 +71,7 @@ fun GeneralSettings(
             icon = painterResource(id = R.drawable.ic_settings_background_player),
             title = stringResource(id = R.string.settings_general_background_player_title),
             description = stringResource(id = R.string.settings_general_background_play_description),
-            isChecked = isPlayInBackgroundEnabled,
+            isChecked = settingsState.isPlayInBackgroundEnabled,
             testTag = TestTags.SWITCH_BACKGROUND_PLAYER,
             onCheckedChange = onPlayInBackgroundChange
         )

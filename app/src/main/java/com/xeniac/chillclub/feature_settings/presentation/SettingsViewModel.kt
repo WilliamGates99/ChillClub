@@ -1,5 +1,6 @@
 package com.xeniac.chillclub.feature_settings.presentation
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xeniac.chillclub.R
@@ -11,21 +12,51 @@ import com.xeniac.chillclub.core.presentation.utils.UiText
 import com.xeniac.chillclub.feature_settings.domain.use_cases.SettingsUseCases
 import com.xeniac.chillclub.feature_settings.domain.utils.AppThemeError
 import com.xeniac.chillclub.feature_settings.domain.utils.PlayInBackgroundError
+import com.xeniac.chillclub.feature_settings.presentation.states.SettingsState
 import com.xeniac.chillclub.feature_settings.presentation.utils.SettingsUiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val settingsUseCases: SettingsUseCases
+    private val settingsUseCases: SettingsUseCases,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val appTheme = settingsUseCases.getCurrentAppThemeUseCase.get()()
-    val isPlayInBackgroundEnabled = settingsUseCases.getIsPlayInBackgroundEnabledUseCase.get()()
+    private val _appTheme = settingsUseCases.getCurrentAppThemeUseCase.get()().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = null
+    )
+    private val _isPlayInBackgroundEnabled = settingsUseCases.getIsPlayInBackgroundEnabledUseCase
+        .get()().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = null
+    )
+
+    private val _settingsState = MutableStateFlow(SettingsState())
+    val settingsState = combine(
+        flow = _settingsState,
+        flow2 = _appTheme,
+        flow3 = _isPlayInBackgroundEnabled
+    ) { settingsState, appTheme, isPlayInBackgroundEnabled ->
+        settingsState.copy(
+            currentAppTheme = appTheme,
+            isPlayInBackgroundEnabled = isPlayInBackgroundEnabled
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = SettingsState()
+    )
 
     private val _setAppThemeEventChannel = Channel<Event>()
     val setAppThemeEventChannel = _setAppThemeEventChannel.receiveAsFlow()
@@ -41,7 +72,8 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun setCurrentAppTheme(newAppTheme: AppTheme) = viewModelScope.launch {
-        if (newAppTheme != appTheme.first()) {
+        val shouldUpdateAppTheme = newAppTheme != settingsState.value.currentAppTheme
+        if (shouldUpdateAppTheme) {
             when (val result = settingsUseCases.setCurrentAppThemeUseCase.get()(newAppTheme)) {
                 is Result.Success -> {
                     _setAppThemeEventChannel.send(SettingsUiEvent.UpdateAppTheme(newAppTheme))

@@ -65,10 +65,7 @@ fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    val appTheme by viewModel.appTheme.collectAsStateWithLifecycle(initialValue = null)
-    val isPlayInBackgroundEnabled by viewModel.isPlayInBackgroundEnabled.collectAsStateWithLifecycle(
-        initialValue = null
-    )
+    val settingsState by viewModel.settingsState.collectAsStateWithLifecycle()
 
     var isIntentAppNotFoundErrorVisible by rememberSaveable { mutableStateOf(false) }
 
@@ -170,8 +167,7 @@ fun SettingsScreen(
                 )
         ) {
             GeneralSettings(
-                appTheme = appTheme,
-                isPlayInBackgroundEnabled = isPlayInBackgroundEnabled,
+                settingsState = settingsState,
                 onThemeChange = { newAppTheme ->
                     viewModel.onEvent(SettingsEvent.SetCurrentAppTheme(newAppTheme))
                 },
