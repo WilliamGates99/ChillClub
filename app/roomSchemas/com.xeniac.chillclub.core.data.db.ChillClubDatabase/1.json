@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "18fdee6d1b0947769df2cc7faeb05370",
+    "identityHash": "03022188de5a91dafd05446d1150fa1f",
     "entities": [
       {
         "tableName": "radios",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`youtube_video_id` TEXT NOT NULL, `title` TEXT NOT NULL, `channel` TEXT NOT NULL, `category` TEXT NOT NULL, `tags` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`youtube_video_id` TEXT NOT NULL, `title` TEXT NOT NULL, `channel` TEXT NOT NULL, `category` TEXT NOT NULL, `tags` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT)",
         "fields": [
           {
             "fieldPath": "youtubeVideoId",
@@ -39,6 +39,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
@@ -58,7 +64,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '18fdee6d1b0947769df2cc7faeb05370')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '03022188de5a91dafd05446d1150fa1f')"
     ]
   }
 }
