@@ -3,13 +3,11 @@ package com.xeniac.chillclub.feature_music_player.presensation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.domain.repositories.ConnectivityObserver
 import com.xeniac.chillclub.core.domain.utils.Result
 import com.xeniac.chillclub.core.presentation.utils.Event
 import com.xeniac.chillclub.core.presentation.utils.NetworkObserverHelper
 import com.xeniac.chillclub.core.presentation.utils.UiEvent
-import com.xeniac.chillclub.core.presentation.utils.UiText
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.MusicPlayerUseCases
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
 import com.xeniac.chillclub.feature_music_player.presensation.utils.asUiText
@@ -53,12 +51,14 @@ class MusicPlayerViewModel @Inject constructor(
     }
 
     private fun getRadios() = viewModelScope.launch {
-        if (NetworkObserverHelper.networkStatus.value == ConnectivityObserver.Status.AVAILABLE) {
-            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                isRadiosLoading = true
-            )
+        savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
+            isRadiosLoading = true
+        )
 
-            when (val getRadiosResult = musicPlayerUseCases.getRadiosUseCase.get()()) {
+        musicPlayerUseCases.getRadiosUseCase.get()(
+            fetchFromRemote = NetworkObserverHelper.networkStatus.value == ConnectivityObserver.Status.AVAILABLE
+        ).collect { getRadiosResult ->
+            when (getRadiosResult) {
                 is Result.Success -> {
                     getRadiosResult.data.let { radios ->
                         savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
@@ -92,12 +92,6 @@ class MusicPlayerViewModel @Inject constructor(
                     )
                 }
             }
-        } else {
-            _getRadiosEventChannel.send(
-                UiEvent.ShowOfflineSnackbar(
-                    UiText.StringResource(R.string.error_network_connection_unavailable)
-                )
-            )
         }
     }
 
