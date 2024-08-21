@@ -22,8 +22,8 @@ import javax.inject.Inject
 
 class FakePreferencesRepositoryImpl @Inject constructor() : PreferencesRepository {
 
-    var appTheme: AppTheme = AppTheme.Dark
-    var appLocale: AppLocale = AppLocale.Default
+    var currentAppTheme: AppTheme = AppTheme.Dark
+    var currentLocale: AppLocale = AppLocale.Default
     var isPlayInBackgroundEnabled = SnapshotStateList<Boolean>().apply {
         add(true)
     }
@@ -31,11 +31,11 @@ class FakePreferencesRepositoryImpl @Inject constructor() : PreferencesRepositor
     var selectedRateAppOption: RateAppOption = RateAppOption.NOT_SHOWN_YET
     var previousRateAppRequestTime: PreviousRateAppRequestTimeInMs? = null
 
-    override fun getCurrentAppThemeSynchronously(): AppTheme = appTheme
+    override fun getCurrentAppThemeSynchronously(): AppTheme = currentAppTheme
 
-    override fun getCurrentAppTheme(): Flow<AppTheme> = flow { emit(appTheme) }
+    override fun getCurrentAppTheme(): Flow<AppTheme> = flow { emit(currentAppTheme) }
 
-    override suspend fun getCurrentAppLocale(): AppLocale = appLocale
+    override fun getCurrentAppLocale(): AppLocale = currentLocale
 
     override fun isPlayInBackgroundEnabled(): Flow<IsBackgroundPlayEnabled> = snapshotFlow {
         isPlayInBackgroundEnabled.first()
@@ -51,17 +51,15 @@ class FakePreferencesRepositoryImpl @Inject constructor() : PreferencesRepositor
         flow { previousRateAppRequestTime }
 
     override suspend fun setCurrentAppTheme(appThemeDto: AppThemeDto) {
-        appTheme = appThemeDto.toAppTheme()
+        currentAppTheme = appThemeDto.toAppTheme()
     }
 
     override suspend fun setCurrentAppLocale(
-        appLocaleDto: AppLocaleDto
+        newAppLocaleDto: AppLocaleDto
     ): IsActivityRestartNeeded {
-        val isActivityRestartNeeded = isActivityRestartNeeded(
-            newLayoutDirection = appLocaleDto.layoutDirection
-        )
+        val isActivityRestartNeeded = isActivityRestartNeeded(newAppLocaleDto)
 
-        appLocale = appLocaleDto.toAppLocale()
+        currentLocale = newAppLocaleDto.toAppLocale()
 
         return isActivityRestartNeeded
     }
@@ -85,7 +83,7 @@ class FakePreferencesRepositoryImpl @Inject constructor() : PreferencesRepositor
         previousRateAppRequestTime = DateHelper.getCurrentTimeInMillis()
     }
 
-    private fun isActivityRestartNeeded(
-        newLayoutDirection: Int
-    ): Boolean = appLocale.layoutDirection != newLayoutDirection
+    fun isActivityRestartNeeded(
+        newLocale: AppLocaleDto
+    ): Boolean = currentLocale.layoutDirectionCompose != newLocale.layoutDirectionCompose
 }

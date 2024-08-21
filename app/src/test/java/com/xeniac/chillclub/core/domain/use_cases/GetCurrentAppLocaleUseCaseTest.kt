@@ -36,6 +36,6 @@ class GetCurrentAppLocaleUseCaseTest {
     @Test
     fun getCurrentAppLocale_returnsCurrentAppLocaleValue() = runTest {
         val currentAppLocale = getCurrentAppLocaleUseCase()
-        assertThat(currentAppLocale).isEqualTo(fakePreferencesRepository.appLocale)
+        assertThat(currentAppLocale).isEqualTo(fakePreferencesRepository.currentLocale)
     }
 }

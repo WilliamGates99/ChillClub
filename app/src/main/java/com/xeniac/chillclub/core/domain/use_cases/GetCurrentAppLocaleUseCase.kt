@@ -6,5 +6,5 @@ import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 class GetCurrentAppLocaleUseCase(
     private val preferencesRepository: PreferencesRepository
 ) {
-    suspend operator fun invoke(): AppLocale = preferencesRepository.getCurrentAppLocale()
+    operator fun invoke(): AppLocale = preferencesRepository.getCurrentAppLocale()
 }

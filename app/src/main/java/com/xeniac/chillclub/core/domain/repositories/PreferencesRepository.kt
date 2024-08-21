@@ -18,7 +18,7 @@ interface PreferencesRepository {
 
     fun getCurrentAppTheme(): Flow<AppTheme>
 
-    suspend fun getCurrentAppLocale(): AppLocale
+    fun getCurrentAppLocale(): AppLocale
 
     fun isPlayInBackgroundEnabled(): Flow<IsBackgroundPlayEnabled>
 
@@ -30,7 +30,7 @@ interface PreferencesRepository {
 
     suspend fun setCurrentAppTheme(appThemeDto: AppThemeDto)
 
-    suspend fun setCurrentAppLocale(appLocaleDto: AppLocaleDto): IsActivityRestartNeeded
+    suspend fun setCurrentAppLocale(newAppLocaleDto: AppLocaleDto): IsActivityRestartNeeded
 
     suspend fun isPlayInBackgroundEnabled(isEnabled: Boolean)
 
