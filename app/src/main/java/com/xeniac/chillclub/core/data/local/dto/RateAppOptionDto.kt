@@ -1,4 +1,4 @@
-package com.xeniac.chillclub.core.data.dto
+package com.xeniac.chillclub.core.data.local.dto
 
 enum class RateAppOptionDto(val value: String) {
     NOT_SHOWN_YET(value = "notShownYet"),

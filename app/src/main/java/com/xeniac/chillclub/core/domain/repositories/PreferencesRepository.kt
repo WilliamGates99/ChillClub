@@ -1,8 +1,8 @@
 package com.xeniac.chillclub.core.domain.repositories
 
-import com.xeniac.chillclub.core.data.dto.AppLocaleDto
-import com.xeniac.chillclub.core.data.dto.AppThemeDto
-import com.xeniac.chillclub.core.data.dto.RateAppOptionDto
+import com.xeniac.chillclub.core.data.local.dto.AppLocaleDto
+import com.xeniac.chillclub.core.data.local.dto.AppThemeDto
+import com.xeniac.chillclub.core.data.local.dto.RateAppOptionDto
 import com.xeniac.chillclub.core.domain.models.AppLocale
 import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.models.RateAppOption

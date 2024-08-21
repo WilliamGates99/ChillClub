@@ -1,6 +1,6 @@
 package com.xeniac.chillclub.feature_music_player.data.remote.dto
 
-import com.xeniac.chillclub.feature_music_player.data.db.entities.RadioEntity
+import com.xeniac.chillclub.core.data.db.entities.RadioEntity
 import com.xeniac.chillclub.feature_music_player.domain.models.Radio
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -11,8 +11,9 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
-import com.xeniac.chillclub.core.data.mapper.toAppThemeDto
-import com.xeniac.chillclub.core.data.mapper.toRateAppOptionDto
+import com.xeniac.chillclub.core.data.local.repositories.PreferencesRepositoryImpl
+import com.xeniac.chillclub.core.data.local.mapper.toAppThemeDto
+import com.xeniac.chillclub.core.data.local.mapper.toRateAppOptionDto
 import com.xeniac.chillclub.core.domain.models.AppLocale
 import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.models.RateAppOption

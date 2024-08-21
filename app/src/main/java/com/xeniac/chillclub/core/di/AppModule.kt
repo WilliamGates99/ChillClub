@@ -10,6 +10,9 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.room.Room
+import com.xeniac.chillclub.core.data.db.ChillClubDao
+import com.xeniac.chillclub.core.data.db.ChillClubDatabase
 import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import dagger.Module
@@ -88,7 +91,11 @@ internal object AppModule {
             })
         }
         install(HttpRequestRetry) {
-            retryOnExceptionOrServerErrors(maxRetries = 3)
+            retryOnServerErrors(maxRetries = 3)
+            retryOnException(
+                maxRetries = 3,
+                retryOnTimeout = true
+            )
             exponentialDelay()
         }
         install(HttpTimeout) {
@@ -97,6 +104,22 @@ internal object AppModule {
             socketTimeoutMillis = 20000 // 20 seconds
         }
     }
+
+    @Provides
+    @Singleton
+    fun provideChillClubDatabase(
+        @ApplicationContext context: Context
+    ): ChillClubDatabase = Room.databaseBuilder(
+        context = context,
+        klass = ChillClubDatabase::class.java,
+        name = "ChillClub.db"
+    ).build()
+
+    @Provides
+    @Singleton
+    fun provideChillClubDao(
+        database: ChillClubDatabase
+    ): ChillClubDao = database.dao
 
     @OptIn(InternalCoroutinesApi::class)
     @Provides

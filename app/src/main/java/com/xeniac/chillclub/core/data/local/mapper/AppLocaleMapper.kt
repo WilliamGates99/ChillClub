@@ -1,6 +1,6 @@
-package com.xeniac.chillclub.core.data.mapper
+package com.xeniac.chillclub.core.data.local.mapper
 
-import com.xeniac.chillclub.core.data.dto.AppLocaleDto
+import com.xeniac.chillclub.core.data.local.dto.AppLocaleDto
 import com.xeniac.chillclub.core.domain.models.AppLocale
 
 fun AppLocale.toAppLocaleDto(): AppLocaleDto = when (this) {

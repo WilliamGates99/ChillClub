@@ -1,4 +1,4 @@
-package com.xeniac.chillclub.core.data.repositories
+package com.xeniac.chillclub.core.data.local.repositories
 
 import android.net.ConnectivityManager
 import android.net.Network

@@ -1,6 +1,6 @@
 package com.xeniac.chillclub.feature_settings.domain.use_cases
 
-import com.xeniac.chillclub.core.data.mapper.toAppThemeDto
+import com.xeniac.chillclub.core.data.local.mapper.toAppThemeDto
 import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import com.xeniac.chillclub.core.domain.utils.Result

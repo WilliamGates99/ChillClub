@@ -1,4 +1,4 @@
-package com.xeniac.chillclub.feature_music_player.data.db.converters
+package com.xeniac.chillclub.core.data.db.converters
 
 import androidx.room.TypeConverter
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.ChannelDto

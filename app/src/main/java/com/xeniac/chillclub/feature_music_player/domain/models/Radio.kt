@@ -1,7 +1,7 @@
 package com.xeniac.chillclub.feature_music_player.domain.models
 
 import android.os.Parcelable
-import com.xeniac.chillclub.feature_music_player.data.db.entities.RadioEntity
+import com.xeniac.chillclub.core.data.db.entities.RadioEntity
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.RadioDto
 import kotlinx.parcelize.Parcelize
 

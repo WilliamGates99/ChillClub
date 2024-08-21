@@ -10,6 +10,9 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.room.Room
+import com.xeniac.chillclub.core.data.db.ChillClubDao
+import com.xeniac.chillclub.core.data.db.ChillClubDatabase
 import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import dagger.Module
@@ -25,7 +28,9 @@ import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.serialization.kotlinx.KotlinxSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,14 +77,28 @@ internal object TestAppModule {
         }
         install(HttpCache)
         install(ContentNegotiation) {
+            register(
+                contentType = ContentType.Text.Plain,
+                converter = KotlinxSerializationConverter(Json {
+                    ignoreUnknownKeys = true
+                    prettyPrint = true
+                    coerceInputValues = true
+                    isLenient = true
+                })
+            )
             json(Json {
                 ignoreUnknownKeys = true
                 prettyPrint = true
                 coerceInputValues = true
+                isLenient = true
             })
         }
         install(HttpRequestRetry) {
-            retryOnExceptionOrServerErrors(maxRetries = 3)
+            retryOnServerErrors(maxRetries = 3)
+            retryOnException(
+                maxRetries = 3,
+                retryOnTimeout = true
+            )
             exponentialDelay()
         }
         install(HttpTimeout) {
@@ -89,6 +108,21 @@ internal object TestAppModule {
         }
     }
 
+    @Provides
+    @Singleton
+    fun provideChillClubDatabase(
+        @ApplicationContext context: Context
+    ): ChillClubDatabase = Room.inMemoryDatabaseBuilder(
+        context = context,
+        klass = ChillClubDatabase::class.java
+    ).build()
+
+    @Provides
+    @Singleton
+    fun provideChillClubDao(
+        database: ChillClubDatabase
+    ): ChillClubDao = database.dao
+
     @OptIn(InternalCoroutinesApi::class)
     @Provides
     @Singleton
@@ -97,13 +131,13 @@ internal object TestAppModule {
     ): DataStore<Preferences> = synchronized(lock = SynchronizedObject()) {
         PreferenceDataStoreFactory.create(
             corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
-            scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+            scope = CoroutineScope(context = Dispatchers.IO + SupervisorJob()),
             produceFile = { context.preferencesDataStoreFile(name = "settings") }
         )
     }
 
     @Provides
-    fun provideAppThemeIndex(
+    fun provideCurrentAppTheme(
         preferencesRepository: PreferencesRepository
     ): AppTheme = preferencesRepository.getCurrentAppThemeSynchronously()
 

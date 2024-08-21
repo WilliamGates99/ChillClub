@@ -1,4 +1,4 @@
-package com.xeniac.chillclub.core.data.dto
+package com.xeniac.chillclub.core.data.local.dto
 
 import androidx.compose.ui.unit.LayoutDirection
 

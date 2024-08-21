@@ -1,4 +1,4 @@
-package com.xeniac.chillclub.core.data.repositories
+package com.xeniac.chillclub.core.data.local.repositories
 
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
@@ -9,12 +9,12 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.xeniac.chillclub.core.data.dto.AppLocaleDto
-import com.xeniac.chillclub.core.data.dto.AppThemeDto
-import com.xeniac.chillclub.core.data.dto.RateAppOptionDto
-import com.xeniac.chillclub.core.data.mapper.toAppLocale
-import com.xeniac.chillclub.core.data.mapper.toAppTheme
-import com.xeniac.chillclub.core.data.mapper.toRateAppOption
+import com.xeniac.chillclub.core.data.local.dto.AppLocaleDto
+import com.xeniac.chillclub.core.data.local.dto.AppThemeDto
+import com.xeniac.chillclub.core.data.local.dto.RateAppOptionDto
+import com.xeniac.chillclub.core.data.local.mapper.toAppLocale
+import com.xeniac.chillclub.core.data.local.mapper.toAppTheme
+import com.xeniac.chillclub.core.data.local.mapper.toRateAppOption
 import com.xeniac.chillclub.core.data.utils.DateHelper
 import com.xeniac.chillclub.core.domain.models.AppLocale
 import com.xeniac.chillclub.core.domain.models.AppTheme

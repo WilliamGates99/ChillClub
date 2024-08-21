@@ -1,6 +1,6 @@
-package com.xeniac.chillclub.core.data.mapper
+package com.xeniac.chillclub.core.data.local.mapper
 
-import com.xeniac.chillclub.core.data.dto.AppThemeDto
+import com.xeniac.chillclub.core.data.local.dto.AppThemeDto
 import com.xeniac.chillclub.core.domain.models.AppTheme
 
 fun AppTheme.toAppThemeDto(): AppThemeDto = when (this) {

@@ -1,6 +1,6 @@
-package com.xeniac.chillclub.core.data.mapper
+package com.xeniac.chillclub.core.data.local.mapper
 
-import com.xeniac.chillclub.core.data.dto.RateAppOptionDto
+import com.xeniac.chillclub.core.data.local.dto.RateAppOptionDto
 import com.xeniac.chillclub.core.domain.models.RateAppOption
 
 fun RateAppOption.toRateAppOptionDto(): RateAppOptionDto = RateAppOptionDto.valueOf(this.toString())
