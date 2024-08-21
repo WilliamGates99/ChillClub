@@ -26,7 +26,7 @@ interface ChillClubDao {
     suspend fun deleteRadioEntityById(radioId: Long)
 
     @Query("SELECT * FROM radios")
-    fun getRadioEntities(): List<RadioEntity>
+    suspend fun getRadioEntities(): List<RadioEntity>
 
     @Query("SELECT * FROM radios WHERE id = :id")
     fun observeRadio(id: Long): Flow<RadioEntity>
