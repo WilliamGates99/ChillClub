@@ -3,6 +3,7 @@ package com.xeniac.chillclub.core.data.db.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.xeniac.chillclub.core.data.utils.DateHelper
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.ChannelDto
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.RadioDto
 import com.xeniac.chillclub.feature_music_player.domain.models.Radio
@@ -14,6 +15,7 @@ data class RadioEntity(
     @ColumnInfo(name = "channel") val channelDto: ChannelDto,
     val category: String,
     val tags: List<String>,
+    @ColumnInfo(name = "created_at") val createdAt: Long = DateHelper.getCurrentTimeInSeconds(),
     @PrimaryKey(autoGenerate = true) val id: Long? = null
 ) {
     fun toRadioDto(): RadioDto = RadioDto(
