@@ -2,6 +2,7 @@ package com.xeniac.chillclub.core.domain.models
 
 import android.os.Parcelable
 import androidx.compose.ui.unit.LayoutDirection
+import com.xeniac.chillclub.core.data.local.dto.AppLocaleDto
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -43,4 +44,11 @@ sealed class AppLocale(
         layoutDirectionCompose = LayoutDirection.Rtl,
         layoutDirection = android.util.LayoutDirection.RTL
     )
+
+    fun toAppLocaleDto(): AppLocaleDto = when (this) {
+        Default -> AppLocaleDto.Default
+        EnglishGB -> AppLocaleDto.EnglishGB
+        EnglishUS -> AppLocaleDto.EnglishUS
+        FarsiIR -> AppLocaleDto.FarsiIR
+    }
 }

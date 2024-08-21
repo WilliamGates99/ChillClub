@@ -1,6 +1,6 @@
 package com.xeniac.chillclub.core.di
 
-import com.xeniac.chillclub.feature_music_player.data.remote.repositories.MusicPlayerRepositoryImpl
+import com.xeniac.chillclub.feature_music_player.data.repositories.MusicPlayerRepositoryImpl
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
 import dagger.Binds
 import dagger.Module

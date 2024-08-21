@@ -1,13 +1,10 @@
-package com.xeniac.chillclub.core.data.local.repositories
+package com.xeniac.chillclub.core.data.repositories
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.xeniac.chillclub.core.data.local.dto.AppLocaleDto
 import com.xeniac.chillclub.core.data.local.dto.AppThemeDto
 import com.xeniac.chillclub.core.data.local.dto.RateAppOptionDto
-import com.xeniac.chillclub.core.data.local.mapper.toAppLocale
-import com.xeniac.chillclub.core.data.local.mapper.toAppTheme
-import com.xeniac.chillclub.core.data.local.mapper.toRateAppOption
 import com.xeniac.chillclub.core.data.utils.DateHelper
 import com.xeniac.chillclub.core.domain.models.AppLocale
 import com.xeniac.chillclub.core.domain.models.AppTheme
@@ -83,7 +80,7 @@ class FakePreferencesRepositoryImpl @Inject constructor() : PreferencesRepositor
         previousRateAppRequestTime = DateHelper.getCurrentTimeInMillis()
     }
 
-    fun isActivityRestartNeeded(
+    private fun isActivityRestartNeeded(
         newLocale: AppLocaleDto
     ): Boolean = currentLocale.layoutDirectionCompose != newLocale.layoutDirectionCompose
 }

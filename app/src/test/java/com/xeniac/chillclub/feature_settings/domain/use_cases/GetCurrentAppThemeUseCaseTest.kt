@@ -3,7 +3,7 @@ package com.xeniac.chillclub.feature_settings.domain.use_cases
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
-import com.xeniac.chillclub.core.data.local.repositories.FakePreferencesRepositoryImpl
+import com.xeniac.chillclub.core.data.repositories.FakePreferencesRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
