@@ -1,4 +1,4 @@
-package com.xeniac.chillclub.core.data.repositories
+package com.xeniac.chillclub.core.data.local.repositories
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -83,7 +83,7 @@ class FakePreferencesRepositoryImpl @Inject constructor() : PreferencesRepositor
         previousRateAppRequestTime = DateHelper.getCurrentTimeInMillis()
     }
 
-    private fun isActivityRestartNeeded(
+    fun isActivityRestartNeeded(
         newLocale: AppLocaleDto
     ): Boolean = currentLocale.layoutDirectionCompose != newLocale.layoutDirectionCompose
 }

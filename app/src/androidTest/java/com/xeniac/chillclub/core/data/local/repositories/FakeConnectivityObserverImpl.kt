@@ -1,4 +1,4 @@
-package com.xeniac.chillclub.core.data.repositories
+package com.xeniac.chillclub.core.data.local.repositories
 
 import com.xeniac.chillclub.core.domain.repositories.ConnectivityObserver
 import kotlinx.coroutines.channels.awaitClose

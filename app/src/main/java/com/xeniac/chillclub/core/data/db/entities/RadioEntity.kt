@@ -1,4 +1,4 @@
-package com.xeniac.chillclub.feature_music_player.data.db.entities
+package com.xeniac.chillclub.core.data.db.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

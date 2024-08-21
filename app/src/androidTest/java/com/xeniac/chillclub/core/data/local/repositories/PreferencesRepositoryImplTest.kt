@@ -1,4 +1,4 @@
-package com.xeniac.chillclub.core.data.repositories
+package com.xeniac.chillclub.core.data.local.repositories
 
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -11,7 +11,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
-import com.xeniac.chillclub.core.data.local.repositories.PreferencesRepositoryImpl
 import com.xeniac.chillclub.core.data.local.mapper.toAppThemeDto
 import com.xeniac.chillclub.core.data.local.mapper.toRateAppOptionDto
 import com.xeniac.chillclub.core.domain.models.AppLocale
