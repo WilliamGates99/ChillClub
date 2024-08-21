@@ -16,7 +16,9 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.KotlinxSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +29,7 @@ import javax.inject.Inject
 
 class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepository {
 
-    private var isNetworkAvailable = false
+    private var isNetworkAvailable = true
     private var radioEntities = SnapshotStateList<RadioEntity>()
     private var getRadiosHttpStatusCode = HttpStatusCode.OK
 
@@ -75,21 +77,21 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
         }
 
         val mockEngine = MockEngine {
-            if (getRadiosHttpStatusCode == HttpStatusCode.OK) {
-                val getRadiosResponseDto = GetRadiosResponseDto(
-                    radioDtos = radioEntities.map { it.toRadioDto() }
-                )
-
-                respond(
-                    content = Json.encodeToString(getRadiosResponseDto),
-                    status = getRadiosHttpStatusCode
-                )
+            val getRadiosResponseDto = if (getRadiosHttpStatusCode == HttpStatusCode.OK) {
+                addDummyRadios()
+                GetRadiosResponseDto(radioDtos = radioEntities.map { it.toRadioDto() })
             } else {
-                respond(
-                    content = "",
-                    status = HttpStatusCode.RequestTimeout
-                )
+                GetRadiosResponseDto(radioDtos = emptyList())
             }
+
+            respond(
+                content = Json.encodeToString(getRadiosResponseDto),
+                status = getRadiosHttpStatusCode,
+                headers = headersOf(
+                    name = HttpHeaders.ContentType,
+                    value = "application/json"
+                )
+            )
         }
 
         val testClient = HttpClient(engine = mockEngine) {
