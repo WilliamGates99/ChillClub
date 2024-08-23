@@ -34,7 +34,7 @@ import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.presentation.utils.IntentHelper
 import com.xeniac.chillclub.core.presentation.utils.ObserverAsEvent
 import com.xeniac.chillclub.core.presentation.utils.UiEvent
-import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeightDp
+import com.xeniac.chillclub.core.presentation.utils.getStatusBarHeightDp
 import com.xeniac.chillclub.core.ui.components.SwipeableSnackbar
 import com.xeniac.chillclub.feature_settings.presentation.components.AboutSection
 import com.xeniac.chillclub.feature_settings.presentation.components.AppVersionSection
@@ -117,7 +117,7 @@ fun SettingsScreen(
                     .padding(
                         start = 24.dp,
                         end = 24.dp,
-                        top = 28.dp + getNavigationBarHeightDp(),
+                        top = 28.dp + getStatusBarHeightDp(),
                         bottom = 28.dp
                     )
             )
