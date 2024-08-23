@@ -7,7 +7,12 @@ val NavigationBarColorV26 = Color(0x63FFFFFF)
 
 val GreenNotificationLight = Color(0xFF00E560)
 
+val ShimmerEffectFirstColor = Color(0xFFFFDDB7)
+val ShimmerEffectSecondColor = Color(0xFFFFDDB7)
+val ShimmerEffectThirdColor = Color(0xFFF2F2F2)
+
 val White = Color(0xFFFFFFFF)
+val WhiteAlpha64 = Color(0xA3FFFFFF)
 val Black = Color(0xFF000000)
 
 val Gray5 = Color(0xFF0E0E0E)

@@ -24,6 +24,10 @@
     <string name="core_content_description_back">Return</string>
 
 
+    <string name="music_player_app_bar_title_welcome">Welcome</string>
+    <string name="music_player_btn_settings">Settings</string>
+
+
     <string name="settings_app_bar_title">Settings</string>
     <string name="settings_general_title">General</string>
     <string name="settings_general_theme_title">Dark Mode</string>
