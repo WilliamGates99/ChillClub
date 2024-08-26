@@ -21,13 +21,14 @@ import io.ktor.client.request.get
 import io.ktor.client.statement.request
 import io.ktor.http.HttpStatusCode
 import io.ktor.util.network.UnresolvedAddressException
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerializationException
 import timber.log.Timber
 import java.util.Locale
 import javax.inject.Inject
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 
 class MusicPlayerRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
@@ -67,10 +68,6 @@ class MusicPlayerRepositoryImpl @Inject constructor(
                 }
                 else -> emit(Result.Error(GetRadiosError.Network.SomethingWentWrong))
             }
-        } catch (e: CancellationException) {
-            Timber.e("Get radios CancellationException:")
-            e.printStackTrace()
-            emit(Result.Error(GetRadiosError.CancellationException))
         } catch (e: UnresolvedAddressException) { // When device is offline
             Timber.e("Get radios UnresolvedAddressException:}")
             e.printStackTrace()
@@ -104,6 +101,8 @@ class MusicPlayerRepositoryImpl @Inject constructor(
             e.printStackTrace()
             emit(Result.Error(GetRadiosError.Network.SerializationException))
         } catch (e: Exception) {
+            coroutineContext.ensureActive()
+
             Timber.e("Get radios Exception:")
             e.printStackTrace()
             if (e.message?.lowercase(Locale.US)?.contains("unable to resolve host") == true) {

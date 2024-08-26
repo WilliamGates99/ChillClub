@@ -69,7 +69,6 @@ class MusicPlayerViewModel @Inject constructor(
                 }
                 is Result.Error -> {
                     when (val error = getRadiosResult.error) {
-//                        GetRadiosError.CancellationException -> TODO()
 //                        GetRadiosError.Network.Offline -> TODO()
 //                        GetRadiosError.Network.ConnectTimeoutException -> TODO()
 //                        GetRadiosError.Network.HttpRequestTimeoutException -> TODO()

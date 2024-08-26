@@ -5,8 +5,6 @@ import com.xeniac.chillclub.core.presentation.utils.UiText
 import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadiosError
 
 fun GetRadiosError.asUiText(): UiText = when (this) {
-    GetRadiosError.CancellationException -> UiText.DynamicString("CancellationException")
-
     GetRadiosError.Network.Offline -> UiText.StringResource(R.string.error_network_connection_unavailable)
     GetRadiosError.Network.ConnectTimeoutException -> UiText.StringResource(R.string.error_network_failure)
     GetRadiosError.Network.HttpRequestTimeoutException -> UiText.StringResource(R.string.error_network_failure)
