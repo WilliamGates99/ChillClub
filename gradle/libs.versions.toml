@@ -33,7 +33,7 @@ testRules = "1.6.1"
 espresso = "3.6.1"
 
 # Plugins
-agp = "8.5.2"
+agp = "8.6.0"
 kotlin = "2.0.0"
 ksp = "2.0.0-1.0.22"
 googleServices = "4.4.2"
