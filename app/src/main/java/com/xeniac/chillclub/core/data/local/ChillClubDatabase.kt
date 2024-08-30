@@ -1,10 +1,10 @@
-package com.xeniac.chillclub.core.data.db
+package com.xeniac.chillclub.core.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.xeniac.chillclub.core.data.db.converters.RadioEntityConverters
-import com.xeniac.chillclub.core.data.db.entities.RadioEntity
+import com.xeniac.chillclub.core.data.local.converters.RadioEntityConverters
+import com.xeniac.chillclub.core.data.local.entities.RadioEntity
 
 @Database(
     entities = [RadioEntity::class],
