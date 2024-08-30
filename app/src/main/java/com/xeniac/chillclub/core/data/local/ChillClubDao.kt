@@ -29,7 +29,7 @@ interface ChillClubDao {
     suspend fun getRadios(): List<RadioEntity>
 
     @Query("SELECT * FROM radios")
-    suspend fun observeRadios(): Flow<List<RadioEntity>>
+    fun observeRadios(): Flow<List<RadioEntity>>
 
     @Query("SELECT * FROM radios WHERE id = :id")
     fun observeRadio(id: Long): Flow<RadioEntity>
