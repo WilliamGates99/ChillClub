@@ -1,23 +1,25 @@
 package com.xeniac.chillclub.feature_music_player.data.remote.repositories
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.xeniac.chillclub.core.data.db.entities.RadioEntity
+import com.xeniac.chillclub.core.data.local.entities.RadioEntity
+import com.xeniac.chillclub.core.domain.models.Channel
+import com.xeniac.chillclub.core.domain.models.Radio
+import com.xeniac.chillclub.core.domain.models.SocialLinks
 import com.xeniac.chillclub.core.domain.utils.Result
-import com.xeniac.chillclub.feature_music_player.data.remote.dto.ChannelDto
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadiosResponseDto
-import com.xeniac.chillclub.feature_music_player.data.remote.dto.SocialLinksDto
-import com.xeniac.chillclub.feature_music_player.domain.models.Radio
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
 import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadiosError
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.KotlinxSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
@@ -30,8 +32,9 @@ import javax.inject.Inject
 class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepository {
 
     private var isNetworkAvailable = true
-    private var radioEntities = SnapshotStateList<RadioEntity>()
     private var getRadiosHttpStatusCode = HttpStatusCode.OK
+
+    private var radioEntities = SnapshotStateList<RadioEntity>()
 
     fun isNetworkAvailable(isAvailable: Boolean) {
         isNetworkAvailable = isAvailable
@@ -46,10 +49,10 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
             val radioEntity = RadioEntity(
                 youtubeVideoId = "abc$index",
                 title = "Test Title $index",
-                channelDto = ChannelDto(
+                channel = Channel(
                     name = "Test Channel $index",
                     avatarUrl = "https://gravatar.com/avatar/b555351fc297b35d3eb1a7857740accd?s=800&d=mp&r=x",
-                    socialLinksDto = SocialLinksDto(
+                    socialLinks = SocialLinks(
                         youtube = "https://www.youtube.com"
                     )
                 ),
@@ -89,7 +92,7 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
                 status = getRadiosHttpStatusCode,
                 headers = headersOf(
                     name = HttpHeaders.ContentType,
-                    value = "application/json"
+                    value = ContentType.Application.Json.toString()
                 )
             )
         }
@@ -111,6 +114,9 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
                     coerceInputValues = true
                     isLenient = true
                 })
+            }
+            install(DefaultRequest) {
+                contentType(ContentType.Application.Json)
             }
         }
 

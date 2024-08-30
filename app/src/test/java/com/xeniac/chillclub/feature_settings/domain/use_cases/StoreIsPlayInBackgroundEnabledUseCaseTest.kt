@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
 import com.xeniac.chillclub.core.data.repositories.FakePreferencesRepositoryImpl
-import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.utils.Result
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -17,7 +16,7 @@ import org.junit.runners.JUnit4
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(JUnit4::class)
-class SetCurrentAppThemeUseCaseTest {
+class StoreIsPlayInBackgroundEnabledUseCaseTest {
 
     @get:Rule
     var instanceTaskExecutorRule = InstantTaskExecutorRule()
@@ -26,33 +25,33 @@ class SetCurrentAppThemeUseCaseTest {
     var mainCoroutineRule = MainCoroutineRule()
 
     private lateinit var fakePreferencesRepository: FakePreferencesRepositoryImpl
-    private lateinit var setCurrentAppThemeUseCase: SetCurrentAppThemeUseCase
-    private lateinit var getCurrentAppThemeUseCase: GetCurrentAppThemeUseCase
+    private lateinit var storeIsPlayInBackgroundEnabledUseCase: StoreIsPlayInBackgroundEnabledUseCase
+    private lateinit var getIsPlayInBackgroundEnabledUseCase: GetIsPlayInBackgroundEnabledUseCase
 
     @Before
     fun setUp() {
         fakePreferencesRepository = FakePreferencesRepositoryImpl()
-        setCurrentAppThemeUseCase = SetCurrentAppThemeUseCase(
+        storeIsPlayInBackgroundEnabledUseCase = StoreIsPlayInBackgroundEnabledUseCase(
             preferencesRepository = fakePreferencesRepository
         )
-        getCurrentAppThemeUseCase = GetCurrentAppThemeUseCase(
+        getIsPlayInBackgroundEnabledUseCase = GetIsPlayInBackgroundEnabledUseCase(
             preferencesRepository = fakePreferencesRepository
         )
     }
 
     @Test
-    fun setCurrentAppTheme_returnsSuccess() = runTest {
-        val testValue = AppTheme.Light
-        val result = setCurrentAppThemeUseCase(testValue)
+    fun setsPlayInBackgroundEnabled_returnsSuccess() = runTest {
+        val testValue = false
+        val result = storeIsPlayInBackgroundEnabledUseCase(testValue)
         assertThat(result).isInstanceOf(Result.Success::class.java)
     }
 
     @Test
-    fun setCurrentAppTheme_returnsNewAppTheme() = runTest {
-        val testValue = AppTheme.Light
-        setCurrentAppThemeUseCase(testValue)
+    fun setsPlayInBackgroundEnabled_returnsNewIsPlayInBackgroundEnabled() = runTest {
+        val testValue = false
+        storeIsPlayInBackgroundEnabledUseCase(testValue)
 
-        val appTheme = getCurrentAppThemeUseCase().first()
-        assertThat(appTheme).isEqualTo(testValue)
+        val isPlayInBackgroundEnabled = getIsPlayInBackgroundEnabledUseCase().first()
+        assertThat(isPlayInBackgroundEnabled).isEqualTo(testValue)
     }
 }
