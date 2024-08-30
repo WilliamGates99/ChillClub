@@ -71,11 +71,13 @@ class PreferencesRepositoryImplTest {
 
     /*
     Fetch Initial Preferences Test Cases:
-    getCurrentAppThemeSynchronously -> AppTheme.Default
-    getCurrentAppTheme -> AppTheme.Default
+    getCurrentAppThemeSynchronously -> AppTheme.Dark
+    getCurrentAppTheme -> AppTheme.Dark
     getCurrentAppLocale -> AppLocale.Default
     isPlayInBackgroundEnabled -> true
     getNotificationPermissionCount -> 0
+    getAppUpdateDialogShowCount -> 0
+    isAppUpdateDialogShownToday -> false
     getSelectedRateAppOption -> RateAppOption.NOT_SHOWN_YET
     getPreviousRateAppRequestTimeInMs -> null
      */
@@ -85,7 +87,11 @@ class PreferencesRepositoryImplTest {
         val initialAppTheme = testRepository.getCurrentAppTheme().first()
         val initialAppLocale = testRepository.getCurrentAppLocale()
         val initialIsPlayInBackgroundEnabled = testRepository.isPlayInBackgroundEnabled().first()
-        val initialNotificationPermissionCount = testRepository.getNotificationPermissionCount()
+        val initialNotificationPermissionCount =
+            testRepository.getNotificationPermissionCount().first()
+        val initialAppUpdateDialogShowCount = testRepository.getAppUpdateDialogShowCount().first()
+        val initialIsAppUpdateDialogShownToday =
+            testRepository.isAppUpdateDialogShownToday().first()
         val initialSelectedRateAppOption = testRepository.getSelectedRateAppOption().first()
         val initialPreviousRateAppRequestTime =
             testRepository.getPreviousRateAppRequestTimeInMs().first()
@@ -95,6 +101,8 @@ class PreferencesRepositoryImplTest {
         assertThat(initialAppLocale).isEqualTo(AppLocale.Default)
         assertThat(initialIsPlayInBackgroundEnabled).isTrue()
         assertThat(initialNotificationPermissionCount).isEqualTo(0)
+        assertThat(initialAppUpdateDialogShowCount).isEqualTo(0)
+        assertThat(initialIsAppUpdateDialogShownToday).isFalse()
         assertThat(initialSelectedRateAppOption).isEqualTo(RateAppOption.NOT_SHOWN_YET)
         assertThat(initialPreviousRateAppRequestTime).isNull()
     }
@@ -102,7 +110,7 @@ class PreferencesRepositoryImplTest {
     @Test
     fun writeCurrentAppTheme() = testScope.runBlockingTest {
         val testValue = AppTheme.Light
-        testRepository.setCurrentAppTheme(testValue.toAppThemeDto())
+        testRepository.storeCurrentAppTheme(testValue)
 
         val currentAppTheme = testRepository.getCurrentAppTheme().first()
         assertThat(currentAppTheme).isEqualTo(testValue)
@@ -120,16 +128,46 @@ class PreferencesRepositoryImplTest {
     @Test
     fun writeNotificationPermissionCount() = testScope.runBlockingTest {
         val testValue = 2
-        testRepository.setNotificationPermissionCount(testValue)
+        testRepository.storeNotificationPermissionCount(testValue)
 
         val notificationPermissionCount = testRepository.getNotificationPermissionCount()
         assertThat(notificationPermissionCount).isEqualTo(testValue)
     }
 
     @Test
+    fun writeAppUpdateDialogShowCount() = testScope.runBlockingTest {
+        val testValue = 3
+        testRepository.storeAppUpdateDialogShowCount(testValue)
+
+        val appUpdateDialogShowCount = testRepository.getAppUpdateDialogShowCount().first()
+        assertThat(appUpdateDialogShowCount).isEqualTo(testValue)
+    }
+
+    @Test
+    fun writeAppUpdateDialogShowEpochDays() = testScope.runBlockingTest {
+        testRepository.storeAppUpdateDialogShowEpochDays()
+
+        val isAppUpdateDialogShownTodayBefore = testRepository.isAppUpdateDialogShownToday().first()
+        assertThat(isAppUpdateDialogShownTodayBefore).isTrue()
+    }
+
+    @Test
+    fun removeAppUpdateDialogShowEpochDays() = testScope.runBlockingTest {
+        testRepository.storeAppUpdateDialogShowEpochDays()
+
+        val isAppUpdateDialogShownTodayBefore = testRepository.isAppUpdateDialogShownToday().first()
+        assertThat(isAppUpdateDialogShownTodayBefore).isTrue()
+
+        testRepository.removeAppUpdateDialogShowEpochDays()
+
+        val isAppUpdateDialogShownTodayAfter = testRepository.isAppUpdateDialogShownToday().first()
+        assertThat(isAppUpdateDialogShownTodayAfter).isFalse()
+    }
+
+    @Test
     fun writeSelectedRateAppOption() = testScope.runBlockingTest {
         val testValue = RateAppOption.RATE_NOW
-        testRepository.setSelectedRateAppOption(testValue.toRateAppOptionDto())
+        testRepository.storeSelectedRateAppOption(testValue)
 
         val selectedRateAppOption = testRepository.getSelectedRateAppOption().first()
         assertThat(selectedRateAppOption).isEqualTo(testValue)
@@ -137,7 +175,7 @@ class PreferencesRepositoryImplTest {
 
     @Test
     fun writePreviousRateAppRequestTimeInMs() = testScope.runBlockingTest {
-        testRepository.setPreviousRateAppRequestTimeInMs()
+        testRepository.storePreviousRateAppRequestTimeInMs()
 
         val previousRateAppRequestTime = testRepository.getPreviousRateAppRequestTimeInMs().first()
         assertThat(previousRateAppRequestTime).isNotNull()

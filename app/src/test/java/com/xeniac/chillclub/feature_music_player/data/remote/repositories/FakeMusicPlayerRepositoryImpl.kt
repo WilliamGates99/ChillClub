@@ -47,7 +47,7 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
     fun addDummyRadios() {
         repeat(times = 10) { index ->
             val radioEntity = RadioEntity(
-                youtubeVideoId = "abc$index",
+                youtubeVideoId = "videoId$index",
                 title = "Test Title $index",
                 channel = Channel(
                     name = "Test Channel $index",

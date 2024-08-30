@@ -1,10 +1,10 @@
-package com.xeniac.chillclub.core.data.db
+package com.xeniac.chillclub.core.data.local
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
-import com.xeniac.chillclub.core.data.db.entities.RadioEntity
-import com.xeniac.chillclub.feature_music_player.data.remote.dto.ChannelDto
-import com.xeniac.chillclub.feature_music_player.data.remote.dto.SocialLinksDto
+import com.xeniac.chillclub.core.data.local.entities.RadioEntity
+import com.xeniac.chillclub.core.domain.models.Channel
+import com.xeniac.chillclub.core.domain.models.SocialLinks
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,6 +15,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
+import kotlin.random.Random
 
 @ExperimentalCoroutinesApi
 @HiltAndroidTest
@@ -43,14 +44,14 @@ class ChillClubDaoTest {
     }
 
     @Test
-    fun insertRadios() = runTest {
+    fun insertRadio() = runTest {
         val radioEntity = RadioEntity(
-            youtubeVideoId = "abc123",
+            youtubeVideoId = "videoId",
             title = "Test Title",
-            channelDto = ChannelDto(
+            channel = Channel(
                 name = "Test Channel",
                 avatarUrl = "https://gravatar.com/avatar/b555351fc297b35d3eb1a7857740accd?s=800&d=mp&r=x",
-                socialLinksDto = SocialLinksDto(
+                socialLinks = SocialLinks(
                     youtube = "https://www.youtube.com"
                 )
             ),
@@ -58,23 +59,23 @@ class ChillClubDaoTest {
             tags = listOf("tag1", "tag2"),
             id = 100
         )
-        dao.insertRadioEntity(radioEntity)
+        dao.insertRadio(radioEntity)
 
-        val radios = dao.getRadioEntities()
+        val radios = dao.getRadios()
         assertThat(radios).contains(radioEntity)
     }
 
     @Test
-    fun insertRadiosList() = runTest {
-        val testEntities = mutableListOf<RadioEntity>()
+    fun insertRadios() = runTest {
+        val dummyRadios = mutableListOf<RadioEntity>()
         repeat(times = 10) { index ->
             val radioEntity = RadioEntity(
-                youtubeVideoId = "abc$index",
+                youtubeVideoId = "videoId$index",
                 title = "Test Title $index",
-                channelDto = ChannelDto(
+                channel = Channel(
                     name = "Test Channel $index",
                     avatarUrl = "https://gravatar.com/avatar/b555351fc297b35d3eb1a7857740accd?s=800&d=mp&r=x",
-                    socialLinksDto = SocialLinksDto(
+                    socialLinks = SocialLinks(
                         youtube = "https://www.youtube.com"
                     )
                 ),
@@ -82,25 +83,28 @@ class ChillClubDaoTest {
                 tags = listOf("tag1", "tag2"),
                 id = index.toLong()
             )
-            testEntities.add(radioEntity)
+
+            dummyRadios.add(radioEntity)
         }
 
-        dao.insertRadioEntities(testEntities)
+        dao.insertRadios(dummyRadios)
 
-        val radios = dao.getRadioEntities()
-        assertThat(radios.containsAll(testEntities)).isTrue()
+        val radios = dao.getRadios()
+        assertThat(radios).isNotEmpty()
+        assertThat(radios).containsExactlyElementsIn(dummyRadios)
     }
 
     @Test
     fun clearRadios() = runTest {
+        val dummyRadios = mutableListOf<RadioEntity>()
         repeat(times = 10) { index ->
             val radioEntity = RadioEntity(
-                youtubeVideoId = "abc$index",
+                youtubeVideoId = "videoId$index",
                 title = "Test Title $index",
-                channelDto = ChannelDto(
+                channel = Channel(
                     name = "Test Channel $index",
                     avatarUrl = "https://gravatar.com/avatar/b555351fc297b35d3eb1a7857740accd?s=800&d=mp&r=x",
-                    socialLinksDto = SocialLinksDto(
+                    socialLinks = SocialLinks(
                         youtube = "https://www.youtube.com"
                     )
                 ),
@@ -108,27 +112,30 @@ class ChillClubDaoTest {
                 tags = listOf("tag1", "tag2"),
                 id = index.toLong()
             )
-            dao.insertRadioEntity(radioEntity)
+
+            dummyRadios.add(radioEntity)
+            dao.insertRadio(radioEntity)
         }
 
-        val radios = dao.getRadioEntities()
+        val radios = dao.getRadios()
         assertThat(radios).isNotEmpty()
+        assertThat(radios).containsExactlyElementsIn(dummyRadios)
 
-        dao.clearRadioEntities()
+        dao.clearRadios()
 
-        val radiosAfterClear = dao.getRadioEntities()
+        val radiosAfterClear = dao.getRadios()
         assertThat(radiosAfterClear).isEmpty()
     }
 
     @Test
     fun deleteRadio() = runTest {
         val radioEntity = RadioEntity(
-            youtubeVideoId = "abc123",
+            youtubeVideoId = "videoId",
             title = "Test Title",
-            channelDto = ChannelDto(
+            channel = Channel(
                 name = "Test Channel",
                 avatarUrl = "https://gravatar.com/avatar/b555351fc297b35d3eb1a7857740accd?s=800&d=mp&r=x",
-                socialLinksDto = SocialLinksDto(
+                socialLinks = SocialLinks(
                     youtube = "https://www.youtube.com"
                 )
             ),
@@ -136,56 +143,66 @@ class ChillClubDaoTest {
             tags = listOf("tag1", "tag2"),
             id = 100
         )
-        dao.insertRadioEntity(radioEntity)
+        dao.insertRadio(radioEntity)
 
-        val radios = dao.getRadioEntities()
+        val radios = dao.getRadios()
         assertThat(radios).contains(radioEntity)
 
-        dao.deleteRadioEntity(radioEntity)
+        dao.deleteRadio(radioEntity)
 
-        val radiosAfterDelete = dao.getRadioEntities()
+        val radiosAfterDelete = dao.getRadios()
         assertThat(radiosAfterDelete).doesNotContain(radioEntity)
     }
 
     @Test
     fun deleteRadioById() = runTest {
-        val radioEntity = RadioEntity(
-            youtubeVideoId = "abc123",
-            title = "Test Title",
-            channelDto = ChannelDto(
-                name = "Test Channel",
-                avatarUrl = "https://gravatar.com/avatar/b555351fc297b35d3eb1a7857740accd?s=800&d=mp&r=x",
-                socialLinksDto = SocialLinksDto(
-                    youtube = "https://www.youtube.com"
-                )
-            ),
-            category = "Test",
-            tags = listOf("tag1", "tag2"),
-            id = 100
-        )
-        dao.insertRadioEntity(radioEntity)
+        val dummyRadios = mutableListOf<RadioEntity>()
+        repeat(times = 10) { index ->
+            val radioEntity = RadioEntity(
+                youtubeVideoId = "videoId$index",
+                title = "Test Title $index",
+                channel = Channel(
+                    name = "Test Channel $index",
+                    avatarUrl = "https://gravatar.com/avatar/b555351fc297b35d3eb1a7857740accd?s=800&d=mp&r=x",
+                    socialLinks = SocialLinks(
+                        youtube = "https://www.youtube.com"
+                    )
+                ),
+                category = "Test",
+                tags = listOf("tag1", "tag2"),
+                id = index.toLong()
+            )
 
-        val radios = dao.getRadioEntities()
-        assertThat(radios).contains(radioEntity)
+            dummyRadios.add(radioEntity)
+            dao.insertRadio(radioEntity)
+        }
 
-        assertThat(radioEntity.id).isNotNull()
-        dao.deleteRadioEntityById(radioEntity.id!!)
+        val radios = dao.getRadios()
+        assertThat(radios).isNotEmpty()
+        assertThat(radios).containsExactlyElementsIn(dummyRadios)
 
-        val radiosAfterDelete = dao.getRadioEntities()
-        assertThat(radiosAfterDelete).doesNotContain(radioEntity)
+        val testRadio = dummyRadios[Random.nextInt(from = 0, until = 10)]
+
+        assertThat(radios).contains(testRadio)
+        assertThat(testRadio.id).isNotNull()
+
+        dao.deleteRadioById(testRadio.id!!)
+
+        val radiosAfterDelete = dao.getRadios()
+        assertThat(radiosAfterDelete).doesNotContain(testRadio)
     }
 
     @Test
     fun getRadios() = runTest {
-        val testEntities = mutableListOf<RadioEntity>()
+        val dummyRadios = mutableListOf<RadioEntity>()
         repeat(times = 10) { index ->
             val radioEntity = RadioEntity(
-                youtubeVideoId = "abc$index",
+                youtubeVideoId = "videoId$index",
                 title = "Test Title $index",
-                channelDto = ChannelDto(
+                channel = Channel(
                     name = "Test Channel $index",
                     avatarUrl = "https://gravatar.com/avatar/b555351fc297b35d3eb1a7857740accd?s=800&d=mp&r=x",
-                    socialLinksDto = SocialLinksDto(
+                    socialLinks = SocialLinks(
                         youtube = "https://www.youtube.com"
                     )
                 ),
@@ -193,26 +210,27 @@ class ChillClubDaoTest {
                 tags = listOf("tag1", "tag2"),
                 id = index.toLong()
             )
-            testEntities.add(radioEntity)
-            dao.insertRadioEntity(radioEntity)
+
+            dummyRadios.add(radioEntity)
+            dao.insertRadio(radioEntity)
         }
 
-        val radios = dao.getRadioEntities()
+        val radios = dao.getRadios()
         assertThat(radios).isNotEmpty()
-        assertThat(radios.containsAll(testEntities)).isTrue()
+        assertThat(radios).containsExactlyElementsIn(dummyRadios)
     }
 
     @Test
     fun observeRadios() = runTest {
-        val testEntities = mutableListOf<RadioEntity>()
+        val dummyRadios = mutableListOf<RadioEntity>()
         repeat(times = 10) { index ->
             val radioEntity = RadioEntity(
-                youtubeVideoId = "abc$index",
+                youtubeVideoId = "videoId$index",
                 title = "Test Title $index",
-                channelDto = ChannelDto(
+                channel = Channel(
                     name = "Test Channel $index",
                     avatarUrl = "https://gravatar.com/avatar/b555351fc297b35d3eb1a7857740accd?s=800&d=mp&r=x",
-                    socialLinksDto = SocialLinksDto(
+                    socialLinks = SocialLinks(
                         youtube = "https://www.youtube.com"
                     )
                 ),
@@ -220,24 +238,25 @@ class ChillClubDaoTest {
                 tags = listOf("tag1", "tag2"),
                 id = index.toLong()
             )
-            testEntities.add(radioEntity)
-            dao.insertRadioEntity(radioEntity)
+
+            dummyRadios.add(radioEntity)
+            dao.insertRadio(radioEntity)
         }
 
-        val radios = dao.getRadioEntities()
+        val radios = dao.observeRadios().first()
         assertThat(radios).isNotEmpty()
-        assertThat(radios.containsAll(testEntities)).isTrue()
+        assertThat(radios).containsExactlyElementsIn(dummyRadios)
     }
 
     @Test
     fun observeRadio() = runTest {
         val radioEntity = RadioEntity(
-            youtubeVideoId = "abc123",
+            youtubeVideoId = "videoId",
             title = "Test Title",
-            channelDto = ChannelDto(
+            channel = Channel(
                 name = "Test Channel",
                 avatarUrl = "https://gravatar.com/avatar/b555351fc297b35d3eb1a7857740accd?s=800&d=mp&r=x",
-                socialLinksDto = SocialLinksDto(
+                socialLinks = SocialLinks(
                     youtube = "https://www.youtube.com"
                 )
             ),
@@ -245,10 +264,11 @@ class ChillClubDaoTest {
             tags = listOf("tag1", "tag2"),
             id = 100
         )
-        dao.insertRadioEntity(radioEntity)
+        dao.insertRadio(radioEntity)
 
         assertThat(radioEntity.id).isNotNull()
         val radio = dao.observeRadio(id = radioEntity.id!!).first()
+
         assertThat(radio).isEqualTo(radioEntity)
     }
 }

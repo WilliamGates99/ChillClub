@@ -116,7 +116,7 @@ class MusicPlayerViewModel @Inject constructor(
         mutex.withLock {
             val newCount = musicPlayerState.value.notificationPermissionCount.plus(1)
 
-            musicPlayerUseCases.setNotificationPermissionCountUseCase.get()(count = newCount)
+            musicPlayerUseCases.storeNotificationPermissionCountUseCase.get()(count = newCount)
 
             savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
                 notificationPermissionCount = newCount,

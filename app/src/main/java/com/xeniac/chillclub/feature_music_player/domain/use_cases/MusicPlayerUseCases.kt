@@ -5,5 +5,5 @@ import dagger.Lazy
 data class MusicPlayerUseCases(
     val getRadiosUseCase: Lazy<GetRadiosUseCase>,
     val getNotificationPermissionCountUseCase: Lazy<GetNotificationPermissionCountUseCase>,
-    val setNotificationPermissionCountUseCase: Lazy<SetNotificationPermissionCountUseCase>
+    val storeNotificationPermissionCountUseCase: Lazy<StoreNotificationPermissionCountUseCase>
 )
