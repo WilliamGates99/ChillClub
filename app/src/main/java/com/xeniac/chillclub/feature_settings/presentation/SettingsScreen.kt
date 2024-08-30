@@ -139,10 +139,10 @@ fun SettingsScreen(
             GeneralSettings(
                 settingsState = settingsState,
                 onThemeChange = { newAppTheme ->
-                    viewModel.onEvent(SettingsEvent.SetCurrentAppTheme(newAppTheme))
+                    viewModel.onEvent(SettingsEvent.StoreCurrentAppTheme(newAppTheme))
                 },
                 onPlayInBackgroundChange = { isChecked ->
-                    viewModel.onEvent(SettingsEvent.SetPlayInBackgroundSwitch(isChecked))
+                    viewModel.onEvent(SettingsEvent.StorePlayInBackgroundSwitch(isChecked))
                 },
                 modifier = Modifier.fillMaxWidth()
             )

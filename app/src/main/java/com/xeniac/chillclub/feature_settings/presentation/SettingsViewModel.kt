@@ -66,15 +66,15 @@ class SettingsViewModel @Inject constructor(
 
     fun onEvent(event: SettingsEvent) {
         when (event) {
-            is SettingsEvent.SetCurrentAppTheme -> setCurrentAppTheme(event.newAppTheme)
-            is SettingsEvent.SetPlayInBackgroundSwitch -> setNotificationSoundSwitch(event.isEnabled)
+            is SettingsEvent.StoreCurrentAppTheme -> storeCurrentAppTheme(event.newAppTheme)
+            is SettingsEvent.StorePlayInBackgroundSwitch -> storeNotificationSoundSwitch(event.isEnabled)
         }
     }
 
-    private fun setCurrentAppTheme(newAppTheme: AppTheme) = viewModelScope.launch {
+    private fun storeCurrentAppTheme(newAppTheme: AppTheme) = viewModelScope.launch {
         val shouldUpdateAppTheme = newAppTheme != settingsState.value.currentAppTheme
         if (shouldUpdateAppTheme) {
-            when (val result = settingsUseCases.setCurrentAppThemeUseCase.get()(newAppTheme)) {
+            when (val result = settingsUseCases.storeCurrentAppThemeUseCase.get()(newAppTheme)) {
                 is Result.Success -> {
                     _setAppThemeEventChannel.send(SettingsUiEvent.UpdateAppTheme(newAppTheme))
                 }
@@ -91,8 +91,8 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    private fun setNotificationSoundSwitch(isEnabled: Boolean) = viewModelScope.launch {
-        when (val result = settingsUseCases.setIsPlayInBackgroundEnabledUseCase.get()(isEnabled)) {
+    private fun storeNotificationSoundSwitch(isEnabled: Boolean) = viewModelScope.launch {
+        when (val result = settingsUseCases.storeIsPlayInBackgroundEnabledUseCase.get()(isEnabled)) {
             is Result.Success -> Unit
             is Result.Error -> {
                 when (result.error) {
