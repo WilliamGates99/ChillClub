@@ -5,7 +5,7 @@ import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayer
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.GetNotificationPermissionCountUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.GetRadiosUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.MusicPlayerUseCases
-import com.xeniac.chillclub.feature_music_player.domain.use_cases.SetNotificationPermissionCountUseCase
+import com.xeniac.chillclub.feature_music_player.domain.use_cases.StoreNotificationPermissionCountUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,20 +31,20 @@ object MusicPlayerModule {
 
     @Provides
     @ViewModelScoped
-    fun provideSetNotificationPermissionCountUseCase(
+    fun provideStoreNotificationPermissionCountUseCase(
         preferencesRepository: PreferencesRepository
-    ): SetNotificationPermissionCountUseCase =
-        SetNotificationPermissionCountUseCase(preferencesRepository)
+    ): StoreNotificationPermissionCountUseCase =
+        StoreNotificationPermissionCountUseCase(preferencesRepository)
 
     @Provides
     @ViewModelScoped
     fun provideMusicPlayerUseCases(
         getRadiosUseCase: GetRadiosUseCase,
         getNotificationPermissionCountUseCase: GetNotificationPermissionCountUseCase,
-        setNotificationPermissionCountUseCase: SetNotificationPermissionCountUseCase
+        storeNotificationPermissionCountUseCase: StoreNotificationPermissionCountUseCase
     ): MusicPlayerUseCases = MusicPlayerUseCases(
         { getRadiosUseCase },
         { getNotificationPermissionCountUseCase },
-        { setNotificationPermissionCountUseCase }
+        { storeNotificationPermissionCountUseCase }
     )
 }
