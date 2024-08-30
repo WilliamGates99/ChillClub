@@ -3,6 +3,7 @@ package com.xeniac.chillclub.core.ui.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -11,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +47,7 @@ fun PermissionDialog(
     ) else stringResource(
         id = R.string.permissions_error_btn_confirm
     ),
+    shape: Shape = AlertDialogDefaults.shape,
     containerColor: Color = MaterialTheme.colorScheme.surface,
     iconContentColor: Color = MaterialTheme.colorScheme.secondary,
     titleContentColor: Color = MaterialTheme.colorScheme.onSurface,
@@ -57,6 +60,7 @@ fun PermissionDialog(
     AlertDialog(
         modifier = modifier,
         properties = dialogProperties,
+        shape = shape,
         containerColor = containerColor,
         iconContentColor = iconContentColor,
         titleContentColor = titleContentColor,
