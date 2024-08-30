@@ -130,7 +130,7 @@ class PreferencesRepositoryImplTest {
         val testValue = 2
         testRepository.storeNotificationPermissionCount(testValue)
 
-        val notificationPermissionCount = testRepository.getNotificationPermissionCount()
+        val notificationPermissionCount = testRepository.getNotificationPermissionCount().first()
         assertThat(notificationPermissionCount).isEqualTo(testValue)
     }
 
