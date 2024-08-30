@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xeniac.chillclub.R
+import com.xeniac.chillclub.core.presentation.utils.TestTags
 import com.xeniac.chillclub.core.ui.theme.White
 import com.xeniac.chillclub.core.ui.theme.WhiteAlpha64
 
@@ -152,6 +154,7 @@ fun MusicPlayerAppSettingsButton(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = false)
             )
+            .testTag(TestTags.BTN_SETTINGS)
     ) {
         Icon(
             painter = icon,
