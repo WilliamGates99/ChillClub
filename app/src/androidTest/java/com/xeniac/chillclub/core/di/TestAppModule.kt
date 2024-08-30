@@ -11,8 +11,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
-import com.xeniac.chillclub.core.data.db.ChillClubDao
-import com.xeniac.chillclub.core.data.db.ChillClubDatabase
+import com.xeniac.chillclub.core.data.local.ChillClubDao
+import com.xeniac.chillclub.core.data.local.ChillClubDatabase
 import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import dagger.Module
@@ -22,6 +22,7 @@ import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.cache.HttpCache
@@ -30,6 +31,7 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.KotlinxSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineScope
@@ -105,6 +107,9 @@ internal object TestAppModule {
             connectTimeoutMillis = 20000 // 20 seconds
             requestTimeoutMillis = 20000 // 20 seconds
             socketTimeoutMillis = 20000 // 20 seconds
+        }
+        install(DefaultRequest) {
+            contentType(ContentType.Application.Json)
         }
     }
 
