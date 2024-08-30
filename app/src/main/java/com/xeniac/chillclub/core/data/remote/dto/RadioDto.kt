@@ -1,7 +1,7 @@
-package com.xeniac.chillclub.feature_music_player.data.remote.dto
+package com.xeniac.chillclub.core.data.remote.dto
 
-import com.xeniac.chillclub.core.data.db.entities.RadioEntity
-import com.xeniac.chillclub.feature_music_player.domain.models.Radio
+import com.xeniac.chillclub.core.data.local.entities.RadioEntity
+import com.xeniac.chillclub.core.domain.models.Radio
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -21,7 +21,7 @@ data class RadioDto(
     fun toRadioEntity(): RadioEntity = RadioEntity(
         youtubeVideoId = youtubeVideoId,
         title = title,
-        channelDto = channelDto,
+        channel = channelDto.toChannel(),
         category = category,
         tags = tags
     )

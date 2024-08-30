@@ -1,8 +1,8 @@
-package com.xeniac.chillclub.feature_music_player.domain.models
+package com.xeniac.chillclub.core.domain.models
 
 import android.os.Parcelable
-import com.xeniac.chillclub.core.data.db.entities.RadioEntity
-import com.xeniac.chillclub.feature_music_player.data.remote.dto.RadioDto
+import com.xeniac.chillclub.core.data.local.entities.RadioEntity
+import com.xeniac.chillclub.core.data.remote.dto.RadioDto
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -16,7 +16,7 @@ data class Radio(
     fun toRadioEntity(): RadioEntity = RadioEntity(
         youtubeVideoId = youtubeVideoId,
         title = title,
-        channelDto = channel.toChannelDto(),
+        channel = channel,
         category = category,
         tags = tags
     )

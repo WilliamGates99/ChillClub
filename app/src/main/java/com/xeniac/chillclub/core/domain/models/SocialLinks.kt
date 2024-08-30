@@ -1,7 +1,7 @@
-package com.xeniac.chillclub.feature_music_player.domain.models
+package com.xeniac.chillclub.core.domain.models
 
 import android.os.Parcelable
-import com.xeniac.chillclub.feature_music_player.data.remote.dto.SocialLinksDto
+import com.xeniac.chillclub.core.data.remote.dto.SocialLinksDto
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

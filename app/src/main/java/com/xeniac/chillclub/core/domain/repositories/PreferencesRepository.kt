@@ -1,8 +1,5 @@
 package com.xeniac.chillclub.core.domain.repositories
 
-import com.xeniac.chillclub.core.data.local.dto.AppLocaleDto
-import com.xeniac.chillclub.core.data.local.dto.AppThemeDto
-import com.xeniac.chillclub.core.data.local.dto.RateAppOptionDto
 import com.xeniac.chillclub.core.domain.models.AppLocale
 import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.models.RateAppOption
@@ -10,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 
 typealias IsBackgroundPlayEnabled = Boolean
 typealias IsActivityRestartNeeded = Boolean
+typealias AppUpdateDialogShowCount = Int
+typealias IsAppUpdateDialogShownToday = Boolean
 typealias PreviousRateAppRequestTimeInMs = Long
 
 interface PreferencesRepository {
@@ -22,21 +21,31 @@ interface PreferencesRepository {
 
     fun isPlayInBackgroundEnabled(): Flow<IsBackgroundPlayEnabled>
 
-    suspend fun getNotificationPermissionCount(): Int
+    fun getNotificationPermissionCount(): Flow<Int>
 
-    suspend fun getSelectedRateAppOption(): Flow<RateAppOption>
+    fun getAppUpdateDialogShowCount(): Flow<AppUpdateDialogShowCount>
 
-    suspend fun getPreviousRateAppRequestTimeInMs(): Flow<PreviousRateAppRequestTimeInMs?>
+    fun isAppUpdateDialogShownToday(): Flow<IsAppUpdateDialogShownToday>
 
-    suspend fun setCurrentAppTheme(appThemeDto: AppThemeDto)
+    fun getSelectedRateAppOption(): Flow<RateAppOption>
 
-    suspend fun setCurrentAppLocale(newAppLocaleDto: AppLocaleDto): IsActivityRestartNeeded
+    fun getPreviousRateAppRequestTimeInMs(): Flow<PreviousRateAppRequestTimeInMs?>
+
+    suspend fun storeCurrentAppTheme(appTheme: AppTheme)
+
+    suspend fun storeCurrentAppLocale(newAppLocale: AppLocale): IsActivityRestartNeeded
 
     suspend fun isPlayInBackgroundEnabled(isEnabled: Boolean)
 
-    suspend fun setNotificationPermissionCount(count: Int)
+    suspend fun storeNotificationPermissionCount(count: Int)
 
-    suspend fun setSelectedRateAppOption(rateAppOptionDto: RateAppOptionDto)
+    suspend fun storeAppUpdateDialogShowCount(count: Int)
 
-    suspend fun setPreviousRateAppRequestTimeInMs()
+    suspend fun storeAppUpdateDialogShowEpochDays()
+
+    suspend fun removeAppUpdateDialogShowEpochDays()
+
+    suspend fun storeSelectedRateAppOption(rateAppOption: RateAppOption)
+
+    suspend fun storePreviousRateAppRequestTimeInMs()
 }
