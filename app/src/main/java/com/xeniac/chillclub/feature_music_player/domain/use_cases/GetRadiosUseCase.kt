@@ -1,7 +1,7 @@
 package com.xeniac.chillclub.feature_music_player.domain.use_cases
 
 import com.xeniac.chillclub.core.domain.utils.Result
-import com.xeniac.chillclub.feature_music_player.domain.models.Radio
+import com.xeniac.chillclub.core.domain.models.Radio
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
 import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadiosError
 import kotlinx.coroutines.flow.Flow
