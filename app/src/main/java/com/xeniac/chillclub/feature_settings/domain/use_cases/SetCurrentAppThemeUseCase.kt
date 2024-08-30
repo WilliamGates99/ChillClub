@@ -9,7 +9,7 @@ class SetCurrentAppThemeUseCase(
     private val preferencesRepository: PreferencesRepository
 ) {
     suspend operator fun invoke(newAppTheme: AppTheme): Result<Unit, AppThemeError> = try {
-        preferencesRepository.setCurrentAppTheme(appThemeDto = newAppTheme.toAppThemeDto())
+        preferencesRepository.storeCurrentAppTheme(newAppTheme)
         Result.Success(Unit)
     } catch (e: Exception) {
         e.printStackTrace()
