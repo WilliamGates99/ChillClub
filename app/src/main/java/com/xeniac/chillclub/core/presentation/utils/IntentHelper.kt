@@ -39,6 +39,9 @@ object IntentHelper {
         true
     }
 
+    /**
+     * returns true if browser app was not found
+     */
     fun openAppPageInStore(context: Context): AppNotFound = try {
         Intent().apply {
             action = Intent.ACTION_VIEW
@@ -52,6 +55,30 @@ object IntentHelper {
             context = context,
             urlString = BuildConfig.URL_APP_STORE
         )
+    }
+
+    /**
+     * returns true if browser app was not found
+     */
+    fun openAppUpdatePageInStore(context: Context): AppNotFound {
+        val appStoreUrl = if (isAppInstalledFromGitHub()) {
+            BuildConfig.URL_APP_STORE + "/releases/latest"
+        } else BuildConfig.URL_APP_STORE
+
+        return try {
+            Intent().apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse(appStoreUrl)
+                setPackage(BuildConfig.PACKAGE_NAME_APP_STORE)
+                context.startActivity(this)
+            }
+            false
+        } catch (e: ActivityNotFoundException) {
+            openLinkInBrowser(
+                context = context,
+                urlString = appStoreUrl
+            )
+        }
     }
 
     /**
