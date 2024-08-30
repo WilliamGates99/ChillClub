@@ -46,6 +46,11 @@ android {
         )
     }
 
+    sourceSets {
+        // Adds room exported schema location as test app assets
+        getByName("androidTest").assets.srcDirs("$projectDir/roomSchemas")
+    }
+
     signingConfigs {
         create("release") {
             storeFile = file(path = properties.getProperty("KEY_STORE_PATH"))
