@@ -1,11 +1,11 @@
 package com.xeniac.chillclub.feature_music_player.data.repositories
 
 import androidx.room.withTransaction
-import com.xeniac.chillclub.core.data.db.ChillClubDao
-import com.xeniac.chillclub.core.data.db.ChillClubDatabase
+import com.xeniac.chillclub.core.data.local.ChillClubDao
+import com.xeniac.chillclub.core.data.local.ChillClubDatabase
+import com.xeniac.chillclub.core.domain.models.Radio
 import com.xeniac.chillclub.core.domain.utils.Result
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadiosResponseDto
-import com.xeniac.chillclub.feature_music_player.domain.models.Radio
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
 import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadiosError
 import dagger.Lazy
@@ -39,7 +39,7 @@ class MusicPlayerRepositoryImpl @Inject constructor(
     override suspend fun getRadios(
         fetchFromRemote: Boolean
     ): Flow<Result<List<Radio>, GetRadiosError>> = flow {
-        val localRadioEntities = dao.get().getRadioEntities()
+        val localRadioEntities = dao.get().getRadios()
 
         val shouldJustLoadFromCache = localRadioEntities.isNotEmpty() && !fetchFromRemote
         if (shouldJustLoadFromCache) {
@@ -57,13 +57,13 @@ class MusicPlayerRepositoryImpl @Inject constructor(
                     val remoteRadioDtos = response.body<GetRadiosResponseDto>().radioDtos
 
                     db.get().withTransaction {
-                        dao.get().clearRadioEntities()
-                        dao.get().insertRadioEntities(
+                        dao.get().clearRadios()
+                        dao.get().insertRadios(
                             radioEntities = remoteRadioDtos.map { it.toRadioEntity() }
                         )
                     }
 
-                    val radios = dao.get().getRadioEntities().map { it.toRadio() }
+                    val radios = dao.get().getRadios().map { it.toRadio() }
                     emit(Result.Success(radios))
                 }
                 else -> emit(Result.Error(GetRadiosError.Network.SomethingWentWrong))
