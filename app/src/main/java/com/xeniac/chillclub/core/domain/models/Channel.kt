@@ -3,7 +3,9 @@ package com.xeniac.chillclub.core.domain.models
 import android.os.Parcelable
 import com.xeniac.chillclub.core.data.remote.dto.ChannelDto
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Parcelize
 data class Channel(
     val name: String,
