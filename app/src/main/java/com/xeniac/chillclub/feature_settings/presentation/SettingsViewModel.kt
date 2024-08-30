@@ -128,7 +128,7 @@ class SettingsViewModel @Inject constructor(
         isGranted: Boolean
     ) = viewModelScope.launch {
         val shouldAskForPermission = settingsState.value.run {
-            notificationPermissionCount < 1 && !permissionDialogQueue.contains(permission) && !isGranted
+            !permissionDialogQueue.contains(permission) && !isGranted
         }
 
         if (shouldAskForPermission) {
