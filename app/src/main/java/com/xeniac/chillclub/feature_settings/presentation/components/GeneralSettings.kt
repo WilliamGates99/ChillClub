@@ -24,6 +24,7 @@ import com.xeniac.chillclub.feature_settings.presentation.utils.TestTags
 @Composable
 fun GeneralSettings(
     settingsState: SettingsState,
+    isPostNotificationsPermissionGranted: Boolean,
     modifier: Modifier = Modifier,
     background: Color = MaterialTheme.colorScheme.surface,
     title: String = stringResource(id = R.string.settings_general_title).uppercase(),
@@ -31,7 +32,8 @@ fun GeneralSettings(
     titleLineHeight: TextUnit = 20.sp,
     titleFontWeight: FontWeight = FontWeight.Normal,
     onThemeChange: (newAppTheme: AppTheme) -> Unit,
-    onPlayInBackgroundChange: (isChecked: Boolean) -> Unit
+    onPlayInBackgroundChange: (isChecked: Boolean) -> Unit,
+    onPlayInBackgroundClick: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(space = 16.dp),
@@ -68,12 +70,14 @@ fun GeneralSettings(
         )
 
         SettingsSwitchRow(
+            isEnabled = isPostNotificationsPermissionGranted,
             icon = painterResource(id = R.drawable.ic_settings_background_player),
             title = stringResource(id = R.string.settings_general_background_player_title),
             description = stringResource(id = R.string.settings_general_background_play_description),
             isChecked = settingsState.isPlayInBackgroundEnabled,
             testTag = TestTags.SWITCH_BACKGROUND_PLAYER,
-            onCheckedChange = onPlayInBackgroundChange
+            onCheckedChange = onPlayInBackgroundChange,
+            onRowClick = if (isPostNotificationsPermissionGranted) null else onPlayInBackgroundClick
         )
     }
 }

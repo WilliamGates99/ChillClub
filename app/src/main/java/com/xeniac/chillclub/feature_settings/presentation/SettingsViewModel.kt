@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -35,6 +36,7 @@ class SettingsViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(),
         initialValue = null
     )
+
     private val _isPlayInBackgroundEnabled = settingsUseCases.getIsPlayInBackgroundEnabledUseCase
         .get()().stateIn(
         scope = viewModelScope,
@@ -42,15 +44,24 @@ class SettingsViewModel @Inject constructor(
         initialValue = null
     )
 
+    private val _notificationPermissionCount =
+        settingsUseCases.getNotificationPermissionCountUseCase.get()().stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = 0
+        )
+
     private val _settingsState = MutableStateFlow(SettingsState())
     val settingsState = combine(
         flow = _settingsState,
         flow2 = _appTheme,
-        flow3 = _isPlayInBackgroundEnabled
-    ) { settingsState, appTheme, isPlayInBackgroundEnabled ->
+        flow3 = _isPlayInBackgroundEnabled,
+        flow4 = _notificationPermissionCount
+    ) { settingsState, appTheme, isPlayInBackgroundEnabled, notificationPermissionCount ->
         settingsState.copy(
             currentAppTheme = appTheme,
-            isPlayInBackgroundEnabled = isPlayInBackgroundEnabled
+            isPlayInBackgroundEnabled = isPlayInBackgroundEnabled,
+            notificationPermissionCount = notificationPermissionCount
         )
     }.stateIn(
         scope = viewModelScope,
@@ -68,6 +79,11 @@ class SettingsViewModel @Inject constructor(
         when (event) {
             is SettingsEvent.StoreCurrentAppTheme -> storeCurrentAppTheme(event.newAppTheme)
             is SettingsEvent.StorePlayInBackgroundSwitch -> storeNotificationSoundSwitch(event.isEnabled)
+            is SettingsEvent.OnPermissionResult -> onPermissionResult(
+                permission = event.permission,
+                isGranted = event.isGranted
+            )
+            is SettingsEvent.DismissPermissionDialog -> dismissPermissionDialog(event.permission)
         }
     }
 
@@ -92,7 +108,8 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun storeNotificationSoundSwitch(isEnabled: Boolean) = viewModelScope.launch {
-        when (val result = settingsUseCases.storeIsPlayInBackgroundEnabledUseCase.get()(isEnabled)) {
+        when (val result =
+            settingsUseCases.storeIsPlayInBackgroundEnabledUseCase.get()(isEnabled)) {
             is Result.Success -> Unit
             is Result.Error -> {
                 when (result.error) {
@@ -103,6 +120,39 @@ class SettingsViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun onPermissionResult(
+        permission: String,
+        isGranted: Boolean
+    ) = viewModelScope.launch {
+        val shouldAskForPermission = settingsState.value.run {
+            notificationPermissionCount < 1 && !permissionDialogQueue.contains(permission) && !isGranted
+        }
+
+        if (shouldAskForPermission) {
+            _settingsState.update {
+                it.copy(
+                    permissionDialogQueue = listOf(permission),
+                    isPermissionDialogVisible = true
+                )
+            }
+        }
+    }
+
+    private fun dismissPermissionDialog(permission: String) = viewModelScope.launch {
+        settingsUseCases.storeNotificationPermissionCountUseCase.get()(
+            count = settingsState.value.notificationPermissionCount.plus(1)
+        )
+
+        _settingsState.update {
+            it.copy(
+                permissionDialogQueue = it.permissionDialogQueue.toMutableList().apply {
+                    remove(permission)
+                }.toList(),
+                isPermissionDialogVisible = false
+            )
         }
     }
 }

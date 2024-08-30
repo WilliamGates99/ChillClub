@@ -3,9 +3,11 @@ package com.xeniac.chillclub.feature_settings.di
 import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import com.xeniac.chillclub.feature_settings.domain.use_cases.GetCurrentAppThemeUseCase
 import com.xeniac.chillclub.feature_settings.domain.use_cases.GetIsPlayInBackgroundEnabledUseCase
+import com.xeniac.chillclub.feature_settings.domain.use_cases.GetNotificationPermissionCountUseCase
 import com.xeniac.chillclub.feature_settings.domain.use_cases.SettingsUseCases
 import com.xeniac.chillclub.feature_settings.domain.use_cases.StoreCurrentAppThemeUseCase
 import com.xeniac.chillclub.feature_settings.domain.use_cases.StoreIsPlayInBackgroundEnabledUseCase
+import com.xeniac.chillclub.feature_settings.domain.use_cases.StoreNotificationPermissionCountUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,6 +33,13 @@ internal object SettingsModule {
 
     @Provides
     @ViewModelScoped
+    fun provideGetNotificationPermissionCountUseCase(
+        preferencesRepository: PreferencesRepository
+    ): GetNotificationPermissionCountUseCase =
+        GetNotificationPermissionCountUseCase(preferencesRepository)
+
+    @Provides
+    @ViewModelScoped
     fun provideStoreCurrentAppThemeUseCase(
         preferencesRepository: PreferencesRepository
     ): StoreCurrentAppThemeUseCase = StoreCurrentAppThemeUseCase(preferencesRepository)
@@ -44,15 +53,26 @@ internal object SettingsModule {
 
     @Provides
     @ViewModelScoped
+    fun provideStoreNotificationPermissionCountUseCase(
+        preferencesRepository: PreferencesRepository
+    ): StoreNotificationPermissionCountUseCase =
+        StoreNotificationPermissionCountUseCase(preferencesRepository)
+
+    @Provides
+    @ViewModelScoped
     fun provideSettingsUseCases(
         getCurrentAppThemeUseCase: GetCurrentAppThemeUseCase,
         getIsPlayInBackgroundEnabledUseCase: GetIsPlayInBackgroundEnabledUseCase,
+        getNotificationPermissionCountUseCase: GetNotificationPermissionCountUseCase,
         storeCurrentAppThemeUseCase: StoreCurrentAppThemeUseCase,
-        storeIsPlayInBackgroundEnabledUseCase: StoreIsPlayInBackgroundEnabledUseCase
+        storeIsPlayInBackgroundEnabledUseCase: StoreIsPlayInBackgroundEnabledUseCase,
+        storeNotificationPermissionCountUseCase: StoreNotificationPermissionCountUseCase
     ): SettingsUseCases = SettingsUseCases(
         { getCurrentAppThemeUseCase },
         { getIsPlayInBackgroundEnabledUseCase },
+        { getNotificationPermissionCountUseCase },
         { storeCurrentAppThemeUseCase },
-        { storeIsPlayInBackgroundEnabledUseCase }
+        { storeIsPlayInBackgroundEnabledUseCase },
+        { storeNotificationPermissionCountUseCase }
     )
 }

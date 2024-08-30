@@ -1,8 +1,6 @@
-package com.xeniac.chillclub.feature_music_player.presensation.utils
+package com.xeniac.chillclub.core.presentation.utils
 
 import com.xeniac.chillclub.R
-import com.xeniac.chillclub.core.presentation.utils.PermissionHelper
-import com.xeniac.chillclub.core.presentation.utils.UiText
 
 class PostNotificationsPermissionHelper : PermissionHelper {
     override fun getMessage(isPermanentlyDeclined: Boolean): UiText {

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.xeniac.chillclub.core.ui.components.addClickable
 import com.xeniac.chillclub.core.ui.components.addTestTag
 import com.xeniac.chillclub.core.ui.theme.Gray60
 import com.xeniac.chillclub.core.ui.theme.Gray80
@@ -41,6 +42,7 @@ fun SettingsSwitchRow(
     title: String,
     isChecked: Boolean?,
     modifier: Modifier = Modifier,
+    isEnabled: Boolean = isChecked != null,
     shape: Shape = RoundedCornerShape(52.dp),
     border: BorderStroke = BorderStroke(
         width = 2.dp,
@@ -68,6 +70,7 @@ fun SettingsSwitchRow(
         disabledUncheckedBorderColor = Color.Transparent
     ),
     testTag: String? = null,
+    onRowClick: (() -> Unit)? = null,
     onCheckedChange: (isChecked: Boolean) -> Unit
 ) {
     Column(
@@ -84,6 +87,7 @@ fun SettingsSwitchRow(
                     border = border,
                     shape = shape
                 )
+                .addClickable(onClick = onRowClick)
                 .padding(rowPadding)
         ) {
             Icon(
@@ -105,7 +109,7 @@ fun SettingsSwitchRow(
             )
 
             Switch(
-                enabled = isChecked != null,
+                enabled = isEnabled,
                 checked = isChecked ?: false,
                 onCheckedChange = onCheckedChange,
                 colors = switchColors,

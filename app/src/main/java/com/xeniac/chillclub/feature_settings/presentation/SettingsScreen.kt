@@ -1,5 +1,10 @@
 package com.xeniac.chillclub.feature_settings.presentation
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,13 +33,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.presentation.utils.IntentHelper
 import com.xeniac.chillclub.core.presentation.utils.ObserverAsEvent
 import com.xeniac.chillclub.core.presentation.utils.UiEvent
+import com.xeniac.chillclub.core.presentation.utils.findActivity
 import com.xeniac.chillclub.core.presentation.utils.getStatusBarHeightDp
+import com.xeniac.chillclub.core.ui.components.NotificationPermissionDialog
 import com.xeniac.chillclub.core.ui.components.SwipeableSnackbar
 import com.xeniac.chillclub.feature_settings.presentation.components.AboutSection
 import com.xeniac.chillclub.feature_settings.presentation.components.AppVersionSection
@@ -44,6 +52,7 @@ import com.xeniac.chillclub.feature_settings.presentation.components.SupportSect
 import com.xeniac.chillclub.feature_settings.presentation.utils.SettingsUiEvent
 import kotlinx.coroutines.launch
 
+@SuppressLint("InlinedApi")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -51,6 +60,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val activity = context.findActivity()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -59,11 +69,54 @@ fun SettingsScreen(
 
     var isIntentAppNotFoundErrorVisible by rememberSaveable { mutableStateOf(false) }
 
+    var isPostNotificationsPermissionGranted by remember {
+        mutableStateOf(
+            when (ActivityCompat.checkSelfPermission(
+                /* context = */ context,
+                /* permission = */ Manifest.permission.POST_NOTIFICATIONS
+            )) {
+                PackageManager.PERMISSION_GRANTED -> true
+                PackageManager.PERMISSION_DENIED -> false
+                else -> false
+            }
+        )
+    }
+
+    val postNotificationPermissionResultLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        isPostNotificationsPermissionGranted = isGranted
+
+        viewModel.onEvent(
+            SettingsEvent.OnPermissionResult(
+                permission = Manifest.permission.POST_NOTIFICATIONS,
+                isGranted = isGranted
+            )
+        )
+    }
+
+    NotificationPermissionDialog(
+        activity = activity,
+        isVisible = settingsState.isPermissionDialogVisible,
+        permissionQueue = settingsState.permissionDialogQueue,
+        onConfirmClick = {
+            postNotificationPermissionResultLauncher.launch(
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        },
+        onDismiss = { permission ->
+            viewModel.onEvent(SettingsEvent.DismissPermissionDialog(permission))
+        }
+    )
+
+
     ObserverAsEvent(flow = viewModel.setAppThemeEventChannel) { event ->
         when (event) {
             is SettingsUiEvent.UpdateAppTheme -> event.newAppTheme.setAppTheme()
             is UiEvent.ShowShortSnackbar -> {
                 scope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+
                     snackbarHostState.showSnackbar(
                         message = event.message.asString(context),
                         duration = SnackbarDuration.Short
@@ -78,6 +131,8 @@ fun SettingsScreen(
         when (event) {
             is UiEvent.ShowShortSnackbar -> {
                 scope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+
                     snackbarHostState.showSnackbar(
                         message = event.message.asString(context),
                         duration = SnackbarDuration.Short
@@ -90,6 +145,8 @@ fun SettingsScreen(
 
     LaunchedEffect(key1 = isIntentAppNotFoundErrorVisible) {
         if (isIntentAppNotFoundErrorVisible) {
+            snackbarHostState.currentSnackbarData?.dismiss()
+
             val result = snackbarHostState.showSnackbar(
                 message = context.getString(R.string.error_intent_app_not_found),
                 duration = SnackbarDuration.Short
@@ -105,9 +162,7 @@ fun SettingsScreen(
     }
 
     Scaffold(
-        snackbarHost = {
-            SwipeableSnackbar(hostState = snackbarHostState)
-        },
+        snackbarHost = { SwipeableSnackbar(hostState = snackbarHostState) },
         topBar = {
             SettingsTopAppBar(
                 onBackClick = onNavigateUp,
@@ -138,11 +193,15 @@ fun SettingsScreen(
         ) {
             GeneralSettings(
                 settingsState = settingsState,
+                isPostNotificationsPermissionGranted = isPostNotificationsPermissionGranted,
                 onThemeChange = { newAppTheme ->
                     viewModel.onEvent(SettingsEvent.StoreCurrentAppTheme(newAppTheme))
                 },
                 onPlayInBackgroundChange = { isChecked ->
                     viewModel.onEvent(SettingsEvent.StorePlayInBackgroundSwitch(isChecked))
+                },
+                onPlayInBackgroundClick = {
+                    postNotificationPermissionResultLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 },
                 modifier = Modifier.fillMaxWidth()
             )
