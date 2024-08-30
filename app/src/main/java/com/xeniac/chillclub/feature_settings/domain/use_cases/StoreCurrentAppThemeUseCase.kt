@@ -5,7 +5,7 @@ import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import com.xeniac.chillclub.core.domain.utils.Result
 import com.xeniac.chillclub.feature_settings.domain.utils.AppThemeError
 
-class SetCurrentAppThemeUseCase(
+class StoreCurrentAppThemeUseCase(
     private val preferencesRepository: PreferencesRepository
 ) {
     suspend operator fun invoke(newAppTheme: AppTheme): Result<Unit, AppThemeError> = try {

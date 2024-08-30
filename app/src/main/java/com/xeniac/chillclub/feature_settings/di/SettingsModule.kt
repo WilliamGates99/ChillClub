@@ -3,9 +3,9 @@ package com.xeniac.chillclub.feature_settings.di
 import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import com.xeniac.chillclub.feature_settings.domain.use_cases.GetCurrentAppThemeUseCase
 import com.xeniac.chillclub.feature_settings.domain.use_cases.GetIsPlayInBackgroundEnabledUseCase
-import com.xeniac.chillclub.feature_settings.domain.use_cases.SetCurrentAppThemeUseCase
-import com.xeniac.chillclub.feature_settings.domain.use_cases.SetIsPlayInBackgroundEnabledUseCase
 import com.xeniac.chillclub.feature_settings.domain.use_cases.SettingsUseCases
+import com.xeniac.chillclub.feature_settings.domain.use_cases.StoreCurrentAppThemeUseCase
+import com.xeniac.chillclub.feature_settings.domain.use_cases.StoreIsPlayInBackgroundEnabledUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,28 +31,28 @@ internal object SettingsModule {
 
     @Provides
     @ViewModelScoped
-    fun provideSetCurrentAppThemeUseCase(
+    fun provideStoreCurrentAppThemeUseCase(
         preferencesRepository: PreferencesRepository
-    ): SetCurrentAppThemeUseCase = SetCurrentAppThemeUseCase(preferencesRepository)
+    ): StoreCurrentAppThemeUseCase = StoreCurrentAppThemeUseCase(preferencesRepository)
 
     @Provides
     @ViewModelScoped
-    fun provideSetIsPlayInBackgroundEnabledUseCase(
+    fun provideStoreIsPlayInBackgroundEnabledUseCase(
         preferencesRepository: PreferencesRepository
-    ): SetIsPlayInBackgroundEnabledUseCase =
-        SetIsPlayInBackgroundEnabledUseCase(preferencesRepository)
+    ): StoreIsPlayInBackgroundEnabledUseCase =
+        StoreIsPlayInBackgroundEnabledUseCase(preferencesRepository)
 
     @Provides
     @ViewModelScoped
     fun provideSettingsUseCases(
-        setCurrentAppThemeUseCase: SetCurrentAppThemeUseCase,
-        getIsPlayInBackgroundEnabledUseCase: GetIsPlayInBackgroundEnabledUseCase,
         getCurrentAppThemeUseCase: GetCurrentAppThemeUseCase,
-        setIsPlayInBackgroundEnabledUseCase: SetIsPlayInBackgroundEnabledUseCase
+        getIsPlayInBackgroundEnabledUseCase: GetIsPlayInBackgroundEnabledUseCase,
+        storeCurrentAppThemeUseCase: StoreCurrentAppThemeUseCase,
+        storeIsPlayInBackgroundEnabledUseCase: StoreIsPlayInBackgroundEnabledUseCase
     ): SettingsUseCases = SettingsUseCases(
         { getCurrentAppThemeUseCase },
         { getIsPlayInBackgroundEnabledUseCase },
-        { setCurrentAppThemeUseCase },
-        { setIsPlayInBackgroundEnabledUseCase }
+        { storeCurrentAppThemeUseCase },
+        { storeIsPlayInBackgroundEnabledUseCase }
     )
 }
