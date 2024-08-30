@@ -6,7 +6,7 @@
     <string name="notification_fcm_channel_name_miscellaneous">Miscellaneous</string>
 
 
-    <string name="permissions_error_notification_declined">This app requires notifications permission to receive notifications.</string>
+    <string name="permissions_error_notification_declined">This app requires notifications permission to continue playing in the background.</string>
     <string name="permissions_error_notification_declined_permanently">It looks like you\'ve permanently denied notifications permission. You can go to the app settings to grant it.</string>
     <string name="permissions_error_btn_open_settings">App Settings</string>
     <string name="permissions_error_btn_confirm">Confirm</string>

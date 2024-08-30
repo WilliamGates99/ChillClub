@@ -1,7 +1,7 @@
 package com.xeniac.chillclub.feature_music_player.presensation.states
 
 import android.os.Parcelable
-import com.xeniac.chillclub.feature_music_player.domain.models.Radio
+import com.xeniac.chillclub.core.domain.models.Radio
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

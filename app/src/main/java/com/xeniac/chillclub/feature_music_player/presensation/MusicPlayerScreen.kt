@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -22,11 +24,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xeniac.chillclub.core.presentation.utils.ObserverAsEvent
+import com.xeniac.chillclub.core.presentation.utils.UiEvent
 import com.xeniac.chillclub.core.presentation.utils.getStatusBarHeightDp
 import com.xeniac.chillclub.core.ui.components.SwipeableSnackbar
 import com.xeniac.chillclub.core.ui.theme.White
 import com.xeniac.chillclub.feature_music_player.presensation.components.MusicPlayerBackground
 import com.xeniac.chillclub.feature_music_player.presensation.components.MusicPlayerTopAppBar
+import com.xeniac.chillclub.feature_music_player.presensation.components.PostNotificationPermissionHandler
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,10 +46,40 @@ fun MusicPlayerScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    Scaffold(
-        snackbarHost = {
-            SwipeableSnackbar(hostState = snackbarHostState)
+    val musicPlayerState by viewModel.musicPlayerState.collectAsStateWithLifecycle()
+
+    ObserverAsEvent(flow = viewModel.getRadiosEventChannel) { event ->
+        when (event) {
+            is UiEvent.ShowLongSnackbar -> {
+                scope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+
+                    snackbarHostState.showSnackbar(
+                        message = event.message.asString(context),
+                        duration = SnackbarDuration.Long
+                    )
+                }
+            }
+        }
+    }
+
+    PostNotificationPermissionHandler(
+        musicPlayerState = musicPlayerState,
+        onPermissionResult = { permission, isGranted ->
+            viewModel.onEvent(
+                MusicPlayerEvent.OnPermissionResult(
+                    permission = permission,
+                    isGranted = isGranted
+                )
+            )
         },
+        onDismiss = { permission ->
+            viewModel.onEvent(MusicPlayerEvent.DismissPermissionDialog(permission))
+        }
+    )
+
+    Scaffold(
+        snackbarHost = { SwipeableSnackbar(hostState = snackbarHostState) },
         topBar = {
             MusicPlayerTopAppBar(
                 onSettingsClick = onNavigateToSettingsScreen,

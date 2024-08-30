@@ -13,11 +13,16 @@ import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayer
 import com.xeniac.chillclub.feature_music_player.presensation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
@@ -27,8 +32,27 @@ class MusicPlayerViewModel @Inject constructor(
 
     private val mutex: Mutex = Mutex()
 
-    val musicPlayerState = savedStateHandle.getStateFlow(
+    private val _notificationPermissionCount =
+        musicPlayerUseCases.getNotificationPermissionCountUseCase.get()().stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = 0
+        )
+
+    private val _musicPlayerState = savedStateHandle.getStateFlow(
         key = "musicPlayerState",
+        initialValue = MusicPlayerState()
+    )
+    val musicPlayerState = combine(
+        flow = _musicPlayerState,
+        flow2 = _notificationPermissionCount
+    ) { musicPlayerState, notificationPermissionCount ->
+        musicPlayerState.copy(
+            notificationPermissionCount = notificationPermissionCount
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(stopTimeout = 5.seconds),
         initialValue = MusicPlayerState()
     )
 
@@ -51,9 +75,11 @@ class MusicPlayerViewModel @Inject constructor(
     }
 
     private fun getRadios() = viewModelScope.launch {
-        savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-            isRadiosLoading = true
-        )
+        mutex.withLock {
+            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
+                isRadiosLoading = true
+            )
+        }
 
         musicPlayerUseCases.getRadiosUseCase.get()(
             fetchFromRemote = NetworkObserverHelper.networkStatus.value == ConnectivityObserver.Status.AVAILABLE
@@ -61,10 +87,12 @@ class MusicPlayerViewModel @Inject constructor(
             when (getRadiosResult) {
                 is Result.Success -> {
                     getRadiosResult.data.let { radios ->
-                        savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                            radios = radios,
-                            isRadiosLoading = false
-                        )
+                        mutex.withLock {
+                            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
+                                radios = radios,
+                                isRadiosLoading = false
+                            )
+                        }
                     }
                 }
                 is Result.Error -> {
@@ -86,9 +114,11 @@ class MusicPlayerViewModel @Inject constructor(
                         }
                     }
 
-                    savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                        isRadiosLoading = false
-                    )
+                    mutex.withLock {
+                        savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
+                            isRadiosLoading = false
+                        )
+                    }
                 }
             }
         }
@@ -98,12 +128,12 @@ class MusicPlayerViewModel @Inject constructor(
         permission: String,
         isGranted: Boolean
     ) = viewModelScope.launch {
-        mutex.withLock {
-            val shouldAskForPermission = musicPlayerState.value.run {
-                notificationPermissionCount < 1 && !permissionDialogQueue.contains(permission) && !isGranted
-            }
+        val shouldAskForPermission = musicPlayerState.value.run {
+            notificationPermissionCount < 1 && !permissionDialogQueue.contains(permission) && !isGranted
+        }
 
-            if (shouldAskForPermission) {
+        if (shouldAskForPermission) {
+            mutex.withLock {
                 savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
                     permissionDialogQueue = listOf(permission),
                     isPermissionDialogVisible = true
@@ -113,13 +143,12 @@ class MusicPlayerViewModel @Inject constructor(
     }
 
     private fun dismissPermissionDialog(permission: String) = viewModelScope.launch {
+        musicPlayerUseCases.storeNotificationPermissionCountUseCase.get()(
+            count = musicPlayerState.value.notificationPermissionCount.plus(1)
+        )
+
         mutex.withLock {
-            val newCount = musicPlayerState.value.notificationPermissionCount.plus(1)
-
-            musicPlayerUseCases.storeNotificationPermissionCountUseCase.get()(count = newCount)
-
             savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                notificationPermissionCount = newCount,
                 permissionDialogQueue = musicPlayerState.value.permissionDialogQueue.toMutableList()
                     .apply { remove(permission) }.toList(),
                 isPermissionDialogVisible = false
