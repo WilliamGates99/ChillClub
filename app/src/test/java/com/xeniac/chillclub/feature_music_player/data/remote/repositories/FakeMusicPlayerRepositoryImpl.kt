@@ -37,7 +37,7 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
     private var isNetworkAvailable = true
     private var getRadiosHttpStatusCode = HttpStatusCode.OK
 
-    private var musicVolume = SnapshotStateList<MusicVolume>().apply { add(5) }
+    var musicVolume = SnapshotStateList<MusicVolume>().apply { add(5) }
     private var radioEntities = SnapshotStateList<RadioEntity>()
 
     fun isNetworkAvailable(isAvailable: Boolean) {
