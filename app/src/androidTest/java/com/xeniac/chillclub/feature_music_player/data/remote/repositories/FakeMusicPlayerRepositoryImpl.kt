@@ -1,5 +1,6 @@
 package com.xeniac.chillclub.feature_music_player.data.remote.repositories
 
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.xeniac.chillclub.core.data.local.entities.RadioEntity
 import com.xeniac.chillclub.core.domain.models.Channel
@@ -8,6 +9,8 @@ import com.xeniac.chillclub.core.domain.models.SocialLinks
 import com.xeniac.chillclub.core.domain.utils.Result
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadiosResponseDto
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
+import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolume
+import com.xeniac.chillclub.feature_music_player.domain.utils.AdjustVolumeError
 import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadiosError
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -34,6 +37,7 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
     private var isNetworkAvailable = true
     private var getRadiosHttpStatusCode = HttpStatusCode.OK
 
+    private var musicVolume = SnapshotStateList<MusicVolume>().apply { add(5) }
     private var radioEntities = SnapshotStateList<RadioEntity>()
 
     fun isNetworkAvailable(isAvailable: Boolean) {
@@ -62,6 +66,38 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
             )
 
             radioEntities.add(radioEntity)
+        }
+    }
+
+    override fun observeMusicVolumeChanges(): Flow<MusicVolume> = snapshotFlow {
+        musicVolume.first()
+    }
+
+    override suspend fun decreaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = flow {
+        try {
+            val currentMusicVolume = musicVolume.first()
+            musicVolume.apply {
+                clear()
+                add(currentMusicVolume - 1)
+            }
+
+            emit(Result.Success(Unit))
+        } catch (e: Exception) {
+            emit(Result.Error(AdjustVolumeError.SomethingWentWrong))
+        }
+    }
+
+    override suspend fun increaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = flow {
+        try {
+            val currentMusicVolume = musicVolume.first()
+            musicVolume.apply {
+                clear()
+                add(currentMusicVolume + 1)
+            }
+
+            emit(Result.Success(Unit))
+        } catch (e: Exception) {
+            emit(Result.Error(AdjustVolumeError.SomethingWentWrong))
         }
     }
 

@@ -1,5 +1,6 @@
 package com.xeniac.chillclub.feature_music_player.presensation
 
+import android.media.AudioManager
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +12,7 @@ import com.xeniac.chillclub.core.presentation.utils.UiEvent
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.MusicPlayerUseCases
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
 import com.xeniac.chillclub.feature_music_player.presensation.utils.asUiText
+import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,10 +29,18 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
     private val musicPlayerUseCases: MusicPlayerUseCases,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val audioManager: Lazy<AudioManager>
 ) : ViewModel() {
 
     private val mutex: Mutex = Mutex()
+
+    private val _musicVolume =
+        musicPlayerUseCases.observeMusicVolumeChangesUseCase.get()().stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null
+        )
 
     private val _notificationPermissionCount =
         musicPlayerUseCases.getNotificationPermissionCountUseCase.get()().stateIn(
@@ -45,9 +55,11 @@ class MusicPlayerViewModel @Inject constructor(
     )
     val musicPlayerState = combine(
         flow = _musicPlayerState,
-        flow2 = _notificationPermissionCount
-    ) { musicPlayerState, notificationPermissionCount ->
+        flow2 = _musicVolume,
+        flow3 = _notificationPermissionCount
+    ) { musicPlayerState, musicVolume, notificationPermissionCount ->
         musicPlayerState.copy(
+            musicVolume = musicVolume,
             notificationPermissionCount = notificationPermissionCount
         )
     }.stateIn(
@@ -59,6 +71,9 @@ class MusicPlayerViewModel @Inject constructor(
     private val _getRadiosEventChannel = Channel<Event>()
     val getRadiosEventChannel = _getRadiosEventChannel.receiveAsFlow()
 
+    private val _adjustMusicVolumeEventChannel = Channel<UiEvent>()
+    val adjustMusicVolumeEventChannel = _adjustMusicVolumeEventChannel.receiveAsFlow()
+
     init {
         getRadios()
     }
@@ -66,6 +81,8 @@ class MusicPlayerViewModel @Inject constructor(
     fun onAction(action: MusicPlayerAction) {
         when (action) {
             MusicPlayerAction.GetRadios -> getRadios()
+            MusicPlayerAction.DecreaseMusicVolume -> decreaseMusicVolume()
+            MusicPlayerAction.IncreaseMusicVolume -> increaseMusicVolume()
             is MusicPlayerAction.OnPermissionResult -> onPermissionResult(
                 permission = action.permission,
                 isGranted = action.isGranted
@@ -119,6 +136,32 @@ class MusicPlayerViewModel @Inject constructor(
                             isRadiosLoading = false
                         )
                     }
+                }
+            }
+        }
+    }
+
+    private fun decreaseMusicVolume() = viewModelScope.launch {
+        musicPlayerUseCases.decreaseMusicVolumeUseCase.get()().collect { result ->
+            when (result) {
+                is Result.Success -> Unit
+                is Result.Error -> {
+                    _adjustMusicVolumeEventChannel.send(
+                        UiEvent.ShowLongSnackbar(result.error.asUiText())
+                    )
+                }
+            }
+        }
+    }
+
+    private fun increaseMusicVolume() = viewModelScope.launch {
+        musicPlayerUseCases.increaseMusicVolumeUseCase.get()().collect { result ->
+            when (result) {
+                is Result.Success -> Unit
+                is Result.Error -> {
+                    _adjustMusicVolumeEventChannel.send(
+                        UiEvent.ShowLongSnackbar(result.error.asUiText())
+                    )
                 }
             }
         }
