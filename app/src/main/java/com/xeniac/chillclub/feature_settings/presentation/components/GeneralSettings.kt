@@ -74,7 +74,7 @@ fun GeneralSettings(
             icon = painterResource(id = R.drawable.ic_settings_background_player),
             title = stringResource(id = R.string.settings_general_background_player_title),
             description = stringResource(id = R.string.settings_general_background_play_description),
-            isChecked = settingsState.isPlayInBackgroundEnabled,
+            isChecked = isPostNotificationsPermissionGranted && settingsState.isPlayInBackgroundEnabled == true,
             testTag = TestTags.SWITCH_BACKGROUND_PLAYER,
             onCheckedChange = onPlayInBackgroundChange,
             onRowClick = if (isPostNotificationsPermissionGranted) null else onPlayInBackgroundClick
