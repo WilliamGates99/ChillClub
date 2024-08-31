@@ -26,7 +26,9 @@ import io.ktor.http.contentType
 import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.KotlinxSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -73,33 +75,49 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
         musicVolume.first()
     }
 
-    override suspend fun decreaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = flow {
-        try {
-            val currentMusicVolume = musicVolume.first()
-            musicVolume.apply {
-                clear()
-                add(currentMusicVolume - 1)
+    override suspend fun decreaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> =
+        callbackFlow {
+            try {
+                val currentMusicVolume = musicVolume.first()
+                musicVolume.apply {
+                    clear()
+                    add(
+                        (currentMusicVolume - 1).coerceIn(
+                            minimumValue = 0,
+                            maximumValue = 15
+                        )
+                    )
+                }
+
+                send(Result.Success(Unit))
+            } catch (e: Exception) {
+                send(Result.Error(AdjustVolumeError.SomethingWentWrong))
             }
 
-            emit(Result.Success(Unit))
-        } catch (e: Exception) {
-            emit(Result.Error(AdjustVolumeError.SomethingWentWrong))
+            awaitClose {}
         }
-    }
 
-    override suspend fun increaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = flow {
-        try {
-            val currentMusicVolume = musicVolume.first()
-            musicVolume.apply {
-                clear()
-                add(currentMusicVolume + 1)
+    override suspend fun increaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> =
+        callbackFlow {
+            try {
+                val currentMusicVolume = musicVolume.first()
+                musicVolume.apply {
+                    clear()
+                    add(
+                        (currentMusicVolume + 1).coerceIn(
+                            minimumValue = 0,
+                            maximumValue = 15
+                        )
+                    )
+                }
+
+                send(Result.Success(Unit))
+            } catch (e: Exception) {
+                send(Result.Error(AdjustVolumeError.SomethingWentWrong))
             }
 
-            emit(Result.Success(Unit))
-        } catch (e: Exception) {
-            emit(Result.Error(AdjustVolumeError.SomethingWentWrong))
+            awaitClose {}
         }
-    }
 
     override suspend fun getRadios(
         fetchFromRemote: Boolean

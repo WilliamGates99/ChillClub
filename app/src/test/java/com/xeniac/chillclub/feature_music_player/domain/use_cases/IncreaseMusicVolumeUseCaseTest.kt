@@ -6,6 +6,7 @@ import com.xeniac.chillclub.MainCoroutineRule
 import com.xeniac.chillclub.core.domain.utils.Result
 import com.xeniac.chillclub.feature_music_player.data.remote.repositories.FakeMusicPlayerRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -36,7 +37,7 @@ class IncreaseMusicVolumeUseCaseTest {
 
     @Test
     fun increaseMusicVolume_returnsSuccess() = runTest {
-        val result = increaseMusicVolumeUseCase()
+        val result = increaseMusicVolumeUseCase().first()
         assertThat(result).isInstanceOf(Result.Success::class.java)
     }
 
@@ -44,7 +45,8 @@ class IncreaseMusicVolumeUseCaseTest {
     fun increaseMusicVolume_increasesCurrentMusicVolumeByOne() = runTest {
         val musicVolumeBefore = fakeMusicPlayerRepositoryImpl.musicVolume.first()
 
-        increaseMusicVolumeUseCase()
+        val result = increaseMusicVolumeUseCase().first()
+        assertThat(result).isInstanceOf(Result.Success::class.java)
 
         val musicVolumeAfter = fakeMusicPlayerRepositoryImpl.musicVolume.first()
         assertThat(musicVolumeAfter).isEqualTo(musicVolumeBefore + 1)
