@@ -44,24 +44,15 @@ class SettingsViewModel @Inject constructor(
         initialValue = null
     )
 
-    private val _notificationPermissionCount =
-        settingsUseCases.getNotificationPermissionCountUseCase.get()().stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = 0
-        )
-
     private val _settingsState = MutableStateFlow(SettingsState())
     val settingsState = combine(
         flow = _settingsState,
         flow2 = _appTheme,
-        flow3 = _isPlayInBackgroundEnabled,
-        flow4 = _notificationPermissionCount
-    ) { settingsState, appTheme, isPlayInBackgroundEnabled, notificationPermissionCount ->
+        flow3 = _isPlayInBackgroundEnabled
+    ) { settingsState, appTheme, isPlayInBackgroundEnabled ->
         settingsState.copy(
             currentAppTheme = appTheme,
-            isPlayInBackgroundEnabled = isPlayInBackgroundEnabled,
-            notificationPermissionCount = notificationPermissionCount
+            isPlayInBackgroundEnabled = isPlayInBackgroundEnabled
         )
     }.stateIn(
         scope = viewModelScope,
@@ -142,10 +133,6 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun dismissPermissionDialog(permission: String) = viewModelScope.launch {
-        settingsUseCases.storeNotificationPermissionCountUseCase.get()(
-            count = settingsState.value.notificationPermissionCount.plus(1)
-        )
-
         _settingsState.update {
             it.copy(
                 permissionDialogQueue = it.permissionDialogQueue.toMutableList().apply {

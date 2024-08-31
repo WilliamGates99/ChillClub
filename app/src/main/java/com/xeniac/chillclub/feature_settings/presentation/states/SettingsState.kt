@@ -8,7 +8,6 @@ import kotlinx.parcelize.Parcelize
 data class SettingsState(
     val currentAppTheme: AppTheme? = null,
     val isPlayInBackgroundEnabled: Boolean? = null,
-    val notificationPermissionCount: Int = 0,
     val permissionDialogQueue: List<String> = emptyList(),
     val isPermissionDialogVisible: Boolean = false
 ) : Parcelable
