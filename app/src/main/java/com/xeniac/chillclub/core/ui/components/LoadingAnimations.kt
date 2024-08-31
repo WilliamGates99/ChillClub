@@ -25,8 +25,8 @@ import com.xeniac.chillclub.core.ui.theme.ShimmerEffectSecondColor
 import com.xeniac.chillclub.core.ui.theme.ShimmerEffectThirdColor
 
 fun Modifier.shimmerEffect(
-    duration: Int = 3000,
-    repeatMode: RepeatMode = RepeatMode.Restart,
+    duration: Int = 2000,
+    repeatMode: RepeatMode = RepeatMode.Reverse,
     firstColor: Color = ShimmerEffectFirstColor,
     secondColor: Color = ShimmerEffectSecondColor,
     thirdColor: Color = ShimmerEffectThirdColor

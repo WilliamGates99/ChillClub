@@ -1,5 +1,6 @@
 package com.xeniac.chillclub.feature_music_player.presensation.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -10,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.SubcomposeAsyncImage
 import com.xeniac.chillclub.R
+import com.xeniac.chillclub.core.ui.components.shimmerEffect
 import kotlin.random.Random
 
 @Composable
@@ -38,6 +40,13 @@ fun MusicPlayerBackground(
         model = remember { backgroundGifs[backgroundIndex] },
         contentDescription = null,
         contentScale = contentScale,
+        loading = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .shimmerEffect()
+            )
+        },
         modifier = modifier.fillMaxSize()
     )
 }
