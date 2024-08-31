@@ -66,15 +66,15 @@ class SettingsViewModel @Inject constructor(
     private val _setPlayInBackgroundEventChannel = Channel<UiEvent>()
     val setPlayInBackgroundEventChannel = _setPlayInBackgroundEventChannel.receiveAsFlow()
 
-    fun onEvent(event: SettingsEvent) {
-        when (event) {
-            is SettingsEvent.StoreCurrentAppTheme -> storeCurrentAppTheme(event.newAppTheme)
-            is SettingsEvent.StorePlayInBackgroundSwitch -> storeNotificationSoundSwitch(event.isEnabled)
-            is SettingsEvent.OnPermissionResult -> onPermissionResult(
-                permission = event.permission,
-                isGranted = event.isGranted
+    fun onAction(action: SettingsAction) {
+        when (action) {
+            is SettingsAction.StoreCurrentAppTheme -> storeCurrentAppTheme(action.newAppTheme)
+            is SettingsAction.StorePlayInBackgroundSwitch -> storeNotificationSoundSwitch(action.isEnabled)
+            is SettingsAction.OnPermissionResult -> onPermissionResult(
+                permission = action.permission,
+                isGranted = action.isGranted
             )
-            is SettingsEvent.DismissPermissionDialog -> dismissPermissionDialog(event.permission)
+            is SettingsAction.DismissPermissionDialog -> dismissPermissionDialog(action.permission)
         }
     }
 

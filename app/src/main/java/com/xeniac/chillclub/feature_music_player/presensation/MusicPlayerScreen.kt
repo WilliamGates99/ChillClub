@@ -66,15 +66,15 @@ fun MusicPlayerScreen(
     PostNotificationPermissionHandler(
         musicPlayerState = musicPlayerState,
         onPermissionResult = { permission, isGranted ->
-            viewModel.onEvent(
-                MusicPlayerEvent.OnPermissionResult(
+            viewModel.onAction(
+                MusicPlayerAction.OnPermissionResult(
                     permission = permission,
                     isGranted = isGranted
                 )
             )
         },
         onDismiss = { permission ->
-            viewModel.onEvent(MusicPlayerEvent.DismissPermissionDialog(permission))
+            viewModel.onAction(MusicPlayerAction.DismissPermissionDialog(permission))
         }
     )
 

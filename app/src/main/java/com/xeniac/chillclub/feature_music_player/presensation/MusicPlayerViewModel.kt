@@ -63,14 +63,14 @@ class MusicPlayerViewModel @Inject constructor(
         getRadios()
     }
 
-    fun onEvent(event: MusicPlayerEvent) {
-        when (event) {
-            MusicPlayerEvent.GetRadios -> getRadios()
-            is MusicPlayerEvent.OnPermissionResult -> onPermissionResult(
-                permission = event.permission,
-                isGranted = event.isGranted
+    fun onAction(action: MusicPlayerAction) {
+        when (action) {
+            MusicPlayerAction.GetRadios -> getRadios()
+            is MusicPlayerAction.OnPermissionResult -> onPermissionResult(
+                permission = action.permission,
+                isGranted = action.isGranted
             )
-            is MusicPlayerEvent.DismissPermissionDialog -> dismissPermissionDialog(event.permission)
+            is MusicPlayerAction.DismissPermissionDialog -> dismissPermissionDialog(action.permission)
         }
     }
 

@@ -87,8 +87,8 @@ fun SettingsScreen(
     ) { isGranted ->
         isPostNotificationsPermissionGranted = isGranted
 
-        viewModel.onEvent(
-            SettingsEvent.OnPermissionResult(
+        viewModel.onAction(
+            SettingsAction.OnPermissionResult(
                 permission = Manifest.permission.POST_NOTIFICATIONS,
                 isGranted = isGranted
             )
@@ -105,7 +105,7 @@ fun SettingsScreen(
             )
         },
         onDismiss = { permission ->
-            viewModel.onEvent(SettingsEvent.DismissPermissionDialog(permission))
+            viewModel.onAction(SettingsAction.DismissPermissionDialog(permission))
         }
     )
 
@@ -195,10 +195,10 @@ fun SettingsScreen(
                 settingsState = settingsState,
                 isPostNotificationsPermissionGranted = isPostNotificationsPermissionGranted,
                 onThemeChange = { newAppTheme ->
-                    viewModel.onEvent(SettingsEvent.StoreCurrentAppTheme(newAppTheme))
+                    viewModel.onAction(SettingsAction.StoreCurrentAppTheme(newAppTheme))
                 },
                 onPlayInBackgroundChange = { isChecked ->
-                    viewModel.onEvent(SettingsEvent.StorePlayInBackgroundSwitch(isChecked))
+                    viewModel.onAction(SettingsAction.StorePlayInBackgroundSwitch(isChecked))
                 },
                 onPlayInBackgroundClick = {
                     postNotificationPermissionResultLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
