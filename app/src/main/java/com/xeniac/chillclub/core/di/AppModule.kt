@@ -2,6 +2,7 @@ package com.xeniac.chillclub.core.di
 
 import android.app.NotificationManager
 import android.content.Context
+import android.media.AudioManager
 import android.net.ConnectivityManager
 import android.os.Build
 import androidx.datastore.core.DataStore
@@ -64,6 +65,14 @@ internal object AppModule {
     ): ConnectivityManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         context.getSystemService(ConnectivityManager::class.java)
     } else context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+    @Provides
+    @Singleton
+    fun provideAudioManager(
+        @ApplicationContext context: Context
+    ): AudioManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        context.getSystemService(AudioManager::class.java)
+    } else context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     @Provides
     @Singleton

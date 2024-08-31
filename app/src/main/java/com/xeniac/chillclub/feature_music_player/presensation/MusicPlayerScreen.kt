@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -63,6 +64,22 @@ fun MusicPlayerScreen(
         }
     }
 
+    ObserverAsEvent(flow = viewModel.adjustMusicVolumeEventChannel) { event ->
+        when (event) {
+            is UiEvent.ShowLongSnackbar -> {
+                scope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+
+                    snackbarHostState.showSnackbar(
+                        message = event.message.asString(context),
+                        duration = SnackbarDuration.Long
+                    )
+                }
+            }
+            else -> Unit
+        }
+    }
+
     PostNotificationPermissionHandler(
         musicPlayerState = musicPlayerState,
         onPermissionResult = { permission, isGranted ->
@@ -103,7 +120,10 @@ fun MusicPlayerScreen(
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally, // TODO: TEMP
-                verticalArrangement = Arrangement.Center, // TODO: TEMP
+                verticalArrangement = Arrangement.spacedBy(
+                    16.dp,
+                    Alignment.CenterVertically
+                ), // TODO: TEMP
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(
@@ -116,6 +136,18 @@ fun MusicPlayerScreen(
                     fontSize = 16.sp,
                     color = White
                 )
+
+                Button(onClick = {
+                    viewModel.onAction(MusicPlayerAction.IncreaseMusicVolume)
+                }) {
+                    Text(text = "Increase Volume")
+                }
+
+                Button(onClick = {
+                    viewModel.onAction(MusicPlayerAction.DecreaseMusicVolume)
+                }) {
+                    Text(text = "Decrease Volume")
+                }
             }
         }
     }
