@@ -14,7 +14,10 @@ typealias AppNotFound = Boolean
 
 object IntentHelper {
 
-    fun openLinkInInAppBrowser(context: Context, urlString: String) {
+    /**
+     * returns true if browser app was not found
+     */
+    fun openLinkInInAppBrowser(context: Context, urlString: String): AppNotFound = try {
         val intent = CustomTabsIntent.Builder().build().apply {
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
@@ -23,6 +26,9 @@ object IntentHelper {
             /* context = */ context,
             /* url = */ Uri.parse(urlString)
         )
+        false
+    } catch (e: ActivityNotFoundException) {
+        openLinkInBrowser(context, urlString)
     }
 
     /**

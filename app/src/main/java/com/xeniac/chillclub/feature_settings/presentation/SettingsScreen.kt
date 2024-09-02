@@ -208,7 +208,7 @@ fun SettingsScreen(
 
             AboutSection(
                 openUrlInInAppBrowser = { url ->
-                    IntentHelper.openLinkInInAppBrowser(
+                    isIntentAppNotFoundErrorVisible = IntentHelper.openLinkInInAppBrowser(
                         context = context,
                         urlString = url
                     )
@@ -224,7 +224,7 @@ fun SettingsScreen(
 
             SupportSection(
                 openUrlInInAppBrowser = { url ->
-                    IntentHelper.openLinkInInAppBrowser(
+                    isIntentAppNotFoundErrorVisible = IntentHelper.openLinkInInAppBrowser(
                         context = context,
                         urlString = url
                     )
