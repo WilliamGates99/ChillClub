@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class MusicPlayerState(
+    val currentRadioStations: RadioStation? = null,
     val radioStations: List<RadioStation> = emptyList(),
     val isRadioStationsLoading: Boolean = false,
     val musicVolume: MusicVolume? = null,
