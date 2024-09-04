@@ -16,9 +16,13 @@ val WhiteAlpha64 = Color(0xA3FFFFFF)
 val Black = Color(0xFF000000)
 
 val Gray5 = Color(0xFF0E0E0E)
+val Gray10 = Color(0xFF161616)
+val Gray20 = Color(0xFF353535)
 val Gray40 = Color(0xFF717171)
 val Gray60 = Color(0xFF9F9F9F)
+val Gray70 = Color(0xFFBBBBBB)
 val Gray80 = Color(0xFFD3D3D3)
+val Gray90 = Color(0xFFE1E1E1)
 
 val primaryLight = Color(0xFF2E48C9)
 val onPrimaryLight = Color(0xFFFFFFFF)
