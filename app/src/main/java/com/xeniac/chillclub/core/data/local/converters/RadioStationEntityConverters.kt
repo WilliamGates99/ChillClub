@@ -5,7 +5,7 @@ import com.xeniac.chillclub.core.domain.models.Channel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-class RadioEntityConverters {
+class RadioStationEntityConverters {
 
     @TypeConverter
     fun fromChannel(channel: Channel): String = Json.encodeToString(channel)

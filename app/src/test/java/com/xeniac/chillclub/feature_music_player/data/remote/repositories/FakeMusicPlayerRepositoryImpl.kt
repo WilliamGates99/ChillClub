@@ -2,16 +2,16 @@ package com.xeniac.chillclub.feature_music_player.data.remote.repositories
 
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.xeniac.chillclub.core.data.local.entities.RadioEntity
+import com.xeniac.chillclub.core.data.local.entities.RadioStationEntity
 import com.xeniac.chillclub.core.domain.models.Channel
-import com.xeniac.chillclub.core.domain.models.Radio
+import com.xeniac.chillclub.core.domain.models.RadioStation
 import com.xeniac.chillclub.core.domain.models.SocialLinks
 import com.xeniac.chillclub.core.domain.utils.Result
-import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadiosResponseDto
+import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadioStationsResponseDto
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolume
 import com.xeniac.chillclub.feature_music_player.domain.utils.AdjustVolumeError
-import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadiosError
+import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadioStationsError
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.mock.MockEngine
@@ -37,22 +37,22 @@ import javax.inject.Inject
 class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepository {
 
     private var isNetworkAvailable = true
-    private var getRadiosHttpStatusCode = HttpStatusCode.OK
+    private var getRadioStationsHttpStatusCode = HttpStatusCode.OK
 
     var musicVolume = SnapshotStateList<MusicVolume>().apply { add(5) }
-    private var radioEntities = SnapshotStateList<RadioEntity>()
+    private var radioStationEntities = SnapshotStateList<RadioStationEntity>()
 
     fun isNetworkAvailable(isAvailable: Boolean) {
         isNetworkAvailable = isAvailable
     }
 
-    fun setGetRadiosHttpStatusCode(httpStatusCode: HttpStatusCode) {
-        getRadiosHttpStatusCode = httpStatusCode
+    fun setGetRadioStationsHttpStatusCode(httpStatusCode: HttpStatusCode) {
+        getRadioStationsHttpStatusCode = httpStatusCode
     }
 
-    fun addDummyRadios() {
+    fun addDummyRadioStations() {
         repeat(times = 10) { index ->
-            val radioEntity = RadioEntity(
+            val radioStationEntity = RadioStationEntity(
                 youtubeVideoId = "videoId$index",
                 title = "Test Title $index",
                 channel = Channel(
@@ -67,7 +67,7 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
                 id = index.toLong()
             )
 
-            radioEntities.add(radioEntity)
+            radioStationEntities.add(radioStationEntity)
         }
     }
 
@@ -119,31 +119,32 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
             awaitClose {}
         }
 
-    override suspend fun getRadios(
+    override suspend fun getRadioStations(
         fetchFromRemote: Boolean
-    ): Flow<Result<List<Radio>, GetRadiosError>> = flow {
-        val shouldJustLoadFromCache = radioEntities.isNotEmpty() && !fetchFromRemote
+    ): Flow<Result<List<RadioStation>, GetRadioStationsError>> = flow {
+        val shouldJustLoadFromCache = radioStationEntities.isNotEmpty() && !fetchFromRemote
         if (shouldJustLoadFromCache) {
-            emit(Result.Success(radioEntities.map { it.toRadio() }))
+            emit(Result.Success(radioStationEntities.map { it.toRadioStation() }))
             return@flow
         }
 
         if (!isNetworkAvailable) {
-            emit(Result.Error(GetRadiosError.Network.Offline))
+            emit(Result.Error(GetRadioStationsError.Network.Offline))
             return@flow
         }
 
         val mockEngine = MockEngine {
-            val getRadiosResponseDto = if (getRadiosHttpStatusCode == HttpStatusCode.OK) {
-                addDummyRadios()
-                GetRadiosResponseDto(radioDtos = radioEntities.map { it.toRadioDto() })
+            val isResponseHttpStatusOk = getRadioStationsHttpStatusCode == HttpStatusCode.OK
+            val getRadioStationsResponseDto = if (isResponseHttpStatusOk) {
+                addDummyRadioStations()
+                GetRadioStationsResponseDto(radioStationDtos = radioStationEntities.map { it.toRadioStationDto() })
             } else {
-                GetRadiosResponseDto(radioDtos = emptyList())
+                GetRadioStationsResponseDto(radioStationDtos = emptyList())
             }
 
             respond(
-                content = Json.encodeToString(getRadiosResponseDto),
-                status = getRadiosHttpStatusCode,
+                content = Json.encodeToString(getRadioStationsResponseDto),
+                status = getRadioStationsHttpStatusCode,
                 headers = headersOf(
                     name = HttpHeaders.ContentType,
                     value = ContentType.Application.Json.toString()
@@ -174,18 +175,20 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
             }
         }
 
-        val response = testClient.get(urlString = MusicPlayerRepository.EndPoints.GetRadios.url)
+        val response = testClient.get(
+            urlString = MusicPlayerRepository.EndPoints.GetRadioStations.url
+        )
 
         when (response.status) {
             HttpStatusCode.OK -> {
-                val remoteRadioDtos = response.body<GetRadiosResponseDto>().radioDtos
+                val remoteRadioDtos = response.body<GetRadioStationsResponseDto>().radioStationDtos
 
-                radioEntities.clear()
-                radioEntities.addAll(remoteRadioDtos.map { it.toRadioEntity() })
+                radioStationEntities.clear()
+                radioStationEntities.addAll(remoteRadioDtos.map { it.toRadioStationEntity() })
 
-                emit(Result.Success(radioEntities.map { it.toRadio() }))
+                emit(Result.Success(radioStationEntities.map { it.toRadioStation() }))
             }
-            else -> emit(Result.Error(GetRadiosError.Network.SomethingWentWrong))
+            else -> emit(Result.Error(GetRadioStationsError.Network.SomethingWentWrong))
         }
     }
 }

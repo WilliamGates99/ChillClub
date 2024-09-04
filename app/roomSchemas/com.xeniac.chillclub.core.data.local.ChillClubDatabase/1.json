@@ -2,10 +2,10 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "03022188de5a91dafd05446d1150fa1f",
+    "identityHash": "9fd7de12eeb64e8ee658112e59969b77",
     "entities": [
       {
-        "tableName": "radios",
+        "tableName": "radio_stations",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`youtube_video_id` TEXT NOT NULL, `title` TEXT NOT NULL, `channel` TEXT NOT NULL, `category` TEXT NOT NULL, `tags` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT)",
         "fields": [
           {
@@ -64,7 +64,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '03022188de5a91dafd05446d1150fa1f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9fd7de12eeb64e8ee658112e59969b77')"
     ]
   }
 }

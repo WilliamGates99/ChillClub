@@ -2,8 +2,8 @@ package com.xeniac.chillclub.feature_music_player.domain.utils
 
 import com.xeniac.chillclub.core.domain.utils.Error
 
-sealed class GetRadiosError : Error() {
-    sealed class Network : GetRadiosError() {
+sealed class GetRadioStationsError : Error() {
+    sealed class Network : GetRadioStationsError() {
         data object Offline : Network()
         data object ConnectTimeoutException : Network()
         data object HttpRequestTimeoutException : Network()
@@ -16,7 +16,7 @@ sealed class GetRadiosError : Error() {
         data object SomethingWentWrong : Network()
     }
 
-    sealed class Local : GetRadiosError() {
-        data object SomethingWentWrong : GetRadiosError()
+    sealed class Local : GetRadioStationsError() {
+        data object SomethingWentWrong : GetRadioStationsError()
     }
 }

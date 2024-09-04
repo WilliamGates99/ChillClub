@@ -6,7 +6,7 @@ data class MusicPlayerUseCases(
     val observeMusicVolumeChangesUseCase: Lazy<ObserveMusicVolumeChangesUseCase>,
     val decreaseMusicVolumeUseCase: Lazy<DecreaseMusicVolumeUseCase>,
     val increaseMusicVolumeUseCase: Lazy<IncreaseMusicVolumeUseCase>,
-    val getRadiosUseCase: Lazy<GetRadiosUseCase>,
+    val getRadioStationsUseCase: Lazy<GetRadioStationsUseCase>,
     val getNotificationPermissionCountUseCase: Lazy<GetNotificationPermissionCountUseCase>,
     val storeNotificationPermissionCountUseCase: Lazy<StoreNotificationPermissionCountUseCase>
 )

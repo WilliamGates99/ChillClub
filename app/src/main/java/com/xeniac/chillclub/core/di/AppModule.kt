@@ -12,7 +12,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
-import com.xeniac.chillclub.core.data.local.ChillClubDao
 import com.xeniac.chillclub.core.data.local.ChillClubDatabase
 import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
@@ -128,12 +127,6 @@ internal object AppModule {
         klass = ChillClubDatabase::class.java,
         name = "ChillClub.db"
     ).build()
-
-    @Provides
-    @Singleton
-    fun provideChillClubDao(
-        database: ChillClubDatabase
-    ): ChillClubDao = database.dao
 
     @OptIn(InternalCoroutinesApi::class)
     @Provides

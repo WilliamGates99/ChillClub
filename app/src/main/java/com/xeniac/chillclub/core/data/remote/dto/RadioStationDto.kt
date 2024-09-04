@@ -1,12 +1,12 @@
 package com.xeniac.chillclub.core.data.remote.dto
 
-import com.xeniac.chillclub.core.data.local.entities.RadioEntity
-import com.xeniac.chillclub.core.domain.models.Radio
+import com.xeniac.chillclub.core.data.local.entities.RadioStationEntity
+import com.xeniac.chillclub.core.domain.models.RadioStation
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RadioDto(
+data class RadioStationDto(
     @SerialName("id")
     val youtubeVideoId: String,
     @SerialName("title")
@@ -18,7 +18,7 @@ data class RadioDto(
     @SerialName("tags")
     val tags: List<String>
 ) {
-    fun toRadioEntity(): RadioEntity = RadioEntity(
+    fun toRadioStationEntity(): RadioStationEntity = RadioStationEntity(
         youtubeVideoId = youtubeVideoId,
         title = title,
         channel = channelDto.toChannel(),
@@ -26,7 +26,7 @@ data class RadioDto(
         tags = tags
     )
 
-    fun toRadio(): Radio = Radio(
+    fun toRadioStation(): RadioStation = RadioStation(
         youtubeVideoId = youtubeVideoId,
         title = title,
         channel = channelDto.toChannel(),

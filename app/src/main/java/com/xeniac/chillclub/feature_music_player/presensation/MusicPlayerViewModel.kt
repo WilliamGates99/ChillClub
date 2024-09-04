@@ -1,6 +1,5 @@
 package com.xeniac.chillclub.feature_music_player.presensation
 
-import android.media.AudioManager
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +11,6 @@ import com.xeniac.chillclub.core.presentation.utils.UiEvent
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.MusicPlayerUseCases
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
 import com.xeniac.chillclub.feature_music_player.presensation.utils.asUiText
-import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,8 +27,7 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
     private val musicPlayerUseCases: MusicPlayerUseCases,
-    private val savedStateHandle: SavedStateHandle,
-    private val audioManager: Lazy<AudioManager>
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val mutex: Mutex = Mutex()
@@ -68,19 +65,19 @@ class MusicPlayerViewModel @Inject constructor(
         initialValue = MusicPlayerState()
     )
 
-    private val _getRadiosEventChannel = Channel<Event>()
-    val getRadiosEventChannel = _getRadiosEventChannel.receiveAsFlow()
+    private val _getRadioStationsEventChannel = Channel<Event>()
+    val getRadioStationsEventChannel = _getRadioStationsEventChannel.receiveAsFlow()
 
     private val _adjustMusicVolumeEventChannel = Channel<UiEvent>()
     val adjustMusicVolumeEventChannel = _adjustMusicVolumeEventChannel.receiveAsFlow()
 
     init {
-        getRadios()
+        getRadioStations()
     }
 
     fun onAction(action: MusicPlayerAction) {
         when (action) {
-            MusicPlayerAction.GetRadios -> getRadios()
+            MusicPlayerAction.GetRadioStations -> getRadioStations()
             MusicPlayerAction.DecreaseMusicVolume -> decreaseMusicVolume()
             MusicPlayerAction.IncreaseMusicVolume -> increaseMusicVolume()
             is MusicPlayerAction.OnPermissionResult -> onPermissionResult(
@@ -91,41 +88,41 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
-    private fun getRadios() = viewModelScope.launch {
+    private fun getRadioStations() = viewModelScope.launch {
         mutex.withLock {
             savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                isRadiosLoading = true
+                isRadioStationsLoading = true
             )
         }
 
-        musicPlayerUseCases.getRadiosUseCase.get()(
+        musicPlayerUseCases.getRadioStationsUseCase.get()(
             fetchFromRemote = NetworkObserverHelper.networkStatus.value == ConnectivityObserver.Status.AVAILABLE
-        ).collect { getRadiosResult ->
-            when (getRadiosResult) {
+        ).collect { getRadioStationsResult ->
+            when (getRadioStationsResult) {
                 is Result.Success -> {
-                    getRadiosResult.data.let { radios ->
+                    getRadioStationsResult.data.let { radioStations ->
                         mutex.withLock {
                             savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                                radios = radios,
-                                isRadiosLoading = false
+                                radioStations = radioStations,
+                                isRadioStationsLoading = false
                             )
                         }
                     }
                 }
                 is Result.Error -> {
-                    when (val error = getRadiosResult.error) {
-//                        GetRadiosError.Network.Offline -> TODO()
-//                        GetRadiosError.Network.ConnectTimeoutException -> TODO()
-//                        GetRadiosError.Network.HttpRequestTimeoutException -> TODO()
-//                        GetRadiosError.Network.SocketTimeoutException -> TODO()
-//                        GetRadiosError.Network.RedirectResponseException -> TODO()
-//                        GetRadiosError.Network.ClientRequestException -> TODO()
-//                        GetRadiosError.Network.ServerResponseException -> TODO()
-//                        GetRadiosError.Network.SerializationException -> TODO()
-//                        GetRadiosError.Network.SomethingWentWrong -> TODO()
-//                        GetRadiosError.Local.SomethingWentWrong -> TODO()
+                    when (val error = getRadioStationsResult.error) {
+//                        GetRadioStationsError.Network.Offline -> TODO()
+//                        GetRadioStationsError.Network.ConnectTimeoutException -> TODO()
+//                        GetRadioStationsError.Network.HttpRequestTimeoutException -> TODO()
+//                        GetRadioStationsError.Network.SocketTimeoutException -> TODO()
+//                        GetRadioStationsError.Network.RedirectResponseException -> TODO()
+//                        GetRadioStationsError.Network.ClientRequestException -> TODO()
+//                        GetRadioStationsError.Network.ServerResponseException -> TODO()
+//                        GetRadioStationsError.Network.SerializationException -> TODO()
+//                        GetRadioStationsError.Network.SomethingWentWrong -> TODO()
+//                        GetRadioStationsError.Local.SomethingWentWrong -> TODO()
                         else -> {
-                            _getRadiosEventChannel.send(
+                            _getRadioStationsEventChannel.send(
                                 UiEvent.ShowLongSnackbar(error.asUiText())
                             )
                         }
@@ -133,7 +130,7 @@ class MusicPlayerViewModel @Inject constructor(
 
                     mutex.withLock {
                         savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                            isRadiosLoading = false
+                            isRadioStationsLoading = false
                         )
                     }
                 }

@@ -1,7 +1,7 @@
 package com.xeniac.chillclub.feature_music_player.presensation
 
 sealed interface MusicPlayerAction {
-    data object GetRadios : MusicPlayerAction
+    data object GetRadioStations : MusicPlayerAction
 
     data object DecreaseMusicVolume : MusicPlayerAction
     data object IncreaseMusicVolume : MusicPlayerAction

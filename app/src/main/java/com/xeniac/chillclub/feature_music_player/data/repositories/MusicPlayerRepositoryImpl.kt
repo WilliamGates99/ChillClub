@@ -7,16 +7,16 @@ import android.content.IntentFilter
 import android.media.AudioManager
 import android.os.Build
 import androidx.room.withTransaction
-import com.xeniac.chillclub.core.data.local.ChillClubDao
 import com.xeniac.chillclub.core.data.local.ChillClubDatabase
-import com.xeniac.chillclub.core.domain.models.Radio
+import com.xeniac.chillclub.core.data.local.RadioStationsDao
+import com.xeniac.chillclub.core.domain.models.RadioStation
 import com.xeniac.chillclub.core.domain.utils.Result
-import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadiosResponseDto
+import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadioStationsResponseDto
 import com.xeniac.chillclub.feature_music_player.di.MUSIC_STREAM_TYPE
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolume
 import com.xeniac.chillclub.feature_music_player.domain.utils.AdjustVolumeError
-import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadiosError
+import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadioStationsError
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.HttpClient
@@ -46,7 +46,7 @@ class MusicPlayerRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val httpClient: HttpClient,
     private val db: Lazy<ChillClubDatabase>,
-    private val dao: Lazy<ChillClubDao>,
+    private val dao: Lazy<RadioStationsDao>,
     private val audioManager: AudioManager,
     private val streamType: MUSIC_STREAM_TYPE
 ) : MusicPlayerRepository {
@@ -136,78 +136,82 @@ class MusicPlayerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getRadios(
+    override suspend fun getRadioStations(
         fetchFromRemote: Boolean
-    ): Flow<Result<List<Radio>, GetRadiosError>> = flow {
-        val localRadioEntities = dao.get().getRadios()
+    ): Flow<Result<List<RadioStation>, GetRadioStationsError>> = flow {
+        val localRadioStationEntities = dao.get().getRadioStations()
 
-        val shouldJustLoadFromCache = localRadioEntities.isNotEmpty() && !fetchFromRemote
+        val shouldJustLoadFromCache = localRadioStationEntities.isNotEmpty() && !fetchFromRemote
         if (shouldJustLoadFromCache) {
-            emit(Result.Success(localRadioEntities.map { it.toRadio() }))
+            emit(Result.Success(localRadioStationEntities.map { it.toRadioStation() }))
             return@flow
         }
 
         try {
-            val response = httpClient.get(urlString = MusicPlayerRepository.EndPoints.GetRadios.url)
+            val response = httpClient.get(
+                urlString = MusicPlayerRepository.EndPoints.GetRadioStations.url
+            )
 
-            Timber.i("Get radios response call = ${response.request.call}")
+            Timber.i("Get radio stations response call = ${response.request.call}")
 
             when (response.status) {
                 HttpStatusCode.OK -> {
-                    val remoteRadioDtos = response.body<GetRadiosResponseDto>().radioDtos
+                    val remoteRadioStationDtos = response
+                        .body<GetRadioStationsResponseDto>()
+                        .radioStationDtos
 
                     db.get().withTransaction {
-                        dao.get().clearRadios()
-                        dao.get().insertRadios(
-                            radioEntities = remoteRadioDtos.map { it.toRadioEntity() }
+                        dao.get().clearRadioStations()
+                        dao.get().insertRadioStations(
+                            radioStationEntities = remoteRadioStationDtos.map { it.toRadioStationEntity() }
                         )
                     }
 
-                    val radios = dao.get().getRadios().map { it.toRadio() }
-                    emit(Result.Success(radios))
+                    val radioStations = dao.get().getRadioStations().map { it.toRadioStation() }
+                    emit(Result.Success(radioStations))
                 }
-                else -> emit(Result.Error(GetRadiosError.Network.SomethingWentWrong))
+                else -> emit(Result.Error(GetRadioStationsError.Network.SomethingWentWrong))
             }
         } catch (e: UnresolvedAddressException) { // When device is offline
-            Timber.e("Get radios UnresolvedAddressException:}")
+            Timber.e("Get radio stations UnresolvedAddressException:}")
             e.printStackTrace()
-            emit(Result.Error(GetRadiosError.Network.Offline))
+            emit(Result.Error(GetRadioStationsError.Network.Offline))
         } catch (e: ConnectTimeoutException) {
-            Timber.e("Get radios ConnectTimeoutException:")
+            Timber.e("Get radio stations ConnectTimeoutException:")
             e.printStackTrace()
-            emit(Result.Error(GetRadiosError.Network.ConnectTimeoutException))
+            emit(Result.Error(GetRadioStationsError.Network.ConnectTimeoutException))
         } catch (e: HttpRequestTimeoutException) {
-            Timber.e("Get radios HttpRequestTimeoutException:")
+            Timber.e("Get radio stations HttpRequestTimeoutException:")
             e.printStackTrace()
-            emit(Result.Error(GetRadiosError.Network.HttpRequestTimeoutException))
+            emit(Result.Error(GetRadioStationsError.Network.HttpRequestTimeoutException))
         } catch (e: SocketTimeoutException) {
-            Timber.e("Get radios SocketTimeoutException:")
+            Timber.e("Get radio stations SocketTimeoutException:")
             e.printStackTrace()
-            emit(Result.Error(GetRadiosError.Network.SocketTimeoutException))
+            emit(Result.Error(GetRadioStationsError.Network.SocketTimeoutException))
         } catch (e: RedirectResponseException) { // 3xx responses
-            Timber.e("Get radios RedirectResponseException:")
+            Timber.e("Get radio stations RedirectResponseException:")
             e.printStackTrace()
-            emit(Result.Error(GetRadiosError.Network.RedirectResponseException))
+            emit(Result.Error(GetRadioStationsError.Network.RedirectResponseException))
         } catch (e: ClientRequestException) { // 4xx responses
-            Timber.e("Get radios ClientRequestException:")
+            Timber.e("Get radio stations ClientRequestException:")
             e.printStackTrace()
-            emit(Result.Error(GetRadiosError.Network.ClientRequestException))
+            emit(Result.Error(GetRadioStationsError.Network.ClientRequestException))
         } catch (e: ServerResponseException) { // 5xx responses
-            Timber.e("Get radios ServerResponseException:")
+            Timber.e("Get radio stations ServerResponseException:")
             e.printStackTrace()
-            emit(Result.Error(GetRadiosError.Network.ServerResponseException))
+            emit(Result.Error(GetRadioStationsError.Network.ServerResponseException))
         } catch (e: SerializationException) {
-            Timber.e("Get radios SerializationException:")
+            Timber.e("Get radio stations SerializationException:")
             e.printStackTrace()
-            emit(Result.Error(GetRadiosError.Network.SerializationException))
+            emit(Result.Error(GetRadioStationsError.Network.SerializationException))
         } catch (e: Exception) {
             coroutineContext.ensureActive()
 
-            Timber.e("Get radios Exception:")
+            Timber.e("Get radio stations Exception:")
             e.printStackTrace()
             if (e.message?.lowercase(Locale.US)?.contains("unable to resolve host") == true) {
-                emit(Result.Error(GetRadiosError.Network.Offline))
-            } else emit(Result.Error(GetRadiosError.Network.SomethingWentWrong))
+                emit(Result.Error(GetRadioStationsError.Network.Offline))
+            } else emit(Result.Error(GetRadioStationsError.Network.SomethingWentWrong))
         }
     }
 }

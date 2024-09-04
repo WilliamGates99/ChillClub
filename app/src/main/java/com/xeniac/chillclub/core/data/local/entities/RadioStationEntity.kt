@@ -3,13 +3,13 @@ package com.xeniac.chillclub.core.data.local.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.xeniac.chillclub.core.data.remote.dto.RadioDto
+import com.xeniac.chillclub.core.data.remote.dto.RadioStationDto
 import com.xeniac.chillclub.core.data.utils.DateHelper
 import com.xeniac.chillclub.core.domain.models.Channel
-import com.xeniac.chillclub.core.domain.models.Radio
+import com.xeniac.chillclub.core.domain.models.RadioStation
 
-@Entity(tableName = "radios")
-data class RadioEntity(
+@Entity(tableName = "radio_stations")
+data class RadioStationEntity(
     @ColumnInfo(name = "youtube_video_id")
     val youtubeVideoId: String,
     val title: String,
@@ -21,7 +21,7 @@ data class RadioEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long? = null
 ) {
-    fun toRadioDto(): RadioDto = RadioDto(
+    fun toRadioStationDto(): RadioStationDto = RadioStationDto(
         youtubeVideoId = youtubeVideoId,
         title = title,
         channelDto = channel.toChannelDto(),
@@ -29,7 +29,7 @@ data class RadioEntity(
         tags = tags
     )
 
-    fun toRadio(): Radio = Radio(
+    fun toRadioStation(): RadioStation = RadioStation(
         youtubeVideoId = youtubeVideoId,
         title = title,
         channel = channel,

@@ -1,10 +1,10 @@
 package com.xeniac.chillclub.feature_music_player.domain.repositories
 
 import com.xeniac.chillclub.BuildConfig
-import com.xeniac.chillclub.core.domain.models.Radio
+import com.xeniac.chillclub.core.domain.models.RadioStation
 import com.xeniac.chillclub.core.domain.utils.Result
 import com.xeniac.chillclub.feature_music_player.domain.utils.AdjustVolumeError
-import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadiosError
+import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadioStationsError
 import kotlinx.coroutines.flow.Flow
 
 typealias MusicVolume = Int
@@ -17,11 +17,13 @@ interface MusicPlayerRepository {
 
     suspend fun increaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>>
 
-    suspend fun getRadios(
+    suspend fun getRadioStations(
         fetchFromRemote: Boolean
-    ): Flow<Result<List<Radio>, GetRadiosError>>
+    ): Flow<Result<List<RadioStation>, GetRadioStationsError>>
 
     sealed class EndPoints(val url: String) {
-        data object GetRadios : EndPoints(url = "${BuildConfig.KTOR_HTTP_BASE_URL}/radio.json")
+        data object GetRadioStations : EndPoints(
+            url = "${BuildConfig.KTOR_HTTP_BASE_URL}/radio.json"
+        )
     }
 }

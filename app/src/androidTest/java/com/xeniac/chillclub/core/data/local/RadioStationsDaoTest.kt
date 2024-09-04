@@ -2,7 +2,7 @@ package com.xeniac.chillclub.core.data.local
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
-import com.xeniac.chillclub.core.data.local.entities.RadioEntity
+import com.xeniac.chillclub.core.data.local.entities.RadioStationEntity
 import com.xeniac.chillclub.core.domain.models.Channel
 import com.xeniac.chillclub.core.domain.models.SocialLinks
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -19,7 +19,7 @@ import kotlin.random.Random
 
 @ExperimentalCoroutinesApi
 @HiltAndroidTest
-class ChillClubDaoTest {
+class RadioStationsDaoTest {
 
     @get:Rule
     var hiltRule = HiltAndroidRule(/* testInstance = */ this)
@@ -31,7 +31,7 @@ class ChillClubDaoTest {
     lateinit var database: ChillClubDatabase
 
     @Inject
-    lateinit var dao: ChillClubDao
+    lateinit var dao: RadioStationsDao
 
     @Before
     fun setUp() {
@@ -44,8 +44,8 @@ class ChillClubDaoTest {
     }
 
     @Test
-    fun insertRadio() = runTest {
-        val radioEntity = RadioEntity(
+    fun insertRadioStation() = runTest {
+        val radioStationEntity = RadioStationEntity(
             youtubeVideoId = "videoId",
             title = "Test Title",
             channel = Channel(
@@ -59,17 +59,17 @@ class ChillClubDaoTest {
             tags = listOf("tag1", "tag2"),
             id = 100
         )
-        dao.insertRadio(radioEntity)
+        dao.insertRadioStation(radioStationEntity)
 
-        val radios = dao.getRadios()
-        assertThat(radios).contains(radioEntity)
+        val radioStations = dao.getRadioStations()
+        assertThat(radioStations).contains(radioStationEntity)
     }
 
     @Test
-    fun insertRadios() = runTest {
-        val dummyRadios = mutableListOf<RadioEntity>()
+    fun insertRadioStationsStation() = runTest {
+        val dummyRadioStations = mutableListOf<RadioStationEntity>()
         repeat(times = 10) { index ->
-            val radioEntity = RadioEntity(
+            val radioStationEntity = RadioStationEntity(
                 youtubeVideoId = "videoId$index",
                 title = "Test Title $index",
                 channel = Channel(
@@ -84,21 +84,21 @@ class ChillClubDaoTest {
                 id = index.toLong()
             )
 
-            dummyRadios.add(radioEntity)
+            dummyRadioStations.add(radioStationEntity)
         }
 
-        dao.insertRadios(dummyRadios)
+        dao.insertRadioStations(dummyRadioStations)
 
-        val radios = dao.getRadios()
-        assertThat(radios).isNotEmpty()
-        assertThat(radios).containsExactlyElementsIn(dummyRadios)
+        val radioStations = dao.getRadioStations()
+        assertThat(radioStations).isNotEmpty()
+        assertThat(radioStations).containsExactlyElementsIn(dummyRadioStations)
     }
 
     @Test
-    fun clearRadios() = runTest {
-        val dummyRadios = mutableListOf<RadioEntity>()
+    fun clearRadioStations() = runTest {
+        val dummyRadioStations = mutableListOf<RadioStationEntity>()
         repeat(times = 10) { index ->
-            val radioEntity = RadioEntity(
+            val radioStationEntity = RadioStationEntity(
                 youtubeVideoId = "videoId$index",
                 title = "Test Title $index",
                 channel = Channel(
@@ -113,23 +113,23 @@ class ChillClubDaoTest {
                 id = index.toLong()
             )
 
-            dummyRadios.add(radioEntity)
-            dao.insertRadio(radioEntity)
+            dummyRadioStations.add(radioStationEntity)
+            dao.insertRadioStation(radioStationEntity)
         }
 
-        val radios = dao.getRadios()
-        assertThat(radios).isNotEmpty()
-        assertThat(radios).containsExactlyElementsIn(dummyRadios)
+        val radioStations = dao.getRadioStations()
+        assertThat(radioStations).isNotEmpty()
+        assertThat(radioStations).containsExactlyElementsIn(dummyRadioStations)
 
-        dao.clearRadios()
+        dao.clearRadioStations()
 
-        val radiosAfterClear = dao.getRadios()
+        val radiosAfterClear = dao.getRadioStations()
         assertThat(radiosAfterClear).isEmpty()
     }
 
     @Test
-    fun deleteRadio() = runTest {
-        val radioEntity = RadioEntity(
+    fun deleteRadioStation() = runTest {
+        val radioStationEntity = RadioStationEntity(
             youtubeVideoId = "videoId",
             title = "Test Title",
             channel = Channel(
@@ -143,22 +143,22 @@ class ChillClubDaoTest {
             tags = listOf("tag1", "tag2"),
             id = 100
         )
-        dao.insertRadio(radioEntity)
+        dao.insertRadioStation(radioStationEntity)
 
-        val radios = dao.getRadios()
-        assertThat(radios).contains(radioEntity)
+        val radioStations = dao.getRadioStations()
+        assertThat(radioStations).contains(radioStationEntity)
 
-        dao.deleteRadio(radioEntity)
+        dao.deleteRadioStation(radioStationEntity)
 
-        val radiosAfterDelete = dao.getRadios()
-        assertThat(radiosAfterDelete).doesNotContain(radioEntity)
+        val radiosAfterDelete = dao.getRadioStations()
+        assertThat(radiosAfterDelete).doesNotContain(radioStationEntity)
     }
 
     @Test
-    fun deleteRadioById() = runTest {
-        val dummyRadios = mutableListOf<RadioEntity>()
+    fun deleteRadioStationById() = runTest {
+        val dummyRadioStations = mutableListOf<RadioStationEntity>()
         repeat(times = 10) { index ->
-            val radioEntity = RadioEntity(
+            val radioStationEntity = RadioStationEntity(
                 youtubeVideoId = "videoId$index",
                 title = "Test Title $index",
                 channel = Channel(
@@ -173,30 +173,30 @@ class ChillClubDaoTest {
                 id = index.toLong()
             )
 
-            dummyRadios.add(radioEntity)
-            dao.insertRadio(radioEntity)
+            dummyRadioStations.add(radioStationEntity)
+            dao.insertRadioStation(radioStationEntity)
         }
 
-        val radios = dao.getRadios()
-        assertThat(radios).isNotEmpty()
-        assertThat(radios).containsExactlyElementsIn(dummyRadios)
+        val radioStations = dao.getRadioStations()
+        assertThat(radioStations).isNotEmpty()
+        assertThat(radioStations).containsExactlyElementsIn(dummyRadioStations)
 
-        val testRadio = dummyRadios[Random.nextInt(from = 0, until = 10)]
+        val testRadio = dummyRadioStations[Random.nextInt(from = 0, until = 10)]
 
-        assertThat(radios).contains(testRadio)
+        assertThat(radioStations).contains(testRadio)
         assertThat(testRadio.id).isNotNull()
 
-        dao.deleteRadioById(testRadio.id!!)
+        dao.deleteRadioStationById(testRadio.id!!)
 
-        val radiosAfterDelete = dao.getRadios()
+        val radiosAfterDelete = dao.getRadioStations()
         assertThat(radiosAfterDelete).doesNotContain(testRadio)
     }
 
     @Test
-    fun getRadios() = runTest {
-        val dummyRadios = mutableListOf<RadioEntity>()
+    fun getRadioStations() = runTest {
+        val dummyRadioStations = mutableListOf<RadioStationEntity>()
         repeat(times = 10) { index ->
-            val radioEntity = RadioEntity(
+            val radioStationEntity = RadioStationEntity(
                 youtubeVideoId = "videoId$index",
                 title = "Test Title $index",
                 channel = Channel(
@@ -211,20 +211,20 @@ class ChillClubDaoTest {
                 id = index.toLong()
             )
 
-            dummyRadios.add(radioEntity)
-            dao.insertRadio(radioEntity)
+            dummyRadioStations.add(radioStationEntity)
+            dao.insertRadioStation(radioStationEntity)
         }
 
-        val radios = dao.getRadios()
-        assertThat(radios).isNotEmpty()
-        assertThat(radios).containsExactlyElementsIn(dummyRadios)
+        val radioStations = dao.getRadioStations()
+        assertThat(radioStations).isNotEmpty()
+        assertThat(radioStations).containsExactlyElementsIn(dummyRadioStations)
     }
 
     @Test
-    fun observeRadios() = runTest {
-        val dummyRadios = mutableListOf<RadioEntity>()
+    fun observeRadioStationStations() = runTest {
+        val dummyRadioStations = mutableListOf<RadioStationEntity>()
         repeat(times = 10) { index ->
-            val radioEntity = RadioEntity(
+            val radioStationEntity = RadioStationEntity(
                 youtubeVideoId = "videoId$index",
                 title = "Test Title $index",
                 channel = Channel(
@@ -239,18 +239,18 @@ class ChillClubDaoTest {
                 id = index.toLong()
             )
 
-            dummyRadios.add(radioEntity)
-            dao.insertRadio(radioEntity)
+            dummyRadioStations.add(radioStationEntity)
+            dao.insertRadioStation(radioStationEntity)
         }
 
-        val radios = dao.observeRadios().first()
-        assertThat(radios).isNotEmpty()
-        assertThat(radios).containsExactlyElementsIn(dummyRadios)
+        val radioStations = dao.observeRadioStations().first()
+        assertThat(radioStations).isNotEmpty()
+        assertThat(radioStations).containsExactlyElementsIn(dummyRadioStations)
     }
 
     @Test
-    fun observeRadio() = runTest {
-        val radioEntity = RadioEntity(
+    fun observeRadioStation() = runTest {
+        val radioStationEntity = RadioStationEntity(
             youtubeVideoId = "videoId",
             title = "Test Title",
             channel = Channel(
@@ -264,11 +264,11 @@ class ChillClubDaoTest {
             tags = listOf("tag1", "tag2"),
             id = 100
         )
-        dao.insertRadio(radioEntity)
+        dao.insertRadioStation(radioStationEntity)
 
-        assertThat(radioEntity.id).isNotNull()
-        val radio = dao.observeRadio(id = radioEntity.id!!).first()
+        assertThat(radioStationEntity.id).isNotNull()
+        val radio = dao.observeRadioStation(id = radioStationEntity.id!!).first()
 
-        assertThat(radio).isEqualTo(radioEntity)
+        assertThat(radio).isEqualTo(radioStationEntity)
     }
 }
