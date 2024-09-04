@@ -30,12 +30,13 @@ class RadioStationsDaoTest {
     @Inject
     lateinit var database: ChillClubDatabase
 
-    @Inject
-    lateinit var dao: RadioStationsDao
+    private lateinit var dao: RadioStationsDao
 
     @Before
     fun setUp() {
         hiltRule.inject()
+
+        dao = database.radioStationsDao
     }
 
     @After
