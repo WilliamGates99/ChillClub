@@ -27,6 +27,11 @@
 
     <string name="music_player_app_bar_title_welcome">Welcome</string>
     <string name="music_player_btn_settings">Settings</string>
+    <string name="music_player_title_not_playing">Choose a Station to Play</string>
+    <string name="music_player_radio_stations_sheet_title"><![CDATA[<b>Select</b> a Station]]></string>
+    <string name="music_player_radio_stations_sheet_content_description_show">Show</string>
+    <string name="music_player_radio_stations_sheet_content_description_hide">Hide</string>
+    <string name="music_player_radio_stations_sheet_content_description_radio_cover">Radio Cover</string>
 
 
     <string name="settings_app_bar_title">Settings</string>
