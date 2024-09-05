@@ -2,9 +2,6 @@ package com.xeniac.chillclub.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val StatusBarColorV21 = Color(0x33000000)
-val NavigationBarColorV26 = Color(0x63FFFFFF)
-
 val GreenNotificationLight = Color(0xFF00E560)
 
 val ShimmerEffectFirstColor = Color(0xFF999999)
