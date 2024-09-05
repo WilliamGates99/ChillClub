@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Build
 import android.view.Window
 import android.view.WindowManager
+import androidx.activity.ComponentActivity
 import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -14,34 +15,38 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private var Impl: EdgeToEdgeImpl? = null
+private var Handler: EdgeToEdgeHandler? = null
 
-@JvmName(name = "EnableEdgeToEdge")
+@JvmName(name = "enableEdgeToEdgeWindow")
+fun ComponentActivity.enableEdgeToEdgeWindow() {
+    WindowCompat.setDecorFitsSystemWindows(
+        /* window = */ window,
+        /* decorFitsSystemWindows = */ false
+    )
+}
+
+@JvmName(name = "EnableEdgeToEdgeWindow")
 @JvmOverloads
 @Composable
-fun EnableEdgeToEdge(
+fun EnableEdgeToEdgeWindow(
     isDarkTheme: Boolean = isSystemInDarkTheme()
 ) {
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            WindowCompat.setDecorFitsSystemWindows(
-                /* window = */ window,
-                /* decorFitsSystemWindows = */ false
-            )
 
-            val edgeToEdgeImpl = Impl ?: when {
+            val edgeToEdgeHandlerImpl = Handler ?: when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> EdgeToEdgeApi30() // Android 11 and above (30+)
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> EdgeToEdgeApi29() // Android 10 and above (29+)
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> EdgeToEdgeApi28() // Android 9 and above (28+)
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> EdgeToEdgeApi26() // Android 8.0 and above (26+)
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> EdgeToEdgeApi23() // Android 6.0 and above (23+)
-                else -> EdgeToEdgeApi21() // Android 5.0 and above (21+)
-            }.also { Impl = it }
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> EdgeToEdgeHandlerApi29() // Android 10 and above (29+)
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> EdgeToEdgeHandlerApi28() // Android 9 and above (28+)
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> EdgeToEdgeHandlerApi26() // Android 8.0 and above (26+)
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> EdgeToEdgeHandlerApi23() // Android 6.0 and above (23+)
+                else -> EdgeToEdgeHandlerApi21() // Android 5.0 and above (21+)
+            }.also { Handler = it }
 
-            edgeToEdgeImpl.setUp(window, isDarkTheme)
-            edgeToEdgeImpl.adjustLayoutInDisplayCutoutMode(window)
+            edgeToEdgeHandlerImpl.setUp(window, isDarkTheme)
+            edgeToEdgeHandlerImpl.adjustLayoutInDisplayCutoutMode(window)
 
             WindowCompat.getInsetsController(window, view).apply {
                 isAppearanceLightStatusBars = !isDarkTheme
@@ -51,7 +56,7 @@ fun EnableEdgeToEdge(
     }
 }
 
-private interface EdgeToEdgeImpl {
+private interface EdgeToEdgeHandler {
 
     val statusBarColorV21: Color
     val navigationBarColorV23: Color
@@ -66,7 +71,7 @@ private interface EdgeToEdgeImpl {
     fun adjustLayoutInDisplayCutoutMode(window: Window)
 }
 
-private open class EdgeToEdgeBase : EdgeToEdgeImpl {
+private open class EdgeToEdgeHandlerBaseImpl : EdgeToEdgeHandler {
 
     override val statusBarColorV21: Color
         get() = Color(0x26444444)
@@ -92,7 +97,7 @@ private open class EdgeToEdgeBase : EdgeToEdgeImpl {
     }
 }
 
-private class EdgeToEdgeApi21 : EdgeToEdgeBase() {
+private class EdgeToEdgeHandlerApi21 : EdgeToEdgeHandlerBaseImpl() {
 
     @Suppress("DEPRECATION")
     @DoNotInline
@@ -108,7 +113,7 @@ private class EdgeToEdgeApi21 : EdgeToEdgeBase() {
 }
 
 @RequiresApi(23)
-private class EdgeToEdgeApi23 : EdgeToEdgeBase() {
+private class EdgeToEdgeHandlerApi23 : EdgeToEdgeHandlerBaseImpl() {
 
     @Suppress("DEPRECATION")
     @DoNotInline
@@ -122,7 +127,7 @@ private class EdgeToEdgeApi23 : EdgeToEdgeBase() {
 }
 
 @RequiresApi(26)
-private open class EdgeToEdgeApi26 : EdgeToEdgeBase() {
+private open class EdgeToEdgeHandlerApi26 : EdgeToEdgeHandlerBaseImpl() {
 
     @Suppress("DEPRECATION")
     @DoNotInline
@@ -138,7 +143,7 @@ private open class EdgeToEdgeApi26 : EdgeToEdgeBase() {
 }
 
 @RequiresApi(28)
-private open class EdgeToEdgeApi28 : EdgeToEdgeApi26() {
+private open class EdgeToEdgeHandlerApi28 : EdgeToEdgeHandlerApi26() {
 
     @DoNotInline
     override fun adjustLayoutInDisplayCutoutMode(window: Window) {
@@ -148,7 +153,7 @@ private open class EdgeToEdgeApi28 : EdgeToEdgeApi26() {
 }
 
 @RequiresApi(29)
-private open class EdgeToEdgeApi29 : EdgeToEdgeApi28() {
+private open class EdgeToEdgeHandlerApi29 : EdgeToEdgeHandlerApi28() {
 
     @Suppress("DEPRECATION")
     @DoNotInline
@@ -163,7 +168,7 @@ private open class EdgeToEdgeApi29 : EdgeToEdgeApi28() {
 }
 
 @RequiresApi(30)
-private class EdgeToEdgeApi30 : EdgeToEdgeApi29() {
+private class EdgeToEdgeApi30 : EdgeToEdgeHandlerApi29() {
 
     @DoNotInline
     override fun adjustLayoutInDisplayCutoutMode(window: Window) {

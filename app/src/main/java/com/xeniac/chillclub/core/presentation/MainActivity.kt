@@ -14,13 +14,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.xeniac.chillclub.core.domain.repositories.ConnectivityObserver
 import com.xeniac.chillclub.core.presentation.utils.NetworkObserverHelper.observeNetworkConnection
 import com.xeniac.chillclub.core.ui.navigation.nav_graph.SetupRootNavGraph
 import com.xeniac.chillclub.core.ui.theme.ChillClubTheme
+import com.xeniac.chillclub.core.ui.theme.utils.enableEdgeToEdgeWindow
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -34,12 +34,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        WindowCompat.setDecorFitsSystemWindows(
-            /* window = */ window,
-            /* decorFitsSystemWindows = */ false
-        )
-
+        enableEdgeToEdgeWindow()
         splashScreen()
         observeNetworkConnection(connectivityObserver)
 
