@@ -4,7 +4,6 @@ package com.xeniac.chillclub.feature_music_player.presensation.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
@@ -94,6 +94,7 @@ private fun BottomSheetHeader(
     titleColor: Color = MaterialTheme.colorScheme.onSurface,
     titleMaxLines: Int = 1,
     arrowUp: Painter = painterResource(R.drawable.ic_music_player_arrow_up),
+    arrowIconColor: Color = MaterialTheme.colorScheme.onSurface,
     arrowIconWidth: Dp = 16.dp,
     arrowContentDescriptionHide: String = stringResource(R.string.music_player_radio_stations_sheet_content_description_hide),
     arrowContentDescriptionShow: String = stringResource(R.string.music_player_radio_stations_sheet_content_description_show),
@@ -131,12 +132,13 @@ private fun BottomSheetHeader(
             maxLines = titleMaxLines
         )
 
-        Image(
+        Icon(
             painter = arrowUp,
             contentDescription = when (sheetState.currentValue) {
                 SheetValue.Expanded -> arrowContentDescriptionHide
                 else -> arrowContentDescriptionShow
             },
+            tint = arrowIconColor,
             modifier = Modifier
                 .width(arrowIconWidth)
                 .rotate(degrees = animatedRotateDegrees)
