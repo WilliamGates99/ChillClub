@@ -109,7 +109,7 @@ fun RadioStationTitleLoading(
     var blankChars by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        for (i in 0..Random.nextInt(from = 60, until = 100)) {
+        for (i in 0..Random.nextInt(from = 45, until = 85)) {
             blankChars += " "
         }
     }
