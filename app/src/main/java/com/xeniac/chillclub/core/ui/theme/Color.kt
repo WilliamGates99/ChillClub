@@ -2,7 +2,7 @@ package com.xeniac.chillclub.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val PurpleNotificationLight = Color(0xFFC25CA8)
+val PurpleNotificationLight = Color(0xFF182118)
 
 val ShimmerEffectFirstColor = Color(0xFF999999)
 val ShimmerEffectSecondColor = Color(0xFF808080)
