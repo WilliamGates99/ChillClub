@@ -37,11 +37,12 @@ fun RadioStationsLoading(
     LazyColumn(
         userScrollEnabled = false,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(space = 12.dp),
-        contentPadding = PaddingValues(),
+        contentPadding = PaddingValues(
+            bottom = 12.dp
+        ),
         modifier = modifier
     ) {
-        items(count = 50) {
+        items(count = 6) {
             RadioStationItemLoading()
         }
     }
@@ -49,21 +50,17 @@ fun RadioStationsLoading(
 
 @Composable
 fun RadioStationItemLoading(
-    modifier: Modifier = Modifier,
-    coverSize: Dp = 44.dp,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(space = 14.dp),
+        horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .padding(
-                horizontal = 24.dp,
-                vertical = 12.dp
-            )
-    ) {
-        RadioStationCoverLoading(
-            modifier = Modifier.size(coverSize)
+        modifier = modifier.padding(
+            horizontal = 20.dp,
+            vertical = 14.dp
         )
+    ) {
+        RadioStationCoverLoading()
 
         RadioStationInfoLoading(modifier = Modifier.weight(1f))
     }
@@ -72,10 +69,12 @@ fun RadioStationItemLoading(
 @Composable
 fun RadioStationCoverLoading(
     modifier: Modifier = Modifier,
+    coverSize: Dp = 48.dp,
     shape: Shape = RoundedCornerShape(14.dp)
 ) {
     Box(
         modifier = modifier
+            .size(coverSize)
             .clip(shape)
             .shimmerEffect()
     )
@@ -86,21 +85,15 @@ fun RadioStationInfoLoading(
     modifier: Modifier = Modifier
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(
+            space = 4.dp,
+            alignment = Alignment.CenterVertically
+        ),
         modifier = modifier
     ) {
         RadioStationTitleLoading()
 
-        LazyRow(
-            userScrollEnabled = false,
-            horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(Random.nextInt(from = 1, until = 5)) {
-                RadioStationTagLoading()
-            }
-        }
+        RadioStationTagsLoading()
     }
 }
 
@@ -131,6 +124,22 @@ fun RadioStationTitleLoading(
             .clip(shape)
             .shimmerEffect()
     )
+}
+
+@Composable
+fun RadioStationTagsLoading(
+    modifier: Modifier = Modifier
+) {
+    LazyRow(
+        userScrollEnabled = false,
+        horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        items(Random.nextInt(from = 1, until = 5)) {
+            RadioStationTagLoading()
+        }
+    }
 }
 
 @Composable

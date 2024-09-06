@@ -1,9 +1,5 @@
 package com.xeniac.chillclub.feature_music_player.presensation.components
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -35,6 +31,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -46,36 +43,9 @@ import com.xeniac.chillclub.core.domain.models.RadioStation
 import com.xeniac.chillclub.core.ui.components.shimmerEffect
 import com.xeniac.chillclub.core.ui.theme.Gray10
 import com.xeniac.chillclub.core.ui.theme.Gray20
-import com.xeniac.chillclub.core.ui.theme.Gray60
+import com.xeniac.chillclub.core.ui.theme.Gray40
 import com.xeniac.chillclub.core.ui.theme.Gray70
 import com.xeniac.chillclub.core.ui.theme.Gray90
-import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
-
-@Composable
-fun RadioStations(
-    musicPlayerState: MusicPlayerState,
-    modifier: Modifier = Modifier,
-    onRadioStationClick: (radioStation: RadioStation) -> Unit
-) {
-    AnimatedContent(
-        targetState = musicPlayerState.isRadioStationsLoading,
-        label = "radioStationsAnimatedContent",
-        transitionSpec = {
-            fadeIn().togetherWith(exit = fadeOut())
-        },
-        modifier = modifier
-    ) { isLoading ->
-        if (isLoading) {
-            RadioStationsLoading(modifier = modifier)
-        } else {
-            RadioStationsList(
-                radioStations = musicPlayerState.radioStations,
-                onRadioStationClick = onRadioStationClick,
-                modifier = modifier
-            )
-        }
-    }
-}
 
 @Composable
 fun RadioStationsList(
@@ -84,10 +54,10 @@ fun RadioStationsList(
     onRadioStationClick: (radioStation: RadioStation) -> Unit
 ) {
     LazyColumn(
-        userScrollEnabled = false,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(space = 12.dp),
-        contentPadding = PaddingValues(),
+        contentPadding = PaddingValues(
+            bottom = 12.dp
+        ),
         modifier = modifier
     ) {
         items(radioStations) { radioStation ->
@@ -104,25 +74,23 @@ fun RadioStationsList(
 fun RadioStationItem(
     radioStation: RadioStation,
     modifier: Modifier = Modifier,
-    coverSize: Dp = 44.dp,
     linkIcon: Painter = painterResource(R.drawable.ic_music_player_link),
     linkIconSize: Dp = 24.dp,
-    linkIconTint: Color = if (isSystemInDarkTheme()) Gray70 else Gray20,
+    linkIconTint: Color = if (isSystemInDarkTheme()) Gray20 else Gray70,
     onClick: () -> Unit
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(space = 14.dp),
+        horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clickable { onClick() }
             .padding(
-                horizontal = 24.dp,
-                vertical = 12.dp
+                horizontal = 20.dp,
+                vertical = 14.dp
             )
     ) {
         RadioStationCover(
-            coverUrl = radioStation.channel.avatarUrl,
-            modifier = Modifier.size(coverSize)
+            coverUrl = radioStation.channel.avatarUrl
         )
 
         RadioStationInfo(
@@ -144,6 +112,7 @@ fun RadioStationItem(
 fun RadioStationCover(
     coverUrl: String?,
     modifier: Modifier = Modifier,
+    coverSize: Dp = 48.dp,
     shape: Shape = RoundedCornerShape(14.dp),
     contentScale: ContentScale = ContentScale.Crop,
     placeholder: Painter = rememberAsyncImagePainter(model = R.drawable.ic_music_player_cover_placeholder),
@@ -154,21 +123,18 @@ fun RadioStationCover(
         contentDescription = contentDescription,
         contentScale = contentScale,
         loading = {
-            Box(
-                modifier = modifier
-                    .clip(shape)
-                    .shimmerEffect()
-            )
+            Box(modifier = Modifier.shimmerEffect())
         },
         error = {
             Image(
                 painter = placeholder,
                 contentDescription = contentDescription,
-                contentScale = contentScale,
-                modifier = modifier.clip(shape)
+                contentScale = contentScale
             )
         },
-        modifier = modifier.clip(shape)
+        modifier = modifier
+            .size(coverSize)
+            .clip(shape)
     )
 }
 
@@ -176,68 +142,84 @@ fun RadioStationCover(
 fun RadioStationInfo(
     title: String,
     tags: List<String>,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(
+            space = 4.dp,
+            alignment = Alignment.CenterVertically
+        ),
+        modifier = modifier
+    ) {
+        RadioStationTitle(
+            title = title,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        RadioStationTags(
+            tags = tags,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+fun RadioStationTitle(
+    title: String,
     modifier: Modifier = Modifier,
     titleFontSize: TextUnit = 14.sp,
     titleLineHeight: TextUnit = 14.sp,
     titleFontWeight: FontWeight = FontWeight.Bold,
     titleColor: Color = MaterialTheme.colorScheme.onSurface,
+    titleOverflow: TextOverflow = TextOverflow.Ellipsis,
     titleMaxLines: Int = 1
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
-        modifier = modifier
-    ) {
-        Text(
-            text = title,
-            fontSize = titleFontSize,
-            lineHeight = titleLineHeight,
-            fontWeight = titleFontWeight,
-            color = titleColor,
-            maxLines = titleMaxLines,
-            modifier = Modifier
-                .fillMaxWidth()
-                .basicMarquee()
-        )
-
-        LazyRow(
-            userScrollEnabled = false,
-            horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(tags) { tag ->
-                RadioStationTag(tag = tag)
-            }
-        }
-    }
+    Text(
+        text = title,
+        fontSize = titleFontSize,
+        lineHeight = titleLineHeight,
+        fontWeight = titleFontWeight,
+        color = titleColor,
+        overflow = titleOverflow,
+        maxLines = titleMaxLines,
+        modifier = modifier.basicMarquee()
+    )
 }
 
-// TODO: EDIT TAG COLORS
 @Composable
-fun RadioStationTag(
-    tag: String,
+fun RadioStationTags(
+    tags: List<String>,
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(4.dp),
-    background: Color = if (isSystemInDarkTheme()) Gray90 else Gray20,
+    background: Color = Gray90,
     tagFontSize: TextUnit = 14.sp,
     tagLineHeight: TextUnit = 14.sp,
     tagFontWeight: FontWeight = FontWeight.Bold,
-    tagColor: Color = if (isSystemInDarkTheme()) Gray10 else Gray60,
+    tagColor: Color = if (isSystemInDarkTheme()) Gray10 else Gray40,
     tagMaxLines: Int = 1
 ) {
-    Text(
-        text = tag,
-        fontSize = tagFontSize,
-        lineHeight = tagLineHeight,
-        fontWeight = tagFontWeight,
-        color = tagColor,
-        maxLines = tagMaxLines,
+    LazyRow(
+        userScrollEnabled = false,
+        horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .clip(shape)
-            .background(background)
-            .padding(
-                horizontal = 4.dp,
-                vertical = 2.dp
+    ) {
+        items(tags) { tag ->
+            Text(
+                text = tag,
+                fontSize = tagFontSize,
+                lineHeight = tagLineHeight,
+                fontWeight = tagFontWeight,
+                color = tagColor,
+                maxLines = tagMaxLines,
+                modifier = modifier
+                    .clip(shape)
+                    .background(background)
+                    .padding(
+                        horizontal = 4.dp,
+                        vertical = 2.dp
+                    )
             )
-    )
+        }
+    }
 }
