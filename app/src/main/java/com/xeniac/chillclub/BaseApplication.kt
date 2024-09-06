@@ -18,7 +18,7 @@ import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import coil.util.DebugLogger
 import com.xeniac.chillclub.core.domain.models.AppTheme
-import com.xeniac.chillclub.core.ui.theme.GreenNotificationLight
+import com.xeniac.chillclub.core.ui.theme.PurpleNotificationLight
 import dagger.hilt.android.HiltAndroidApp
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
@@ -74,7 +74,7 @@ class BaseApplication : Application(), ImageLoaderFactory {
         ).apply {
             group = NOTIFICATION_CHANNEL_GROUP_ID_FCM
             lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-            lightColor = GreenNotificationLight.toArgb() // TODO: CHANGE COLOR BASED ON APP ICON
+            lightColor = PurpleNotificationLight.toArgb()
             enableLights(true)
         }
 

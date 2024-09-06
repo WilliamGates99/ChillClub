@@ -10,7 +10,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.xeniac.chillclub.BaseApplication
 import com.xeniac.chillclub.R
-import com.xeniac.chillclub.core.ui.theme.GreenNotificationLight
+import com.xeniac.chillclub.core.ui.theme.PurpleNotificationLight
 import com.xeniac.chillclub.feature_firebase_cloud_messaging.di.entrypoints.requireNotificationManager
 import com.xeniac.chillclub.feature_firebase_cloud_messaging.services.utils.getBitmapFromUrl
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,7 +42,7 @@ class FirebaseCloudMessagingService : FirebaseMessagingService() {
         ).apply {
             setAutoCancel(true)
             setContentIntent(cancelNotificationPendingIntent)
-            setSmallIcon(R.drawable.ic_launcher_foreground) // TODO: CHANGE NOTIFICATION ICON
+            setSmallIcon(R.drawable.ic_notification)
             setContentTitle(message.notification?.title)
             setContentText(message.notification?.body)
 
@@ -65,7 +65,7 @@ class FirebaseCloudMessagingService : FirebaseMessagingService() {
             setPriority(NotificationCompat.PRIORITY_DEFAULT)
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             setLights(
-                /* argb = */  GreenNotificationLight.toArgb(), // TODO: CHANGE COLOR BASED ON APP ICON
+                /* argb = */  PurpleNotificationLight.toArgb(),
                 /* onMs = */ 1000,
                 /* offMs = */ 1000
             )
