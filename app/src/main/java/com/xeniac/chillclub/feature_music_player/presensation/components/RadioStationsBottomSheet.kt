@@ -9,7 +9,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -73,6 +75,10 @@ fun RadioStationsBottomSheet(
                 }
         )
 
+        if (sheetState.targetValue != SheetValue.Expanded) {
+            Spacer(modifier = Modifier.height(navigationBarHeight))
+        }
+
         RadioStations(
             musicPlayerState = musicPlayerState,
             onRadioStationClick = onRadioStationClick,
@@ -117,8 +123,8 @@ private fun BottomSheetHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.padding(
-            start = 36.dp,
-            end = 36.dp,
+            start = 44.dp,
+            end = 44.dp,
             top = 32.dp,
             bottom = 20.dp // 32 - 12 (from radio station item) = 20.dp
         )

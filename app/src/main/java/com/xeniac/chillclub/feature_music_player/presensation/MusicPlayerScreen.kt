@@ -56,10 +56,12 @@ fun MusicPlayerScreen(
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         snackbarHostState = snackbarHostState,
         bottomSheetState = rememberStandardBottomSheetState(
+            skipHiddenState = true,
             initialValue = SheetValue.PartiallyExpanded,
-//            confirmValueChange = { sheetValue ->
-//                !(musicPlayerState.currentRadioStations == null && sheetValue == SheetValue.Expanded)
-//            }
+            confirmValueChange = { sheetValue ->
+                val shouldActionBeConfirmed = sheetValue != SheetValue.Hidden
+                shouldActionBeConfirmed
+            }
         )
     )
 
