@@ -2,8 +2,12 @@
 
 package com.xeniac.chillclub.feature_music_player.presensation.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -149,5 +153,31 @@ private fun BottomSheetHeader(
                 .width(arrowIconWidth)
                 .rotate(degrees = animatedRotateDegrees)
         )
+    }
+}
+
+@Composable
+fun RadioStations(
+    musicPlayerState: MusicPlayerState,
+    modifier: Modifier = Modifier,
+    onRadioStationClick: (radioStation: RadioStation) -> Unit
+) {
+    AnimatedContent(
+        targetState = musicPlayerState.isRadioStationsLoading,
+        transitionSpec = {
+            fadeIn().togetherWith(exit = fadeOut())
+        },
+        label = "radioStationsAnimatedContent",
+        modifier = modifier
+    ) { isLoading ->
+        if (isLoading) {
+            RadioStationsLoading(modifier = modifier)
+        } else {
+            RadioStationsList(
+                radioStations = musicPlayerState.radioStations,
+                onRadioStationClick = onRadioStationClick,
+                modifier = modifier
+            )
+        }
     }
 }
