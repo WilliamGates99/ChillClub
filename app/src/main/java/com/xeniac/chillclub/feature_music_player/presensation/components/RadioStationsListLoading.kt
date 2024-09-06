@@ -1,6 +1,5 @@
 package com.xeniac.chillclub.feature_music_player.presensation.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,9 +39,7 @@ fun RadioStationsLoading(
     LazyColumn(
         userScrollEnabled = false,
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(
-            bottom = 12.dp + navigationBarHeight
-        ),
+        contentPadding = PaddingValues(bottom = navigationBarHeight),
         modifier = modifier
     ) {
         items(count = 6) {
@@ -58,12 +55,10 @@ fun RadioStationItemLoading(
     Row(
         horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .clickable { } // TODO: TEMP - REMOVE
-            .padding(
-                horizontal = 20.dp,
-                vertical = 14.dp
-            )
+        modifier = modifier.padding(
+            horizontal = 20.dp,
+            vertical = 14.dp
+        )
     ) {
         RadioStationCoverLoading()
 

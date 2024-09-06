@@ -57,9 +57,7 @@ fun RadioStationsList(
 ) {
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(
-            bottom = 12.dp + navigationBarHeight
-        ),
+        contentPadding = PaddingValues(bottom = navigationBarHeight),
         modifier = modifier
     ) {
         items(radioStations) { radioStation ->
@@ -76,6 +74,7 @@ fun RadioStationsList(
 fun RadioStationItem(
     radioStation: RadioStation,
     modifier: Modifier = Modifier,
+    shape: Shape = RoundedCornerShape(12.dp),
     linkIcon: Painter = painterResource(R.drawable.ic_music_player_link),
     linkIconSize: Dp = 24.dp,
     linkIconTint: Color = if (isSystemInDarkTheme()) Gray20 else Gray70,
@@ -85,6 +84,7 @@ fun RadioStationItem(
         horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
+            .clip(shape)
             .clickable { onClick() }
             .padding(
                 horizontal = 20.dp,
