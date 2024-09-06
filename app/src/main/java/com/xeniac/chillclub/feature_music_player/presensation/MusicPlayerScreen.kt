@@ -135,6 +135,9 @@ fun MusicPlayerScreen(
                     }
                 },
                 onRadioStationClick = { radioStation ->
+                    scope.launch {
+                        bottomSheetScaffoldState.bottomSheetState.partialExpand()
+                    }
                     // TODO: IMPLEMENT
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -183,7 +186,7 @@ fun MusicPlayerScreen(
                             .padding(horizontal = 24.dp)
                     )
 
-                    // TODO: OTHER
+                    // TODO: IMPLEMENT OTHER ELEMENTS
                 }
             }
         }
