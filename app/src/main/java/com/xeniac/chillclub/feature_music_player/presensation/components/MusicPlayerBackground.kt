@@ -41,11 +41,7 @@ fun MusicPlayerBackground(
         contentDescription = null,
         contentScale = contentScale,
         loading = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .shimmerEffect()
-            )
+            Box(modifier = Modifier.shimmerEffect())
         },
         modifier = modifier.fillMaxSize()
     )
