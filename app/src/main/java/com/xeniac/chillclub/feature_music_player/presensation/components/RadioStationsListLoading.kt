@@ -1,5 +1,6 @@
 package com.xeniac.chillclub.feature_music_player.presensation.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,18 +28,20 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeightDp
 import com.xeniac.chillclub.core.ui.components.shimmerEffect
 import kotlin.random.Random
 
 @Composable
 fun RadioStationsLoading(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navigationBarHeight: Dp = getNavigationBarHeightDp()
 ) {
     LazyColumn(
         userScrollEnabled = false,
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(
-            bottom = 12.dp
+            bottom = 12.dp + navigationBarHeight
         ),
         modifier = modifier
     ) {
@@ -55,10 +58,12 @@ fun RadioStationItemLoading(
     Row(
         horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(
-            horizontal = 20.dp,
-            vertical = 14.dp
-        )
+        modifier = modifier
+            .clickable { } // TODO: TEMP - REMOVE
+            .padding(
+                horizontal = 20.dp,
+                vertical = 14.dp
+            )
     ) {
         RadioStationCoverLoading()
 

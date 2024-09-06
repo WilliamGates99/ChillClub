@@ -61,9 +61,7 @@ fun RadioStationsBottomSheet(
     onHeaderClick: () -> Unit,
     onRadioStationClick: (radioStation: RadioStation) -> Unit
 ) {
-    Column(
-        modifier = modifier.padding(bottom = navigationBarHeight)
-    ) {
+    Column(modifier = modifier) {
         BottomSheetHeader(
             sheetState = sheetState,
             modifier = Modifier
@@ -130,7 +128,7 @@ private fun BottomSheetHeader(
             start = 36.dp,
             end = 36.dp,
             top = 32.dp,
-            bottom = 20.dp // 32 - 12 (from radio station item) = 20.dp
+            bottom = 18.dp // 32 - 14 (from radio station item) = 18.dp
         )
     ) {
         Text(

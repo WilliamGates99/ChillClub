@@ -40,6 +40,7 @@ import coil.compose.SubcomposeAsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.domain.models.RadioStation
+import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeightDp
 import com.xeniac.chillclub.core.ui.components.shimmerEffect
 import com.xeniac.chillclub.core.ui.theme.Gray10
 import com.xeniac.chillclub.core.ui.theme.Gray20
@@ -51,12 +52,13 @@ import com.xeniac.chillclub.core.ui.theme.Gray90
 fun RadioStationsList(
     radioStations: List<RadioStation>,
     modifier: Modifier = Modifier,
+    navigationBarHeight: Dp = getNavigationBarHeightDp(),
     onRadioStationClick: (radioStation: RadioStation) -> Unit
 ) {
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(
-            bottom = 12.dp
+            bottom = 12.dp + navigationBarHeight
         ),
         modifier = modifier
     ) {
