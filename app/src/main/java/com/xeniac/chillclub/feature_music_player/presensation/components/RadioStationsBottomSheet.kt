@@ -127,8 +127,8 @@ private fun BottomSheetHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.padding(
-            start = 44.dp,
-            end = 44.dp,
+            start = 36.dp,
+            end = 36.dp,
             top = 32.dp,
             bottom = 20.dp // 32 - 12 (from radio station item) = 20.dp
         )
