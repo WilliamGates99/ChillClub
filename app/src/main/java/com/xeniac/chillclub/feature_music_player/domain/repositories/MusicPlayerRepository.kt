@@ -7,11 +7,11 @@ import com.xeniac.chillclub.feature_music_player.domain.utils.AdjustVolumeError
 import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadioStationsError
 import kotlinx.coroutines.flow.Flow
 
-typealias MusicVolume = Int
+typealias MusicVolumePercentage = Float
 
 interface MusicPlayerRepository {
 
-    fun observeMusicVolumeChanges(): Flow<MusicVolume>
+    fun observeMusicVolumeChanges(): Flow<MusicVolumePercentage>
 
     suspend fun decreaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>>
 

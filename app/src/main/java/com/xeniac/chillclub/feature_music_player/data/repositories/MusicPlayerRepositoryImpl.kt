@@ -9,12 +9,13 @@ import android.os.Build
 import androidx.room.withTransaction
 import com.xeniac.chillclub.core.data.local.ChillClubDatabase
 import com.xeniac.chillclub.core.data.local.RadioStationsDao
+import com.xeniac.chillclub.core.data.utils.convertToPercentage
 import com.xeniac.chillclub.core.domain.models.RadioStation
 import com.xeniac.chillclub.core.domain.utils.Result
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadioStationsResponseDto
 import com.xeniac.chillclub.feature_music_player.di.MUSIC_STREAM_TYPE
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
-import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolume
+import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
 import com.xeniac.chillclub.feature_music_player.domain.utils.AdjustVolumeError
 import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadioStationsError
 import dagger.Lazy
@@ -51,11 +52,19 @@ class MusicPlayerRepositoryImpl @Inject constructor(
     private val streamType: MUSIC_STREAM_TYPE
 ) : MusicPlayerRepository {
 
-    override fun observeMusicVolumeChanges(): Flow<MusicVolume> = callbackFlow {
-        val currentVolume = audioManager.getStreamVolume(streamType)
-        trySend(currentVolume)
+    override fun observeMusicVolumeChanges(): Flow<MusicVolumePercentage> = callbackFlow {
+        val maxVolume = audioManager.getStreamMaxVolume(streamType)
+        val minVolume = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            audioManager.getStreamMinVolume(streamType)
+        } else 0
+        val currentVolumePercentage = audioManager.getStreamVolume(streamType).convertToPercentage(
+            minValue = minVolume,
+            maxValue = maxVolume
+        )
 
-        val receiver = object : BroadcastReceiver() {
+        trySend(currentVolumePercentage)
+
+        val volumeChangedActionReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 val volumeStreamType = intent?.getIntExtra(
                     /* name = */ "android.media.EXTRA_VOLUME_STREAM_TYPE",
@@ -63,41 +72,47 @@ class MusicPlayerRepositoryImpl @Inject constructor(
                 )
 
                 when (volumeStreamType) {
-                    streamType -> trySend(audioManager.getStreamVolume(streamType))
+                    streamType -> {
+                        val newVolumePercentage = audioManager
+                            .getStreamVolume(streamType)
+                            .convertToPercentage(
+                                minValue = minVolume,
+                                maxValue = maxVolume
+                            )
+                        trySend(newVolumePercentage)
+                    }
                 }
             }
         }
 
         context.registerReceiver(
-            /* receiver = */ receiver,
+            /* receiver = */ volumeChangedActionReceiver,
             /* filter = */ IntentFilter(/* action = */ "android.media.VOLUME_CHANGED_ACTION")
         )
 
         awaitClose {
-            context.unregisterReceiver(receiver)
+            context.unregisterReceiver(volumeChangedActionReceiver)
         }
     }
 
     override suspend fun decreaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = flow {
         try {
-            audioManager.apply {
-                val currentVolume = getStreamVolume(streamType)
-                val maxVolume = getStreamMaxVolume(streamType)
-                val minVolume = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    getStreamMinVolume(streamType)
-                } else 0
+            val currentVolume = audioManager.getStreamVolume(streamType)
+            val maxVolume = audioManager.getStreamMaxVolume(streamType)
+            val minVolume = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                audioManager.getStreamMinVolume(streamType)
+            } else 0
 
-                setStreamVolume(
-                    /* streamType = */ streamType,
-                    /* index = */ currentVolume.minus(1).coerceIn(
-                        minimumValue = minVolume,
-                        maximumValue = maxVolume
-                    ),
-                    /* flags = */ 0 // Do not show the volume slider
-                )
+            audioManager.setStreamVolume(
+                /* streamType = */ streamType,
+                /* index = */ currentVolume.minus(1).coerceIn(
+                    minimumValue = minVolume,
+                    maximumValue = maxVolume
+                ),
+                /* flags = */ 0 // Do not show the volume slider
+            )
 
-                emit(Result.Success(Unit))
-            }
+            emit(Result.Success(Unit))
         } catch (e: Exception) {
             coroutineContext.ensureActive()
 
@@ -109,24 +124,22 @@ class MusicPlayerRepositoryImpl @Inject constructor(
 
     override suspend fun increaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = flow {
         try {
-            audioManager.apply {
-                val currentVolume = getStreamVolume(streamType)
-                val maxVolume = getStreamMaxVolume(streamType)
-                val minVolume = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    getStreamMinVolume(streamType)
-                } else 0
+            val currentVolume = audioManager.getStreamVolume(streamType)
+            val maxVolume = audioManager.getStreamMaxVolume(streamType)
+            val minVolume = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                audioManager.getStreamMinVolume(streamType)
+            } else 0
 
-                setStreamVolume(
-                    /* streamType = */ streamType,
-                    /* index = */ currentVolume.plus(1).coerceIn(
-                        minimumValue = minVolume,
-                        maximumValue = maxVolume
-                    ),
-                    /* flags = */ 0 // Do not show the volume slider
-                )
+            audioManager.setStreamVolume(
+                /* streamType = */ streamType,
+                /* index = */ currentVolume.plus(1).coerceIn(
+                    minimumValue = minVolume,
+                    maximumValue = maxVolume
+                ),
+                /* flags = */ 0 // Do not show the volume slider
+            )
 
-                emit(Result.Success(Unit))
-            }
+            emit(Result.Success(Unit))
         } catch (e: Exception) {
             coroutineContext.ensureActive()
 

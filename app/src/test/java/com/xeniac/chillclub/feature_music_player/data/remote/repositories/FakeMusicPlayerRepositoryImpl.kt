@@ -3,13 +3,14 @@ package com.xeniac.chillclub.feature_music_player.data.remote.repositories
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.xeniac.chillclub.core.data.local.entities.RadioStationEntity
+import com.xeniac.chillclub.core.data.utils.convertToPercentage
 import com.xeniac.chillclub.core.domain.models.Channel
 import com.xeniac.chillclub.core.domain.models.RadioStation
 import com.xeniac.chillclub.core.domain.models.SocialLinks
 import com.xeniac.chillclub.core.domain.utils.Result
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadioStationsResponseDto
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
-import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolume
+import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
 import com.xeniac.chillclub.feature_music_player.domain.utils.AdjustVolumeError
 import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadioStationsError
 import io.ktor.client.HttpClient
@@ -39,7 +40,17 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
     private var isNetworkAvailable = true
     private var getRadioStationsHttpStatusCode = HttpStatusCode.OK
 
-    var musicVolume = SnapshotStateList<MusicVolume>().apply { add(5) }
+    private var minVolume = 0
+    private var maxVolume = 15
+    var currentMusicVolume = 7
+    var musicVolumePercentage = SnapshotStateList<MusicVolumePercentage>().apply {
+        add(
+            currentMusicVolume.convertToPercentage(
+                minValue = minVolume,
+                maxValue = maxVolume
+            )
+        )
+    }
     private var radioStationEntities = SnapshotStateList<RadioStationEntity>()
 
     fun isNetworkAvailable(isAvailable: Boolean) {
@@ -71,20 +82,21 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
         }
     }
 
-    override fun observeMusicVolumeChanges(): Flow<MusicVolume> = snapshotFlow {
-        musicVolume.first()
+    override fun observeMusicVolumeChanges(): Flow<MusicVolumePercentage> = snapshotFlow {
+        musicVolumePercentage.first()
     }
 
     override suspend fun decreaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> =
         callbackFlow {
             try {
-                val currentMusicVolume = musicVolume.first()
-                musicVolume.apply {
+                currentMusicVolume -= 1
+
+                musicVolumePercentage.apply {
                     clear()
                     add(
-                        (currentMusicVolume - 1).coerceIn(
-                            minimumValue = 0,
-                            maximumValue = 15
+                        (currentMusicVolume).convertToPercentage(
+                            minValue = currentMusicVolume,
+                            maxValue = maxVolume
                         )
                     )
                 }
@@ -100,13 +112,14 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
     override suspend fun increaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> =
         callbackFlow {
             try {
-                val currentMusicVolume = musicVolume.first()
-                musicVolume.apply {
+                currentMusicVolume += 1
+
+                musicVolumePercentage.apply {
                     clear()
                     add(
-                        (currentMusicVolume + 1).coerceIn(
-                            minimumValue = 0,
-                            maximumValue = 15
+                        (currentMusicVolume).convertToPercentage(
+                            minValue = currentMusicVolume,
+                            maxValue = maxVolume
                         )
                     )
                 }

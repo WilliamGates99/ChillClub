@@ -43,12 +43,17 @@ class IncreaseMusicVolumeUseCaseTest {
 
     @Test
     fun increaseMusicVolume_increasesCurrentMusicVolumeByOne() = runTest {
-        val musicVolumeBefore = fakeMusicPlayerRepositoryImpl.musicVolume.first()
+        val musicVolumeBefore = fakeMusicPlayerRepositoryImpl.currentMusicVolume
+        val musicVolumePercentageBefore =
+            fakeMusicPlayerRepositoryImpl.musicVolumePercentage.first()
 
         val result = increaseMusicVolumeUseCase().first()
         assertThat(result).isInstanceOf(Result.Success::class.java)
 
-        val musicVolumeAfter = fakeMusicPlayerRepositoryImpl.musicVolume.first()
+        val musicVolumeAfter = fakeMusicPlayerRepositoryImpl.currentMusicVolume
+        val musicVolumePercentageAfter = fakeMusicPlayerRepositoryImpl.musicVolumePercentage.first()
+
         assertThat(musicVolumeAfter).isEqualTo(musicVolumeBefore + 1)
+        assertThat(musicVolumePercentageAfter).isAtLeast(musicVolumePercentageBefore)
     }
 }

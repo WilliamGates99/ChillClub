@@ -36,7 +36,9 @@ class ObserveMusicVolumeChangesUseCaseTest {
 
     @Test
     fun observeMusicVolumeChanges_returnsCurrentMusicVolume() = runTest {
-        val currentMusicVolume = observeMusicVolumeChangesUseCase().first()
-        assertThat(currentMusicVolume).isEqualTo(fakeMusicPlayerRepositoryImpl.musicVolume.first())
+        val currentMusicVolumePercentage = observeMusicVolumeChangesUseCase().first()
+        assertThat(currentMusicVolumePercentage).isEqualTo(
+            fakeMusicPlayerRepositoryImpl.musicVolumePercentage.first()
+        )
     }
 }
