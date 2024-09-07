@@ -155,7 +155,7 @@ private fun BottomSheetHeader(
 }
 
 @Composable
-fun RadioStations(
+private fun RadioStations(
     musicPlayerState: MusicPlayerState,
     modifier: Modifier = Modifier,
     onRadioStationClick: (radioStation: RadioStation) -> Unit

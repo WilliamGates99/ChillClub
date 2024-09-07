@@ -71,7 +71,7 @@ fun RadioStationsList(
 }
 
 @Composable
-fun RadioStationItem(
+private fun RadioStationItem(
     radioStation: RadioStation,
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(12.dp),
@@ -111,7 +111,7 @@ fun RadioStationItem(
 }
 
 @Composable
-fun RadioStationCover(
+private fun RadioStationCover(
     coverUrl: String?,
     modifier: Modifier = Modifier,
     coverSize: Dp = 48.dp,
@@ -141,7 +141,7 @@ fun RadioStationCover(
 }
 
 @Composable
-fun RadioStationInfo(
+private fun RadioStationInfo(
     title: String,
     tags: List<String>,
     modifier: Modifier = Modifier
@@ -166,7 +166,7 @@ fun RadioStationInfo(
 }
 
 @Composable
-fun RadioStationTitle(
+private fun RadioStationTitle(
     title: String,
     modifier: Modifier = Modifier,
     titleFontSize: TextUnit = 14.sp,
@@ -189,7 +189,7 @@ fun RadioStationTitle(
 }
 
 @Composable
-fun RadioStationTags(
+private fun RadioStationTags(
     tags: List<String>,
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(4.dp),

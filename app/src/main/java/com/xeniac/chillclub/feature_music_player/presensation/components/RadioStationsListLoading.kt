@@ -49,7 +49,7 @@ fun RadioStationsLoading(
 }
 
 @Composable
-fun RadioStationItemLoading(
+private fun RadioStationItemLoading(
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -67,7 +67,7 @@ fun RadioStationItemLoading(
 }
 
 @Composable
-fun RadioStationCoverLoading(
+private fun RadioStationCoverLoading(
     modifier: Modifier = Modifier,
     coverSize: Dp = 48.dp,
     shape: Shape = RoundedCornerShape(14.dp)
@@ -81,7 +81,7 @@ fun RadioStationCoverLoading(
 }
 
 @Composable
-fun RadioStationInfoLoading(
+private fun RadioStationInfoLoading(
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -98,7 +98,7 @@ fun RadioStationInfoLoading(
 }
 
 @Composable
-fun RadioStationTitleLoading(
+private fun RadioStationTitleLoading(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(4.dp),
     titleFontSize: TextUnit = 14.sp,
@@ -127,7 +127,7 @@ fun RadioStationTitleLoading(
 }
 
 @Composable
-fun RadioStationTagsLoading(
+private fun RadioStationTagsLoading(
     modifier: Modifier = Modifier
 ) {
     LazyRow(
@@ -143,7 +143,7 @@ fun RadioStationTagsLoading(
 }
 
 @Composable
-fun RadioStationTagLoading(
+private fun RadioStationTagLoading(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(4.dp),
     tagFontSize: TextUnit = 14.sp,

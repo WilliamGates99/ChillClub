@@ -107,7 +107,7 @@ fun MusicPlayerTopAppBar(
 }
 
 @Composable
-fun MusicPlayerAppBarImage(
+private fun MusicPlayerAppBarImage(
     modifier: Modifier = Modifier,
     image: Painter = painterResource(id = R.drawable.ic_music_player_app_bar),
     imageSize: Dp = 32.dp,
@@ -135,7 +135,7 @@ fun MusicPlayerAppBarImage(
 }
 
 @Composable
-fun MusicPlayerAppSettingsButton(
+private fun MusicPlayerAppSettingsButton(
     modifier: Modifier = Modifier,
     icon: Painter = painterResource(id = R.drawable.ic_music_player_settings),
     contentDescription: String = stringResource(id = R.string.music_player_btn_settings),
