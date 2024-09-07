@@ -171,6 +171,18 @@ fun MusicPlayerScreen(
 
             MusicPlayer(
                 musicPlayerState = musicPlayerState,
+                onPlayClick = {
+                    viewModel.onAction(MusicPlayerAction.PlayMusic)
+                },
+                onPauseClick = {
+                    viewModel.onAction(MusicPlayerAction.PauseMusic)
+                },
+                onIncreaseVolume = {
+                    viewModel.onAction(MusicPlayerAction.IncreaseMusicVolume)
+                },
+                onDecreaseVolume = {
+                    viewModel.onAction(MusicPlayerAction.DecreaseMusicVolume)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)

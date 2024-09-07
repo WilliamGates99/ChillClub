@@ -31,7 +31,11 @@ import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayer
 @Composable
 fun MusicPlayer(
     musicPlayerState: MusicPlayerState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onPlayClick: () -> Unit,
+    onPauseClick: () -> Unit,
+    onIncreaseVolume: () -> Unit,
+    onDecreaseVolume: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(space = 24.dp),
@@ -44,6 +48,10 @@ fun MusicPlayer(
 
         CurrentRadioStation(
             musicPlayerState = musicPlayerState,
+            onPlayClick = onPlayClick,
+            onPauseClick = onPauseClick,
+            onIncreaseVolume = onIncreaseVolume,
+            onDecreaseVolume = onDecreaseVolume,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
@@ -78,7 +86,11 @@ private fun MusicPlayerTitle(
 @Composable
 private fun CurrentRadioStation(
     musicPlayerState: MusicPlayerState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onPlayClick: () -> Unit,
+    onPauseClick: () -> Unit,
+    onIncreaseVolume: () -> Unit,
+    onDecreaseVolume: () -> Unit
 ) {
     AnimatedVisibility(
         visible = musicPlayerState.currentRadioStations != null,
@@ -96,6 +108,10 @@ private fun CurrentRadioStation(
 
             MusicPlayerMediaControls(
                 musicPlayerState = musicPlayerState,
+                onPlayClick = onPlayClick,
+                onPauseClick = onPauseClick,
+                onIncreaseVolume = onIncreaseVolume,
+                onDecreaseVolume = onDecreaseVolume,
                 modifier = Modifier.fillMaxWidth()
             )
         }
