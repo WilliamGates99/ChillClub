@@ -14,7 +14,7 @@ import com.xeniac.chillclub.core.ui.theme.Black
 import com.xeniac.chillclub.core.ui.theme.White
 
 fun Modifier.customShadow(
-    isSystemInDarkTheme: Boolean = false,
+    isSystemInDarkTheme: Boolean,
     lightThemeShadowColor: Color = Black,
     darkThemeShadowColor: Color = White,
     shadowCornerRadius: Dp = 0.dp,

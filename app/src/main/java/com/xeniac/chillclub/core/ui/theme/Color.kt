@@ -11,6 +11,7 @@ val ShimmerEffectThirdColor = Color(0xFF717171)
 val White = Color(0xFFFFFFFF)
 val WhiteAlpha64 = Color(0xA3FFFFFF)
 val Black = Color(0xFF000000)
+val BlackAlpha24 = Color(0x3D000000)
 
 val Gray5 = Color(0xFF0E0E0E)
 val Gray10 = Color(0xFF161616)

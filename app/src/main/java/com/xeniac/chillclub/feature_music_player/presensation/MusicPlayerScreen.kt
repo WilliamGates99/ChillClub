@@ -1,6 +1,5 @@
 package com.xeniac.chillclub.feature_music_player.presensation
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,8 +31,8 @@ import com.xeniac.chillclub.core.presentation.utils.ObserverAsEvent
 import com.xeniac.chillclub.core.presentation.utils.UiEvent
 import com.xeniac.chillclub.core.presentation.utils.getStatusBarHeightDp
 import com.xeniac.chillclub.core.ui.components.SwipeableSnackbar
+import com.xeniac.chillclub.feature_music_player.presensation.components.MusicPlayer
 import com.xeniac.chillclub.feature_music_player.presensation.components.MusicPlayerBackground
-import com.xeniac.chillclub.feature_music_player.presensation.components.MusicPlayerTitle
 import com.xeniac.chillclub.feature_music_player.presensation.components.MusicPlayerTopAppBar
 import com.xeniac.chillclub.feature_music_player.presensation.components.PostNotificationPermissionHandler
 import com.xeniac.chillclub.feature_music_player.presensation.components.RadioStationsBottomSheet
@@ -155,40 +154,31 @@ fun MusicPlayerScreen(
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            MusicPlayerBackground()
+        MusicPlayerBackground()
 
-            Column(modifier = Modifier.fillMaxSize()) {
-                MusicPlayerTopAppBar(
-                    onSettingsClick = onNavigateToSettingsScreen,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            start = 24.dp,
-                            end = 24.dp,
-                            top = 20.dp + getStatusBarHeightDp(),
-                            bottom = 20.dp
-                        )
-                )
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(
-                            top = innerPadding.calculateTopPadding() + 4.dp,
-                            bottom = innerPadding.calculateBottomPadding()
-                        )
-                ) {
-                    MusicPlayerTitle(
-                        musicPlayerState = musicPlayerState,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
+        Column(modifier = Modifier.fillMaxSize()) {
+            MusicPlayerTopAppBar(
+                onSettingsClick = onNavigateToSettingsScreen,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        top = 20.dp + getStatusBarHeightDp(),
+                        bottom = 20.dp
                     )
+            )
 
-                    // TODO: IMPLEMENT OTHER ELEMENTS
-                }
-            }
+            MusicPlayer(
+                musicPlayerState = musicPlayerState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(
+                        top = 8.dp,
+                        bottom = innerPadding.calculateBottomPadding() + 8.dp
+                    )
+            )
         }
     }
 }
