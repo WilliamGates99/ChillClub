@@ -37,7 +37,7 @@ fun CustomIconButton(
     shadowColorDark: Color = BlackAlpha24,
     shadowCornerRadius: Dp = 90.dp,
     shadowBlurRadius: Dp = 16.dp,
-    shadowSpread: Dp = 16.dp,
+    shadowSpread: Dp = 4.dp,
     contentDescription: String? = null,
     iconSize: Dp = 24.dp,
     indication: Indication = rememberRipple(),
