@@ -32,7 +32,7 @@ class MusicPlayerViewModel @Inject constructor(
 
     private val mutex: Mutex = Mutex()
 
-    private val _musicVolume =
+    private val _musicVolumePercentage =
         musicPlayerUseCases.observeMusicVolumeChangesUseCase.get()().stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
@@ -52,11 +52,11 @@ class MusicPlayerViewModel @Inject constructor(
     )
     val musicPlayerState = combine(
         flow = _musicPlayerState,
-        flow2 = _musicVolume,
+        flow2 = _musicVolumePercentage,
         flow3 = _notificationPermissionCount
-    ) { musicPlayerState, musicVolume, notificationPermissionCount ->
+    ) { musicPlayerState, musicVolumePercentage, notificationPermissionCount ->
         musicPlayerState.copy(
-            musicVolume = musicVolume,
+            musicVolumePercentage = musicVolumePercentage,
             notificationPermissionCount = notificationPermissionCount
         )
     }.stateIn(
@@ -78,6 +78,8 @@ class MusicPlayerViewModel @Inject constructor(
     fun onAction(action: MusicPlayerAction) {
         when (action) {
             MusicPlayerAction.GetRadioStations -> getRadioStations()
+            MusicPlayerAction.PlayMusic -> playMusic()
+            MusicPlayerAction.PauseMusic -> pauseMusic()
             MusicPlayerAction.DecreaseMusicVolume -> decreaseMusicVolume()
             MusicPlayerAction.IncreaseMusicVolume -> increaseMusicVolume()
             is MusicPlayerAction.OnPermissionResult -> onPermissionResult(
@@ -135,6 +137,24 @@ class MusicPlayerViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun playMusic() = viewModelScope.launch {
+        // TODO: MODIFY AFTER ADDING YOUTUBE PLAYER
+        mutex.withLock {
+            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
+                isMusicPlaying = true
+            )
+        }
+    }
+
+    private fun pauseMusic() = viewModelScope.launch {
+        // TODO: MODIFY AFTER ADDING YOUTUBE PLAYER
+        mutex.withLock {
+            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
+                isMusicPlaying = false
+            )
         }
     }
 
