@@ -3,16 +3,21 @@ package com.xeniac.chillclub.feature_music_player.presensation.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.layoutId
@@ -21,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.popup
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
@@ -28,8 +34,10 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.Visibility
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.ui.components.CustomIconButton
+import com.xeniac.chillclub.core.ui.components.VerticalSlider
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
+import timber.log.Timber
 
 @Composable
 fun MusicPlayerMediaControls(
@@ -96,6 +104,8 @@ fun VolumeControlButton(
     modifier: Modifier = Modifier,
     icon: Painter = musicPlayerState.musicVolumePercentage.getVolumeIcon(),
     contentDescription: String = stringResource(id = R.string.music_player_btn_volume_control),
+    volumeSliderWidth: Dp = 48.dp,
+    volumeSliderHeight: Dp = 148.dp,
     onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
     showVolumeSlider: () -> Unit,
     hideVolumeSlider: () -> Unit,
@@ -115,12 +125,12 @@ fun VolumeControlButton(
         constrain(ref = volumeSlider) {
             start.linkTo(anchor = parent.start)
             end.linkTo(anchor = parent.end)
-            bottom.linkTo(anchor = parent.top, margin = (-28).dp)
+            bottom.linkTo(anchor = parent.top, margin = (-36).dp)
 
             horizontalChainWeight = 0.5f
 
-            width = Dimension.value(36.dp)
-            height = Dimension.value(120.dp)
+            width = Dimension.value(volumeSliderWidth)
+            height = Dimension.value(volumeSliderHeight)
 
             visibility = if (musicPlayerState.isVolumeSliderVisible) {
                 Visibility.Visible
@@ -132,20 +142,16 @@ fun VolumeControlButton(
         constraintSet = constraintSet,
         modifier = modifier
     ) {
-        Box(
-            modifier = Modifier
-                .layoutId("volumeSlider")
-                .semantics { this.popup() }
-                .width(36.dp)
-                .height(120.dp)
-                .clip(RoundedCornerShape(44.dp))
-                .background(Color.Yellow)
-                .onGloballyPositioned { coordinates ->
-                    onVolumeSliderShown(coordinates.boundsInWindow())
-                }
-        ) {
-            // TODO: IMPLEMENT VOLUME SLIDER
-        }
+        VolumeSlider(
+            musicPlayerState = musicPlayerState,
+            sliderWidth = volumeSliderWidth,
+            sliderHeight = volumeSliderHeight,
+            onVolumeSliderShown = onVolumeSliderShown,
+            onValueChange = { newValue ->
+
+            },
+            modifier = Modifier.layoutId("volumeSlider")
+        )
 
         CustomIconButton(
             icon = icon,
@@ -161,10 +167,53 @@ fun VolumeControlButton(
 }
 
 @Composable
+fun VolumeSlider(
+    musicPlayerState: MusicPlayerState,
+    sliderWidth: Dp,
+    sliderHeight: Dp,
+    modifier: Modifier = Modifier,
+//    sliderInitialPosition: Float = musicPlayerState.musicVolumePercentage ?: 0f,
+    volumeSliderShape: Shape = RoundedCornerShape(90.dp),
+    volumeSliderBackground: Color = MaterialTheme.colorScheme.surface,
+    onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
+    onValueChange: (newValue: Float) -> Unit // TODO: RENAME
+) {
+    //musicPlayerState.musicVolumePercentage ?: 0f
+//    var sliderPosition by remember { mutableFloatStateOf(sliderInitialPosition) }
+
+    Box(
+        modifier = modifier
+            .semantics { this.popup() }
+            .clip(volumeSliderShape)
+            .background(volumeSliderBackground)
+            .onGloballyPositioned { coordinates ->
+                onVolumeSliderShown(coordinates.boundsInWindow())
+            }
+    ) {
+        VerticalSlider(
+//            value = sliderPosition,
+            value = musicPlayerState.musicVolumePercentage ?: 0f,
+            onValueChange = { newValue ->
+//                sliderPosition = newValue
+            },
+//            onValueChangeFinished = {
+//                Timber.i("onValueChangeFinished")
+//            },
+            paddingValues = PaddingValues(
+                start = 42.dp,
+                end = 8.dp
+            ),
+            width = sliderWidth,
+            height = sliderHeight
+        )
+    }
+}
+
+@Composable
 private fun MusicVolumePercentage?.getVolumeIcon(): Painter = when {
     this == null -> painterResource(R.drawable.ic_music_player_volume_mute)
-    this > 80 -> painterResource(R.drawable.ic_music_player_volume_full)
-    this > 40 -> painterResource(R.drawable.ic_music_player_volume_mid)
-    this > 0 -> painterResource(R.drawable.ic_music_player_volume_mid)
+    this > 0.8 -> painterResource(R.drawable.ic_music_player_volume_full)
+    this > 0.4 -> painterResource(R.drawable.ic_music_player_volume_mid)
+    this > 0 -> painterResource(R.drawable.ic_music_player_volume_low)
     else -> painterResource(R.drawable.ic_music_player_volume_mute)
 }
