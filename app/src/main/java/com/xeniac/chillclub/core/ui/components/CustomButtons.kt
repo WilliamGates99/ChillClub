@@ -29,7 +29,7 @@ fun CustomIconButton(
     icon: Painter,
     modifier: Modifier = Modifier,
     isSystemInDarkTheme: Boolean = isSystemInDarkTheme(),
-    size: Dp = 52.dp,
+    size: Dp = 56.dp,
     shape: Shape = CircleShape,
     containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,
@@ -39,7 +39,7 @@ fun CustomIconButton(
     shadowBlurRadius: Dp = 16.dp,
     shadowSpread: Dp = 4.dp,
     contentDescription: String? = null,
-    iconSize: Dp = 24.dp,
+    iconSize: Dp = 28.dp,
     indication: Indication = rememberRipple(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     onClick: () -> Unit
