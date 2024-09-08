@@ -37,6 +37,7 @@ fun MusicPlayerMediaControls(
     modifier: Modifier = Modifier,
     onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
     showVolumeSlider: () -> Unit,
+    hideVolumeSlider: () -> Unit,
     onDecreaseVolume: () -> Unit,
     onIncreaseVolume: () -> Unit,
     onPlayClick: () -> Unit,
@@ -60,6 +61,7 @@ fun MusicPlayerMediaControls(
             musicPlayerState = musicPlayerState,
             onVolumeSliderShown = onVolumeSliderShown,
             showVolumeSlider = showVolumeSlider,
+            hideVolumeSlider = hideVolumeSlider,
             onClick = onDecreaseVolume // TODO: CHANGE
         )
     }
@@ -96,6 +98,7 @@ fun VolumeControlButton(
     contentDescription: String = stringResource(id = R.string.music_player_btn_volume_control),
     onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
     showVolumeSlider: () -> Unit,
+    hideVolumeSlider: () -> Unit,
     onClick: () -> Unit // TODO: CHANGE TO ON_SLIDER_CHANGED
 ) {
     val constraintSet = ConstraintSet {
@@ -147,7 +150,11 @@ fun VolumeControlButton(
         CustomIconButton(
             icon = icon,
             contentDescription = contentDescription,
-            onClick = showVolumeSlider,
+            onClick = {
+                if (musicPlayerState.isVolumeSliderVisible) {
+                    hideVolumeSlider()
+                } else showVolumeSlider()
+            },
             modifier = Modifier.layoutId("volumeBtn")
         )
     }

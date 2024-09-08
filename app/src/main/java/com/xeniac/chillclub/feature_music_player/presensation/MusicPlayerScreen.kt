@@ -210,6 +210,9 @@ fun MusicPlayerScreen(
                 showVolumeSlider = {
                     viewModel.onAction(MusicPlayerAction.ShowVolumeSlider)
                 },
+                hideVolumeSlider = {
+                    viewModel.onAction(MusicPlayerAction.HideVolumeSlider)
+                },
                 onDecreaseVolume = {
                     viewModel.onAction(MusicPlayerAction.DecreaseMusicVolume)
                 },
