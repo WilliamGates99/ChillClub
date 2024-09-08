@@ -9,7 +9,7 @@ import android.os.Build
 import androidx.room.withTransaction
 import com.xeniac.chillclub.core.data.local.ChillClubDatabase
 import com.xeniac.chillclub.core.data.local.RadioStationsDao
-import com.xeniac.chillclub.core.data.utils.convertToPercentage
+import com.xeniac.chillclub.core.data.utils.scaleToUnitInterval
 import com.xeniac.chillclub.core.domain.models.RadioStation
 import com.xeniac.chillclub.core.domain.utils.Result
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadioStationsResponseDto
@@ -57,7 +57,7 @@ class MusicPlayerRepositoryImpl @Inject constructor(
         val minVolume = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             audioManager.getStreamMinVolume(streamType)
         } else 0
-        val currentVolumePercentage = audioManager.getStreamVolume(streamType).convertToPercentage(
+        val currentVolumePercentage = audioManager.getStreamVolume(streamType).scaleToUnitInterval(
             minValue = minVolume,
             maxValue = maxVolume
         )
@@ -75,7 +75,7 @@ class MusicPlayerRepositoryImpl @Inject constructor(
                     streamType -> {
                         val newVolumePercentage = audioManager
                             .getStreamVolume(streamType)
-                            .convertToPercentage(
+                            .scaleToUnitInterval(
                                 minValue = minVolume,
                                 maxValue = maxVolume
                             )

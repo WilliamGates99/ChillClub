@@ -3,7 +3,7 @@ package com.xeniac.chillclub.feature_music_player.data.remote.repositories
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.xeniac.chillclub.core.data.local.entities.RadioStationEntity
-import com.xeniac.chillclub.core.data.utils.convertToPercentage
+import com.xeniac.chillclub.core.data.utils.scaleToUnitInterval
 import com.xeniac.chillclub.core.domain.models.Channel
 import com.xeniac.chillclub.core.domain.models.RadioStation
 import com.xeniac.chillclub.core.domain.models.SocialLinks
@@ -45,7 +45,7 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
     var currentMusicVolume = 7
     var musicVolumePercentage = SnapshotStateList<MusicVolumePercentage>().apply {
         add(
-            currentMusicVolume.convertToPercentage(
+            currentMusicVolume.scaleToUnitInterval(
                 minValue = minVolume,
                 maxValue = maxVolume
             )
@@ -94,8 +94,8 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
                 musicVolumePercentage.apply {
                     clear()
                     add(
-                        (currentMusicVolume).convertToPercentage(
-                            minValue = currentMusicVolume,
+                        (currentMusicVolume).scaleToUnitInterval(
+                            minValue = minVolume,
                             maxValue = maxVolume
                         )
                     )
@@ -117,8 +117,8 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
                 musicVolumePercentage.apply {
                     clear()
                     add(
-                        (currentMusicVolume).convertToPercentage(
-                            minValue = currentMusicVolume,
+                        (currentMusicVolume).scaleToUnitInterval(
+                            minValue = minVolume,
                             maxValue = maxVolume
                         )
                     )
