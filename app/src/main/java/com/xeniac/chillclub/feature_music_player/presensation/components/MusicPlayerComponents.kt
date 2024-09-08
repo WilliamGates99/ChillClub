@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
@@ -32,10 +33,12 @@ import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayer
 fun MusicPlayer(
     musicPlayerState: MusicPlayerState,
     modifier: Modifier = Modifier,
-    onPlayClick: () -> Unit,
-    onPauseClick: () -> Unit,
+    onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
+    showVolumeSlider: () -> Unit,
+    onDecreaseVolume: () -> Unit,
     onIncreaseVolume: () -> Unit,
-    onDecreaseVolume: () -> Unit
+    onPlayClick: () -> Unit,
+    onPauseClick: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(space = 24.dp),
@@ -48,10 +51,12 @@ fun MusicPlayer(
 
         CurrentRadioStation(
             musicPlayerState = musicPlayerState,
+            onVolumeSliderShown = onVolumeSliderShown,
+            showVolumeSlider = showVolumeSlider,
+            onDecreaseVolume = onDecreaseVolume,
+            onIncreaseVolume = onIncreaseVolume,
             onPlayClick = onPlayClick,
             onPauseClick = onPauseClick,
-            onIncreaseVolume = onIncreaseVolume,
-            onDecreaseVolume = onDecreaseVolume,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
@@ -87,10 +92,12 @@ private fun MusicPlayerTitle(
 private fun CurrentRadioStation(
     musicPlayerState: MusicPlayerState,
     modifier: Modifier = Modifier,
-    onPlayClick: () -> Unit,
-    onPauseClick: () -> Unit,
+    onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
+    showVolumeSlider: () -> Unit,
+    onDecreaseVolume: () -> Unit,
     onIncreaseVolume: () -> Unit,
-    onDecreaseVolume: () -> Unit
+    onPlayClick: () -> Unit,
+    onPauseClick: () -> Unit
 ) {
     AnimatedVisibility(
         visible = musicPlayerState.currentRadioStations != null,
@@ -108,10 +115,12 @@ private fun CurrentRadioStation(
 
             MusicPlayerMediaControls(
                 musicPlayerState = musicPlayerState,
+                onVolumeSliderShown = onVolumeSliderShown,
+                showVolumeSlider = showVolumeSlider,
+                onDecreaseVolume = onDecreaseVolume,
+                onIncreaseVolume = onIncreaseVolume,
                 onPlayClick = onPlayClick,
                 onPauseClick = onPauseClick,
-                onIncreaseVolume = onIncreaseVolume,
-                onDecreaseVolume = onDecreaseVolume,
                 modifier = Modifier.fillMaxWidth()
             )
         }

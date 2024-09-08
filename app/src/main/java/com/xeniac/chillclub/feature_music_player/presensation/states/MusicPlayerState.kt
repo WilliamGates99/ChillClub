@@ -1,5 +1,6 @@
 package com.xeniac.chillclub.feature_music_player.presensation.states
 
+import android.graphics.Rect
 import android.os.Parcelable
 import com.xeniac.chillclub.core.domain.models.RadioStation
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
@@ -13,6 +14,8 @@ data class MusicPlayerState(
     val musicVolumePercentage: MusicVolumePercentage? = null,
     val currentRadioStations: RadioStation? = null,
     val radioStations: List<RadioStation> = emptyList(),
+    val isVolumeSliderVisible: Boolean = false,
+    val volumeSliderBounds: Rect? = null,
     val isPermissionDialogVisible: Boolean = false,
     val notificationPermissionCount: Int = 0,
     val permissionDialogQueue: List<String> = emptyList()

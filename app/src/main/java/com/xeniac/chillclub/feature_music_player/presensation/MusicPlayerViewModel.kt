@@ -1,8 +1,11 @@
 package com.xeniac.chillclub.feature_music_player.presensation
 
+import android.graphics.Rect
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.xeniac.chillclub.core.domain.models.RadioStation
+import com.xeniac.chillclub.core.domain.models.SocialLinks
 import com.xeniac.chillclub.core.domain.repositories.ConnectivityObserver
 import com.xeniac.chillclub.core.domain.utils.Result
 import com.xeniac.chillclub.core.presentation.utils.Event
@@ -73,15 +76,41 @@ class MusicPlayerViewModel @Inject constructor(
 
     init {
         getRadioStations()
+
+        // TODO: TEMP - REMOVE
+        viewModelScope.launch {
+            val station = RadioStation(
+                youtubeVideoId = "videoId_1",
+                title = "Test Title",
+                channel = com.xeniac.chillclub.core.domain.models.Channel(
+                    name = "Test Channel",
+                    avatarUrl = "https://gravatar.com/avatar/b555351fc297b35d3eb1a7857740accd?s=800&d=mp&r=x",
+                    socialLinks = SocialLinks(
+                        youtube = "https://www.youtube.com"
+                    )
+                ),
+                category = "Test",
+                tags = listOf("tag1", "tag2")
+            )
+
+            mutex.withLock {
+                savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
+                    currentRadioStations = station
+                )
+            }
+        }
     }
 
     fun onAction(action: MusicPlayerAction) {
         when (action) {
             MusicPlayerAction.GetRadioStations -> getRadioStations()
-            MusicPlayerAction.PlayMusic -> playMusic()
-            MusicPlayerAction.PauseMusic -> pauseMusic()
+            is MusicPlayerAction.SetVolumeSliderBounds -> setVolumeSliderBounds(action.bounds)
+            MusicPlayerAction.ShowVolumeSlider -> showVolumeSlider()
+            MusicPlayerAction.HideVolumeSlider -> hideVolumeSlider()
             MusicPlayerAction.DecreaseMusicVolume -> decreaseMusicVolume()
             MusicPlayerAction.IncreaseMusicVolume -> increaseMusicVolume()
+            MusicPlayerAction.PlayMusic -> playMusic()
+            MusicPlayerAction.PauseMusic -> pauseMusic()
             is MusicPlayerAction.OnPermissionResult -> onPermissionResult(
                 permission = action.permission,
                 isGranted = action.isGranted
@@ -140,20 +169,26 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
-    private fun playMusic() = viewModelScope.launch {
-        // TODO: MODIFY AFTER ADDING YOUTUBE PLAYER
+    private fun setVolumeSliderBounds(bounds: Rect) = viewModelScope.launch {
         mutex.withLock {
             savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                isMusicPlaying = true
+                volumeSliderBounds = bounds
             )
         }
     }
 
-    private fun pauseMusic() = viewModelScope.launch {
-        // TODO: MODIFY AFTER ADDING YOUTUBE PLAYER
+    private fun showVolumeSlider() = viewModelScope.launch {
         mutex.withLock {
             savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                isMusicPlaying = false
+                isVolumeSliderVisible = true
+            )
+        }
+    }
+
+    private fun hideVolumeSlider() = viewModelScope.launch {
+        mutex.withLock {
+            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
+                isVolumeSliderVisible = false
             )
         }
     }
@@ -181,6 +216,24 @@ class MusicPlayerViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    private fun playMusic() = viewModelScope.launch {
+        // TODO: MODIFY AFTER ADDING YOUTUBE PLAYER
+        mutex.withLock {
+            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
+                isMusicPlaying = true
+            )
+        }
+    }
+
+    private fun pauseMusic() = viewModelScope.launch {
+        // TODO: MODIFY AFTER ADDING YOUTUBE PLAYER
+        mutex.withLock {
+            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
+                isMusicPlaying = false
+            )
         }
     }
 

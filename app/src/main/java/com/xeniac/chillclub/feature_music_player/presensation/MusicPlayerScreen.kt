@@ -1,5 +1,7 @@
 package com.xeniac.chillclub.feature_music_player.presensation
 
+import android.graphics.Rect
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -156,7 +159,28 @@ fun MusicPlayerScreen(
     ) { innerPadding ->
         MusicPlayerBackground()
 
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(key1 = Unit) {
+                    detectTapGestures { tapOffset ->
+                        musicPlayerState.volumeSliderBounds?.let { sliderBounds ->
+                            val isWithinSliderWidth = tapOffset.x >= sliderBounds.left
+                                    && tapOffset.x <= sliderBounds.right
+                            val isWithinSliderHeight = tapOffset.y >= sliderBounds.top
+                                    && tapOffset.y <= sliderBounds.bottom
+
+                            val isWithinSliderBounds = isWithinSliderWidth && isWithinSliderHeight
+
+                            val shouldHideVolumeSlider = !isWithinSliderBounds
+                                    && musicPlayerState.isVolumeSliderVisible
+                            if (shouldHideVolumeSlider) {
+                                viewModel.onAction(MusicPlayerAction.HideVolumeSlider)
+                            }
+                        }
+                    }
+                }
+        ) {
             MusicPlayerTopAppBar(
                 onSettingsClick = onNavigateToSettingsScreen,
                 modifier = Modifier
@@ -171,17 +195,32 @@ fun MusicPlayerScreen(
 
             MusicPlayer(
                 musicPlayerState = musicPlayerState,
+                onVolumeSliderShown = { bounds ->
+                    viewModel.onAction(
+                        MusicPlayerAction.SetVolumeSliderBounds(
+                            Rect(
+                                /* left = */ bounds.left.toInt(),
+                                /* top = */ bounds.top.toInt(),
+                                /* right = */ bounds.right.toInt(),
+                                /* bottom = */ bounds.bottom.toInt()
+                            )
+                        )
+                    )
+                },
+                showVolumeSlider = {
+                    viewModel.onAction(MusicPlayerAction.ShowVolumeSlider)
+                },
+                onDecreaseVolume = {
+                    viewModel.onAction(MusicPlayerAction.DecreaseMusicVolume)
+                },
+                onIncreaseVolume = {
+                    viewModel.onAction(MusicPlayerAction.IncreaseMusicVolume)
+                },
                 onPlayClick = {
                     viewModel.onAction(MusicPlayerAction.PlayMusic)
                 },
                 onPauseClick = {
                     viewModel.onAction(MusicPlayerAction.PauseMusic)
-                },
-                onIncreaseVolume = {
-                    viewModel.onAction(MusicPlayerAction.IncreaseMusicVolume)
-                },
-                onDecreaseVolume = {
-                    viewModel.onAction(MusicPlayerAction.DecreaseMusicVolume)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
