@@ -86,53 +86,51 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
         musicVolumePercentage.first()
     }
 
-    override suspend fun decreaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> =
-        callbackFlow {
-            try {
-                currentMusicVolume -= 1
+    override fun decreaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = callbackFlow {
+        try {
+            currentMusicVolume -= 1
 
-                musicVolumePercentage.apply {
-                    clear()
-                    add(
-                        (currentMusicVolume).scaleToUnitInterval(
-                            minValue = minVolume,
-                            maxValue = maxVolume
-                        )
+            musicVolumePercentage.apply {
+                clear()
+                add(
+                    (currentMusicVolume).scaleToUnitInterval(
+                        minValue = minVolume,
+                        maxValue = maxVolume
                     )
-                }
-
-                send(Result.Success(Unit))
-            } catch (e: Exception) {
-                send(Result.Error(AdjustVolumeError.SomethingWentWrong))
+                )
             }
 
-            awaitClose {}
+            send(Result.Success(Unit))
+        } catch (e: Exception) {
+            send(Result.Error(AdjustVolumeError.SomethingWentWrong))
         }
 
-    override suspend fun increaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> =
-        callbackFlow {
-            try {
-                currentMusicVolume += 1
+        awaitClose {}
+    }
 
-                musicVolumePercentage.apply {
-                    clear()
-                    add(
-                        (currentMusicVolume).scaleToUnitInterval(
-                            minValue = minVolume,
-                            maxValue = maxVolume
-                        )
+    override fun increaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = callbackFlow {
+        try {
+            currentMusicVolume += 1
+
+            musicVolumePercentage.apply {
+                clear()
+                add(
+                    (currentMusicVolume).scaleToUnitInterval(
+                        minValue = minVolume,
+                        maxValue = maxVolume
                     )
-                }
-
-                send(Result.Success(Unit))
-            } catch (e: Exception) {
-                send(Result.Error(AdjustVolumeError.SomethingWentWrong))
+                )
             }
 
-            awaitClose {}
+            send(Result.Success(Unit))
+        } catch (e: Exception) {
+            send(Result.Error(AdjustVolumeError.SomethingWentWrong))
         }
 
-    override suspend fun getRadioStations(
+        awaitClose {}
+    }
+
+    override fun getRadioStations(
         fetchFromRemote: Boolean
     ): Flow<Result<List<RadioStation>, GetRadioStationsError>> = flow {
         val shouldJustLoadFromCache = radioStationEntities.isNotEmpty() && !fetchFromRemote
