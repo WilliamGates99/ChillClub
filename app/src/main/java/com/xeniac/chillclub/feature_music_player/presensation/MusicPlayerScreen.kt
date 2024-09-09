@@ -195,6 +195,18 @@ fun MusicPlayerScreen(
 
             MusicPlayer(
                 musicPlayerState = musicPlayerState,
+                onPlayClick = {
+                    viewModel.onAction(MusicPlayerAction.PlayMusic)
+                },
+                onPauseClick = {
+                    viewModel.onAction(MusicPlayerAction.PauseMusic)
+                },
+                showVolumeSlider = {
+                    viewModel.onAction(MusicPlayerAction.ShowVolumeSlider)
+                },
+                hideVolumeSlider = {
+                    viewModel.onAction(MusicPlayerAction.HideVolumeSlider)
+                },
                 onVolumeSliderShown = { bounds ->
                     viewModel.onAction(
                         MusicPlayerAction.SetVolumeSliderBounds(
@@ -207,23 +219,8 @@ fun MusicPlayerScreen(
                         )
                     )
                 },
-                showVolumeSlider = {
-                    viewModel.onAction(MusicPlayerAction.ShowVolumeSlider)
-                },
-                hideVolumeSlider = {
-                    viewModel.onAction(MusicPlayerAction.HideVolumeSlider)
-                },
-                onDecreaseVolume = {
-                    viewModel.onAction(MusicPlayerAction.DecreaseMusicVolume)
-                },
-                onIncreaseVolume = {
-                    viewModel.onAction(MusicPlayerAction.IncreaseMusicVolume)
-                },
-                onPlayClick = {
-                    viewModel.onAction(MusicPlayerAction.PlayMusic)
-                },
-                onPauseClick = {
-                    viewModel.onAction(MusicPlayerAction.PauseMusic)
+                adjustMusicVolume = { newPercentage ->
+                    viewModel.onAction(MusicPlayerAction.AdjustMusicVolume(newPercentage))
                 },
                 modifier = Modifier
                     .fillMaxWidth()

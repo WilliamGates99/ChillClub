@@ -50,13 +50,12 @@ import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayer
 fun MusicPlayerMediaControls(
     musicPlayerState: MusicPlayerState,
     modifier: Modifier = Modifier,
-    onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
+    onPlayClick: () -> Unit,
+    onPauseClick: () -> Unit,
     showVolumeSlider: () -> Unit,
     hideVolumeSlider: () -> Unit,
-    onDecreaseVolume: () -> Unit,
-    onIncreaseVolume: () -> Unit,
-    onPlayClick: () -> Unit,
-    onPauseClick: () -> Unit
+    onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
+    adjustMusicVolume: (newPercentage: Float) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(
@@ -77,7 +76,7 @@ fun MusicPlayerMediaControls(
             onVolumeSliderShown = onVolumeSliderShown,
             showVolumeSlider = showVolumeSlider,
             hideVolumeSlider = hideVolumeSlider,
-            onClick = onDecreaseVolume // TODO: CHANGE
+            adjustMusicVolume = adjustMusicVolume
         )
     }
 }
@@ -113,10 +112,10 @@ fun VolumeControlButton(
     contentDescription: String = stringResource(id = R.string.music_player_btn_volume_control),
     volumeSliderWidth: Dp = 48.dp,
     volumeSliderHeight: Dp = 148.dp,
-    onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
     showVolumeSlider: () -> Unit,
     hideVolumeSlider: () -> Unit,
-    onClick: () -> Unit // TODO: CHANGE TO ON_SLIDER_CHANGED
+    onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
+    adjustMusicVolume: (newPercentage: Float) -> Unit
 ) {
     val constraintSet = ConstraintSet {
         val volumeBtn = createRefFor(id = "volumeBtn")
@@ -162,9 +161,7 @@ fun VolumeControlButton(
                 sliderWidth = volumeSliderWidth,
                 sliderHeight = volumeSliderHeight,
                 onVolumeSliderShown = onVolumeSliderShown,
-                onValueChange = { newValue ->
-
-                },
+                adjustMusicVolume = adjustMusicVolume,
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -191,12 +188,12 @@ fun VolumeSlider(
     volumeSliderShape: Shape = RoundedCornerShape(90.dp),
     volumeSliderBackground: Color = MaterialTheme.colorScheme.surface,
     onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
-    onValueChange: (newValue: Float) -> Unit // TODO: RENAME
+    adjustMusicVolume: (newPercentage: Float) -> Unit
 ) {
     var startVolumeSliderAnimation by remember { mutableStateOf(false) }
     val animatedVolumeSliderPosition by animateFloatAsState(
         targetValue = if (startVolumeSliderAnimation) {
-            musicPlayerState.musicVolumePercentage ?: 0f
+            musicPlayerState.musicVolumePercentage
         } else 0f,
         animationSpec = spring(stiffness = Spring.StiffnessLow),
         label = "animatedVolumeSliderPosition"
@@ -217,9 +214,7 @@ fun VolumeSlider(
     ) {
         VerticalSlider(
             value = animatedVolumeSliderPosition,
-            onValueChange = { newValue ->
-//                sliderPosition = newValue
-            },
+            onValueChange = adjustMusicVolume,
             paddingValues = PaddingValues(
                 start = 42.dp,
                 end = 8.dp
@@ -231,8 +226,7 @@ fun VolumeSlider(
 }
 
 @Composable
-private fun MusicVolumePercentage?.getVolumeIcon(): Painter = when {
-    this == null -> painterResource(R.drawable.ic_music_player_volume_mute)
+private fun MusicVolumePercentage.getVolumeIcon(): Painter = when {
     this > 0.8 -> painterResource(R.drawable.ic_music_player_volume_full)
     this > 0.4 -> painterResource(R.drawable.ic_music_player_volume_mid)
     this > 0 -> painterResource(R.drawable.ic_music_player_volume_low)

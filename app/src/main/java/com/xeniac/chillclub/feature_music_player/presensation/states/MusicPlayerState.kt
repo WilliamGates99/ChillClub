@@ -11,7 +11,7 @@ data class MusicPlayerState(
     val isRadioStationsLoading: Boolean = false,
     val isMusicBuffering: Boolean = false,
     val isMusicPlaying: Boolean = false,
-    val musicVolumePercentage: MusicVolumePercentage? = null,
+    val musicVolumePercentage: MusicVolumePercentage = 0f,
     val currentRadioStations: RadioStation? = null,
     val radioStations: List<RadioStation> = emptyList(),
     val isVolumeSliderVisible: Boolean = false,

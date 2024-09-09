@@ -1,17 +1,17 @@
 package com.xeniac.chillclub.feature_music_player.presensation
 
 import android.graphics.Rect
+import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
 
 sealed interface MusicPlayerAction {
     data object GetRadioStations : MusicPlayerAction
 
-    data class SetVolumeSliderBounds(val bounds: Rect) : MusicPlayerAction
-    data object ShowVolumeSlider : MusicPlayerAction
-    data object HideVolumeSlider : MusicPlayerAction
-    data object DecreaseMusicVolume : MusicPlayerAction
-    data object IncreaseMusicVolume : MusicPlayerAction
     data object PlayMusic : MusicPlayerAction
     data object PauseMusic : MusicPlayerAction
+    data object ShowVolumeSlider : MusicPlayerAction
+    data object HideVolumeSlider : MusicPlayerAction
+    data class SetVolumeSliderBounds(val bounds: Rect) : MusicPlayerAction
+    data class AdjustMusicVolume(val newPercentage: MusicVolumePercentage) : MusicPlayerAction
 
     data class OnPermissionResult(
         val permission: String,

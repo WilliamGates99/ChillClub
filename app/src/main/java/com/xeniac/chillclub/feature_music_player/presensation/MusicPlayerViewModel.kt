@@ -10,6 +10,7 @@ import com.xeniac.chillclub.core.domain.utils.Result
 import com.xeniac.chillclub.core.presentation.utils.Event
 import com.xeniac.chillclub.core.presentation.utils.NetworkObserverHelper
 import com.xeniac.chillclub.core.presentation.utils.UiEvent
+import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.MusicPlayerUseCases
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
 import com.xeniac.chillclub.feature_music_player.presensation.utils.asUiText
@@ -89,13 +90,12 @@ class MusicPlayerViewModel @Inject constructor(
     fun onAction(action: MusicPlayerAction) {
         when (action) {
             MusicPlayerAction.GetRadioStations -> getRadioStations()
-            is MusicPlayerAction.SetVolumeSliderBounds -> setVolumeSliderBounds(action.bounds)
-            MusicPlayerAction.ShowVolumeSlider -> showVolumeSlider()
-            MusicPlayerAction.HideVolumeSlider -> hideVolumeSlider()
-            MusicPlayerAction.DecreaseMusicVolume -> decreaseMusicVolume()
-            MusicPlayerAction.IncreaseMusicVolume -> increaseMusicVolume()
             MusicPlayerAction.PlayMusic -> playMusic()
             MusicPlayerAction.PauseMusic -> pauseMusic()
+            MusicPlayerAction.ShowVolumeSlider -> showVolumeSlider()
+            MusicPlayerAction.HideVolumeSlider -> hideVolumeSlider()
+            is MusicPlayerAction.SetVolumeSliderBounds -> setVolumeSliderBounds(action.bounds)
+            is MusicPlayerAction.AdjustMusicVolume -> adjustMusicVolume(action.newPercentage)
             is MusicPlayerAction.OnPermissionResult -> onPermissionResult(
                 permission = action.permission,
                 isGranted = action.isGranted
@@ -155,9 +155,17 @@ class MusicPlayerViewModel @Inject constructor(
         }.launchIn(scope = viewModelScope)
     }
 
-    private fun setVolumeSliderBounds(bounds: Rect) {
+    private fun playMusic() {
+        // TODO: MODIFY AFTER ADDING YOUTUBE PLAYER
         _musicPlayerState.update {
-            it.copy(volumeSliderBounds = bounds)
+            it.copy(isMusicPlaying = true)
+        }
+    }
+
+    private fun pauseMusic() {
+        // TODO: MODIFY AFTER ADDING YOUTUBE PLAYER
+        _musicPlayerState.update {
+            it.copy(isMusicPlaying = false)
         }
     }
 
@@ -173,8 +181,17 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
-    private fun decreaseMusicVolume() {
-        musicPlayerUseCases.decreaseMusicVolumeUseCase.get()().onEach { result ->
+    private fun setVolumeSliderBounds(bounds: Rect) {
+        _musicPlayerState.update {
+            it.copy(volumeSliderBounds = bounds)
+        }
+    }
+
+    private fun adjustMusicVolume(newPercentage: MusicVolumePercentage) {
+        musicPlayerUseCases.adjustMusicVolumeUseCase.get()(
+            newPercentage = newPercentage,
+            currentPercentage = musicPlayerState.value.musicVolumePercentage
+        ).onEach { result ->
             when (result) {
                 is Result.Success -> Unit
                 is Result.Error -> {
@@ -184,33 +201,6 @@ class MusicPlayerViewModel @Inject constructor(
                 }
             }
         }.launchIn(viewModelScope)
-    }
-
-    private fun increaseMusicVolume() {
-        musicPlayerUseCases.increaseMusicVolumeUseCase.get()().onEach { result ->
-            when (result) {
-                is Result.Success -> Unit
-                is Result.Error -> {
-                    _adjustMusicVolumeEventChannel.send(
-                        UiEvent.ShowLongSnackbar(result.error.asUiText())
-                    )
-                }
-            }
-        }.launchIn(viewModelScope)
-    }
-
-    private fun playMusic() {
-        // TODO: MODIFY AFTER ADDING YOUTUBE PLAYER
-        _musicPlayerState.update {
-            it.copy(isMusicPlaying = true)
-        }
-    }
-
-    private fun pauseMusic() {
-        // TODO: MODIFY AFTER ADDING YOUTUBE PLAYER
-        _musicPlayerState.update {
-            it.copy(isMusicPlaying = false)
-        }
     }
 
     private fun onPermissionResult(
