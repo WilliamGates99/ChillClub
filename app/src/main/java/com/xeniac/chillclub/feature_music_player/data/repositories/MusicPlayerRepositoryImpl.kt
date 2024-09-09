@@ -42,6 +42,7 @@ import timber.log.Timber
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.coroutines.coroutineContext
+import kotlin.math.roundToInt
 
 class MusicPlayerRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -95,13 +96,10 @@ class MusicPlayerRepositoryImpl @Inject constructor(
         }
     }
 
-    /*
-    TODO: CREATE NEW FUNCTION AND MERGE BOTH DECREASE AND INCREASE VOLUME FUNCTIONS
-    CHECK THE NEW VOLUME SLIDER VALUE AND CONVERT AND COERCE IT BASED ON THE MIN AND MAX VOLUMES
-    THEN SET THE NEW STREAM VOLUME
-     */
-
-    override fun decreaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = flow {
+    override fun adjustMusicVolume(
+        newPercentage: MusicVolumePercentage,
+        currentPercentage: MusicVolumePercentage
+    ): Flow<Result<Unit, AdjustVolumeError>> = flow {
         try {
             val currentVolume = audioManager.getStreamVolume(streamType)
             val maxVolume = audioManager.getStreamMaxVolume(streamType)
@@ -109,9 +107,16 @@ class MusicPlayerRepositoryImpl @Inject constructor(
                 audioManager.getStreamMinVolume(streamType)
             } else 0
 
+            // Calculate the percentage difference
+            val deltaPercentage = newPercentage - currentPercentage
+
+            // Calculate how much to adjust the music volume
+            val volumeRange = maxVolume - minVolume
+            val deltaVolume = (deltaPercentage * volumeRange).roundToInt()
+
             audioManager.setStreamVolume(
                 /* streamType = */ streamType,
-                /* index = */ currentVolume.minus(1).coerceIn(
+                /* index = */ currentVolume.plus(deltaVolume).coerceIn(
                     minimumValue = minVolume,
                     maximumValue = maxVolume
                 ),
@@ -122,34 +127,7 @@ class MusicPlayerRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             coroutineContext.ensureActive()
 
-            Timber.i("decreaseMusicVolume failed:")
-            e.printStackTrace()
-            emit(Result.Error(AdjustVolumeError.SomethingWentWrong))
-        }
-    }
-
-    override fun increaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = flow {
-        try {
-            val currentVolume = audioManager.getStreamVolume(streamType)
-            val maxVolume = audioManager.getStreamMaxVolume(streamType)
-            val minVolume = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                audioManager.getStreamMinVolume(streamType)
-            } else 0
-
-            audioManager.setStreamVolume(
-                /* streamType = */ streamType,
-                /* index = */ currentVolume.plus(1).coerceIn(
-                    minimumValue = minVolume,
-                    maximumValue = maxVolume
-                ),
-                /* flags = */ 0 // Do not show the volume slider
-            )
-
-            emit(Result.Success(Unit))
-        } catch (e: Exception) {
-            coroutineContext.ensureActive()
-
-            Timber.i("increaseMusicVolume failed:")
+            Timber.i("Adjust music volume failed:")
             e.printStackTrace()
             emit(Result.Error(AdjustVolumeError.SomethingWentWrong))
         }

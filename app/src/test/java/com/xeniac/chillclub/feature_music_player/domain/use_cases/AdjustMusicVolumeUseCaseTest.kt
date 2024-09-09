@@ -16,7 +16,7 @@ import org.junit.runners.JUnit4
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(JUnit4::class)
-class DecreaseMusicVolumeUseCaseTest {
+class AdjustMusicVolumeUseCaseTest {
 
     @get:Rule
     var instanceTaskExecutorRule = InstantTaskExecutorRule()
@@ -25,19 +25,19 @@ class DecreaseMusicVolumeUseCaseTest {
     var mainCoroutineRule = MainCoroutineRule()
 
     private lateinit var fakeMusicPlayerRepositoryImpl: FakeMusicPlayerRepositoryImpl
-    private lateinit var decreaseMusicVolumeUseCase: DecreaseMusicVolumeUseCase
+    private lateinit var adjustMusicVolumeUseCase: AdjustMusicVolumeUseCase
 
     @Before
     fun setUp() {
         fakeMusicPlayerRepositoryImpl = FakeMusicPlayerRepositoryImpl()
-        decreaseMusicVolumeUseCase = DecreaseMusicVolumeUseCase(
+        adjustMusicVolumeUseCase = AdjustMusicVolumeUseCase(
             musicPlayerRepository = fakeMusicPlayerRepositoryImpl
         )
     }
 
     @Test
     fun decreaseMusicVolume_returnsSuccess() = runTest {
-        val result = decreaseMusicVolumeUseCase().first()
+        val result = adjustMusicVolumeUseCase().first()
         assertThat(result).isInstanceOf(Result.Success::class.java)
     }
 
@@ -47,7 +47,7 @@ class DecreaseMusicVolumeUseCaseTest {
         val musicVolumePercentageBefore =
             fakeMusicPlayerRepositoryImpl.musicVolumePercentage.first()
 
-        val result = decreaseMusicVolumeUseCase().first()
+        val result = adjustMusicVolumeUseCase().first()
         assertThat(result).isInstanceOf(Result.Success::class.java)
 
         val musicVolumeAfter = fakeMusicPlayerRepositoryImpl.currentMusicVolume

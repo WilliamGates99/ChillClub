@@ -5,10 +5,9 @@ import com.xeniac.chillclub.core.data.local.ChillClubDatabase
 import com.xeniac.chillclub.core.data.local.RadioStationsDao
 import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
-import com.xeniac.chillclub.feature_music_player.domain.use_cases.DecreaseMusicVolumeUseCase
+import com.xeniac.chillclub.feature_music_player.domain.use_cases.AdjustMusicVolumeUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.GetNotificationPermissionCountUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.GetRadioStationsUseCase
-import com.xeniac.chillclub.feature_music_player.domain.use_cases.IncreaseMusicVolumeUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.MusicPlayerUseCases
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.ObserveMusicVolumeChangesUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.StoreNotificationPermissionCountUseCase
@@ -42,15 +41,9 @@ object MusicPlayerModule {
 
     @Provides
     @ViewModelScoped
-    fun provideDecreaseMusicVolumeUseCase(
+    fun provideAdjustMusicVolumeUseCase(
         musicPlayerRepository: MusicPlayerRepository
-    ): DecreaseMusicVolumeUseCase = DecreaseMusicVolumeUseCase(musicPlayerRepository)
-
-    @Provides
-    @ViewModelScoped
-    fun provideIncreaseMusicVolumeUseCase(
-        musicPlayerRepository: MusicPlayerRepository
-    ): IncreaseMusicVolumeUseCase = IncreaseMusicVolumeUseCase(musicPlayerRepository)
+    ): AdjustMusicVolumeUseCase = AdjustMusicVolumeUseCase(musicPlayerRepository)
 
     @Provides
     @ViewModelScoped
@@ -76,15 +69,13 @@ object MusicPlayerModule {
     @ViewModelScoped
     fun provideMusicPlayerUseCases(
         observeMusicVolumeChangesUseCase: ObserveMusicVolumeChangesUseCase,
-        decreaseMusicVolumeUseCase: DecreaseMusicVolumeUseCase,
-        increaseMusicVolumeUseCase: IncreaseMusicVolumeUseCase,
+        adjustMusicVolumeUseCase: AdjustMusicVolumeUseCase,
         getRadioStationsUseCase: GetRadioStationsUseCase,
         getNotificationPermissionCountUseCase: GetNotificationPermissionCountUseCase,
         storeNotificationPermissionCountUseCase: StoreNotificationPermissionCountUseCase
     ): MusicPlayerUseCases = MusicPlayerUseCases(
         { observeMusicVolumeChangesUseCase },
-        { decreaseMusicVolumeUseCase },
-        { increaseMusicVolumeUseCase },
+        { adjustMusicVolumeUseCase },
         { getRadioStationsUseCase },
         { getNotificationPermissionCountUseCase },
         { storeNotificationPermissionCountUseCase }

@@ -13,9 +13,10 @@ interface MusicPlayerRepository {
 
     fun observeMusicVolumeChanges(): Flow<MusicVolumePercentage>
 
-    fun decreaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>>
-
-    fun increaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>>
+    fun adjustMusicVolume(
+        newPercentage: MusicVolumePercentage,
+        currentPercentage: MusicVolumePercentage
+    ): Flow<Result<Unit, AdjustVolumeError>>
 
     fun getRadioStations(
         fetchFromRemote: Boolean
