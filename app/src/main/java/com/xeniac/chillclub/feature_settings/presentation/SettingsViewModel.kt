@@ -104,7 +104,7 @@ class SettingsViewModel @Inject constructor(
     private fun onPermissionResult(
         permission: String,
         isGranted: Boolean
-    ) = viewModelScope.launch {
+    ) {
         val shouldAskForPermission = settingsState.value.run {
             !permissionDialogQueue.contains(permission) && !isGranted
         }
@@ -119,7 +119,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    private fun dismissPermissionDialog(permission: String) = viewModelScope.launch {
+    private fun dismissPermissionDialog(permission: String) {
         _settingsState.update {
             it.copy(
                 permissionDialogQueue = it.permissionDialogQueue.toMutableList().apply {
