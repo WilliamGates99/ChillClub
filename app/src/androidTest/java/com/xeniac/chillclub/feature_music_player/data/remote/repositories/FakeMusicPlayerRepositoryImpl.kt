@@ -99,15 +99,15 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
             val volumeRange = maxVolume - minVolume
             val deltaVolume = (deltaPercentage * volumeRange).roundToInt()
 
-            currentMusicVolume += deltaVolume
             musicVolumePercentage.apply {
-                clear()
-                add(
-                    (currentMusicVolume).scaleToUnitInterval(
-                        minValue = minVolume,
-                        maxValue = maxVolume
-                    )
+                currentMusicVolume += deltaVolume
+                val newMusicVolumePercentage = (currentMusicVolume).scaleToUnitInterval(
+                    minValue = minVolume,
+                    maxValue = maxVolume
                 )
+
+                clear()
+                add(newMusicVolumePercentage)
             }
 
             send(Result.Success(Unit))

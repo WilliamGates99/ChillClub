@@ -50,18 +50,20 @@ class MusicPlayerRepositoryImpl @Inject constructor(
     private val db: Lazy<ChillClubDatabase>,
     private val dao: Lazy<RadioStationsDao>,
     private val audioManager: AudioManager,
-    private val streamType: MUSIC_STREAM_TYPE
+    private val musicStreamType: MUSIC_STREAM_TYPE
 ) : MusicPlayerRepository {
 
     override fun observeMusicVolumeChanges(): Flow<MusicVolumePercentage> = callbackFlow {
-        val maxVolume = audioManager.getStreamMaxVolume(streamType)
+        val maxVolume = audioManager.getStreamMaxVolume(musicStreamType)
         val minVolume = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            audioManager.getStreamMinVolume(streamType)
+            audioManager.getStreamMinVolume(musicStreamType)
         } else 0
-        val currentVolumePercentage = audioManager.getStreamVolume(streamType).scaleToUnitInterval(
-            minValue = minVolume,
-            maxValue = maxVolume
-        )
+        val currentVolumePercentage = audioManager
+            .getStreamVolume(musicStreamType)
+            .scaleToUnitInterval(
+                minValue = minVolume,
+                maxValue = maxVolume
+            )
 
         trySend(currentVolumePercentage)
 
@@ -73,9 +75,9 @@ class MusicPlayerRepositoryImpl @Inject constructor(
                 )
 
                 when (volumeStreamType) {
-                    streamType -> {
+                    musicStreamType -> {
                         val newVolumePercentage = audioManager
-                            .getStreamVolume(streamType)
+                            .getStreamVolume(musicStreamType)
                             .scaleToUnitInterval(
                                 minValue = minVolume,
                                 maxValue = maxVolume
@@ -101,25 +103,26 @@ class MusicPlayerRepositoryImpl @Inject constructor(
         currentPercentage: MusicVolumePercentage
     ): Flow<Result<Unit, AdjustVolumeError>> = flow {
         try {
-            val currentVolume = audioManager.getStreamVolume(streamType)
-            val maxVolume = audioManager.getStreamMaxVolume(streamType)
+            val currentVolume = audioManager.getStreamVolume(musicStreamType)
+            val maxVolume = audioManager.getStreamMaxVolume(musicStreamType)
             val minVolume = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                audioManager.getStreamMinVolume(streamType)
+                audioManager.getStreamMinVolume(musicStreamType)
             } else 0
 
             // Calculate the percentage difference
-            val deltaPercentage = newPercentage - currentPercentage
+            val percentageChange = newPercentage - currentPercentage
 
             // Calculate how much to adjust the music volume
             val volumeRange = maxVolume - minVolume
-            val deltaVolume = (deltaPercentage * volumeRange).roundToInt()
+            val volumeChange = (percentageChange * volumeRange).roundToInt()
+            val newVolumeIndex = currentVolume.plus(volumeChange).coerceIn(
+                minimumValue = minVolume,
+                maximumValue = maxVolume
+            )
 
             audioManager.setStreamVolume(
-                /* streamType = */ streamType,
-                /* index = */ currentVolume.plus(deltaVolume).coerceIn(
-                    minimumValue = minVolume,
-                    maximumValue = maxVolume
-                ),
+                /* streamType = */ musicStreamType,
+                /* index = */ newVolumeIndex,
                 /* flags = */ 0 // Do not show the volume slider
             )
 
