@@ -31,24 +31,11 @@ class SettingsViewModel @Inject constructor(
     private val settingsUseCases: SettingsUseCases
 ) : ViewModel() {
 
-    private val _appTheme = settingsUseCases.getCurrentAppThemeUseCase.get()().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(),
-        initialValue = null
-    )
-
-    private val _isPlayInBackgroundEnabled = settingsUseCases.getIsPlayInBackgroundEnabledUseCase
-        .get()().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(),
-        initialValue = null
-    )
-
     private val _settingsState = MutableStateFlow(SettingsState())
     val settingsState = combine(
         flow = _settingsState,
-        flow2 = _appTheme,
-        flow3 = _isPlayInBackgroundEnabled
+        flow2 = settingsUseCases.getCurrentAppThemeUseCase.get()(),
+        flow3 = settingsUseCases.getIsPlayInBackgroundEnabledUseCase.get()()
     ) { settingsState, appTheme, isPlayInBackgroundEnabled ->
         settingsState.copy(
             currentAppTheme = appTheme,

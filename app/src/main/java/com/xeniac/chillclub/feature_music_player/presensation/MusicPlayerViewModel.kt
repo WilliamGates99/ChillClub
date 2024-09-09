@@ -35,28 +35,14 @@ class MusicPlayerViewModel @Inject constructor(
 
     private val mutex: Mutex = Mutex()
 
-    private val _musicVolumePercentage =
-        musicPlayerUseCases.observeMusicVolumeChangesUseCase.get()().stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = null
-        )
-
-    private val _notificationPermissionCount =
-        musicPlayerUseCases.getNotificationPermissionCountUseCase.get()().stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = 0
-        )
-
     private val _musicPlayerState = savedStateHandle.getStateFlow(
         key = "musicPlayerState",
         initialValue = MusicPlayerState()
     )
     val musicPlayerState = combine(
         flow = _musicPlayerState,
-        flow2 = _musicVolumePercentage,
-        flow3 = _notificationPermissionCount
+        flow2 = musicPlayerUseCases.observeMusicVolumeChangesUseCase.get()(),
+        flow3 = musicPlayerUseCases.getNotificationPermissionCountUseCase.get()()
     ) { musicPlayerState, musicVolumePercentage, notificationPermissionCount ->
         musicPlayerState.copy(
             musicVolumePercentage = musicVolumePercentage,
