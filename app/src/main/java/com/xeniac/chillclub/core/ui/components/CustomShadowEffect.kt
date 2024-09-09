@@ -1,6 +1,7 @@
 package com.xeniac.chillclub.core.ui.components
 
 import android.graphics.BlurMaskFilter
+import android.os.Build
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Rect
@@ -28,7 +29,12 @@ fun Modifier.customShadow(
     drawIntoCanvas { canvas ->
         val paint = Paint()
         val frameworkPaint = paint.asFrameworkPaint()
-        val spreadPixel = spread.toPx()
+
+        // on android 9 and below, blur radius does not work, hence the spread must be set to 0px
+        // TODO: TEST AND UPDATE VERSION ACCORDINGLY
+        val spreadPixel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            spread.toPx()
+        } else 0f.dp.toPx()
 
         val leftPixel = (0f - spreadPixel) + offsetX.toPx()
         val topPixel = (0f - spreadPixel) + offsetY.toPx()
@@ -70,7 +76,11 @@ fun Modifier.customOvalShadow(
     drawIntoCanvas { canvas ->
         val paint = Paint()
         val frameworkPaint = paint.asFrameworkPaint()
-        val spreadPixel = spread.toPx()
+
+        // TODO: TEST AND UPDATE VERSION ACCORDINGLY
+        val spreadPixel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            spread.toPx()
+        } else 0f.dp.toPx()
 
         val leftPixel = (0f - spreadPixel) + offsetX.toPx()
         val topPixel = (0f - spreadPixel) + offsetY.toPx()
