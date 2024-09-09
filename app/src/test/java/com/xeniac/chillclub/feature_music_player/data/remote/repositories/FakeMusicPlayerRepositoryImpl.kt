@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepository {
 
@@ -86,32 +87,19 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
         musicVolumePercentage.first()
     }
 
-    override fun decreaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = callbackFlow {
+    override fun adjustMusicVolume(
+        newPercentage: MusicVolumePercentage,
+        currentPercentage: MusicVolumePercentage
+    ): Flow<Result<Unit, AdjustVolumeError>> = callbackFlow {
         try {
-            currentMusicVolume -= 1
+            // Calculate the percentage difference
+            val deltaPercentage = newPercentage - currentPercentage
 
-            musicVolumePercentage.apply {
-                clear()
-                add(
-                    (currentMusicVolume).scaleToUnitInterval(
-                        minValue = minVolume,
-                        maxValue = maxVolume
-                    )
-                )
-            }
+            // Calculate how much to adjust the music volume
+            val volumeRange = maxVolume - minVolume
+            val deltaVolume = (deltaPercentage * volumeRange).roundToInt()
 
-            send(Result.Success(Unit))
-        } catch (e: Exception) {
-            send(Result.Error(AdjustVolumeError.SomethingWentWrong))
-        }
-
-        awaitClose {}
-    }
-
-    override fun increaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = callbackFlow {
-        try {
-            currentMusicVolume += 1
-
+            currentMusicVolume += deltaVolume
             musicVolumePercentage.apply {
                 clear()
                 add(
