@@ -95,7 +95,13 @@ class MusicPlayerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun decreaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = flow {
+    /*
+    TODO: CREATE NEW FUNCTION AND MERGE BOTH DECREASE AND INCREASE VOLUME FUNCTIONS
+    CHECK THE NEW VOLUME SLIDER VALUE AND CONVERT AND COERCE IT BASED ON THE MIN AND MAX VOLUMES
+    THEN SET THE NEW STREAM VOLUME
+     */
+
+    override fun decreaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = flow {
         try {
             val currentVolume = audioManager.getStreamVolume(streamType)
             val maxVolume = audioManager.getStreamMaxVolume(streamType)
@@ -122,7 +128,7 @@ class MusicPlayerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun increaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = flow {
+    override fun increaseMusicVolume(): Flow<Result<Unit, AdjustVolumeError>> = flow {
         try {
             val currentVolume = audioManager.getStreamVolume(streamType)
             val maxVolume = audioManager.getStreamMaxVolume(streamType)
@@ -149,18 +155,18 @@ class MusicPlayerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getRadioStations(
+    override fun getRadioStations(
         fetchFromRemote: Boolean
     ): Flow<Result<List<RadioStation>, GetRadioStationsError>> = flow {
-        val localRadioStationEntities = dao.get().getRadioStations()
-
-        val shouldJustLoadFromCache = localRadioStationEntities.isNotEmpty() && !fetchFromRemote
-        if (shouldJustLoadFromCache) {
-            emit(Result.Success(localRadioStationEntities.map { it.toRadioStation() }))
-            return@flow
-        }
-
         try {
+            val localRadioStationEntities = dao.get().getRadioStations()
+
+            val shouldJustLoadFromCache = localRadioStationEntities.isNotEmpty() && !fetchFromRemote
+            if (shouldJustLoadFromCache) {
+                emit(Result.Success(localRadioStationEntities.map { it.toRadioStation() }))
+                return@flow
+            }
+
             val response = httpClient.get(
                 urlString = MusicPlayerRepository.EndPoints.GetRadioStations.url
             )

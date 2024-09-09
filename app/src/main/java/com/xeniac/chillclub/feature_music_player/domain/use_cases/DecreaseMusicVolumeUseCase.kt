@@ -8,6 +8,6 @@ import kotlinx.coroutines.flow.Flow
 class DecreaseMusicVolumeUseCase(
     private val musicPlayerRepository: MusicPlayerRepository
 ) {
-    suspend operator fun invoke(): Flow<Result<Unit, AdjustVolumeError>> =
+    operator fun invoke(): Flow<Result<Unit, AdjustVolumeError>> =
         musicPlayerRepository.decreaseMusicVolume()
 }

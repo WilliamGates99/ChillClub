@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 class GetRadioStationsUseCase(
     private val musicPlayerRepository: MusicPlayerRepository
 ) {
-    suspend operator fun invoke(
+    operator fun invoke(
         fetchFromRemote: Boolean
     ): Flow<Result<List<RadioStation>, GetRadioStationsError>> =
         musicPlayerRepository.getRadioStations(fetchFromRemote)

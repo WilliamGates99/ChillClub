@@ -1,7 +1,6 @@
 package com.xeniac.chillclub.feature_music_player.presensation
 
 import android.graphics.Rect
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xeniac.chillclub.core.domain.models.RadioStation
@@ -15,30 +14,32 @@ import com.xeniac.chillclub.feature_music_player.domain.use_cases.MusicPlayerUse
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
 import com.xeniac.chillclub.feature_music_player.presensation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
     private val musicPlayerUseCases: MusicPlayerUseCases,
-    private val savedStateHandle: SavedStateHandle
+//    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val mutex: Mutex = Mutex()
+//    private val mutex: Mutex = Mutex()
 
-    private val _musicPlayerState = savedStateHandle.getStateFlow(
-        key = "musicPlayerState",
-        initialValue = MusicPlayerState()
-    )
+    private val _musicPlayerState = MutableStateFlow(MusicPlayerState())
     val musicPlayerState = combine(
         flow = _musicPlayerState,
         flow2 = musicPlayerUseCases.observeMusicVolumeChangesUseCase.get()(),
@@ -79,10 +80,8 @@ class MusicPlayerViewModel @Inject constructor(
                 tags = listOf("tag1", "tag2")
             )
 
-            mutex.withLock {
-                savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                    currentRadioStations = station
-                )
+            _musicPlayerState.update {
+                it.copy(currentRadioStations = station)
             }
         }
     }
@@ -105,24 +104,19 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
-    private fun getRadioStations() = viewModelScope.launch {
-        mutex.withLock {
-            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                isRadioStationsLoading = true
-            )
-        }
-
+    private fun getRadioStations() {
         musicPlayerUseCases.getRadioStationsUseCase.get()(
             fetchFromRemote = NetworkObserverHelper.networkStatus.value == ConnectivityObserver.Status.AVAILABLE
-        ).collect { getRadioStationsResult ->
+        ).onStart {
+            _musicPlayerState.update {
+                it.copy(isRadioStationsLoading = true)
+            }
+        }.onEach { getRadioStationsResult ->
             when (getRadioStationsResult) {
                 is Result.Success -> {
                     getRadioStationsResult.data.let { radioStations ->
-                        mutex.withLock {
-                            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                                radioStations = radioStations,
-                                isRadioStationsLoading = false
-                            )
+                        _musicPlayerState.update {
+                            it.copy(radioStations = radioStations)
                         }
                     }
                 }
@@ -144,43 +138,43 @@ class MusicPlayerViewModel @Inject constructor(
                             )
                         }
                     }
-
-                    mutex.withLock {
-                        savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                            isRadioStationsLoading = false
-                        )
-                    }
                 }
             }
+        }.onCompletion { throwable ->
+            if (throwable == null) {
+                _musicPlayerState.update {
+                    it.copy(isRadioStationsLoading = false)
+                }
+            }
+
+            if (throwable is CancellationException) {
+                _musicPlayerState.update {
+                    it.copy(isRadioStationsLoading = false)
+                }
+            }
+        }.launchIn(scope = viewModelScope)
+    }
+
+    private fun setVolumeSliderBounds(bounds: Rect) {
+        _musicPlayerState.update {
+            it.copy(volumeSliderBounds = bounds)
         }
     }
 
-    private fun setVolumeSliderBounds(bounds: Rect) = viewModelScope.launch {
-        mutex.withLock {
-            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                volumeSliderBounds = bounds
-            )
+    private fun showVolumeSlider() {
+        _musicPlayerState.update {
+            it.copy(isVolumeSliderVisible = true)
         }
     }
 
-    private fun showVolumeSlider() = viewModelScope.launch {
-        mutex.withLock {
-            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                isVolumeSliderVisible = true
-            )
+    private fun hideVolumeSlider() {
+        _musicPlayerState.update {
+            it.copy(isVolumeSliderVisible = false)
         }
     }
 
-    private fun hideVolumeSlider() = viewModelScope.launch {
-        mutex.withLock {
-            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                isVolumeSliderVisible = false
-            )
-        }
-    }
-
-    private fun decreaseMusicVolume() = viewModelScope.launch {
-        musicPlayerUseCases.decreaseMusicVolumeUseCase.get()().collect { result ->
+    private fun decreaseMusicVolume() {
+        musicPlayerUseCases.decreaseMusicVolumeUseCase.get()().onEach { result ->
             when (result) {
                 is Result.Success -> Unit
                 is Result.Error -> {
@@ -189,11 +183,11 @@ class MusicPlayerViewModel @Inject constructor(
                     )
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
-    private fun increaseMusicVolume() = viewModelScope.launch {
-        musicPlayerUseCases.increaseMusicVolumeUseCase.get()().collect { result ->
+    private fun increaseMusicVolume() {
+        musicPlayerUseCases.increaseMusicVolumeUseCase.get()().onEach { result ->
             when (result) {
                 is Result.Success -> Unit
                 is Result.Error -> {
@@ -202,38 +196,34 @@ class MusicPlayerViewModel @Inject constructor(
                     )
                 }
             }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun playMusic() {
+        // TODO: MODIFY AFTER ADDING YOUTUBE PLAYER
+        _musicPlayerState.update {
+            it.copy(isMusicPlaying = true)
         }
     }
 
-    private fun playMusic() = viewModelScope.launch {
+    private fun pauseMusic() {
         // TODO: MODIFY AFTER ADDING YOUTUBE PLAYER
-        mutex.withLock {
-            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                isMusicPlaying = true
-            )
-        }
-    }
-
-    private fun pauseMusic() = viewModelScope.launch {
-        // TODO: MODIFY AFTER ADDING YOUTUBE PLAYER
-        mutex.withLock {
-            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
-                isMusicPlaying = false
-            )
+        _musicPlayerState.update {
+            it.copy(isMusicPlaying = false)
         }
     }
 
     private fun onPermissionResult(
         permission: String,
         isGranted: Boolean
-    ) = viewModelScope.launch {
+    ) {
         val shouldAskForPermission = musicPlayerState.value.run {
             notificationPermissionCount < 1 && !permissionDialogQueue.contains(permission) && !isGranted
         }
 
         if (shouldAskForPermission) {
-            mutex.withLock {
-                savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
+            _musicPlayerState.update {
+                it.copy(
                     permissionDialogQueue = listOf(permission),
                     isPermissionDialogVisible = true
                 )
@@ -246,8 +236,8 @@ class MusicPlayerViewModel @Inject constructor(
             count = musicPlayerState.value.notificationPermissionCount.plus(1)
         )
 
-        mutex.withLock {
-            savedStateHandle["musicPlayerState"] = musicPlayerState.value.copy(
+        _musicPlayerState.update {
+            it.copy(
                 permissionDialogQueue = musicPlayerState.value.permissionDialogQueue.toMutableList()
                     .apply { remove(permission) }.toList(),
                 isPermissionDialogVisible = false
