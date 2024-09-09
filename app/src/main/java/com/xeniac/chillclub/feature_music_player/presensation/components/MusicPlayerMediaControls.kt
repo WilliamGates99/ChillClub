@@ -1,15 +1,23 @@
 package com.xeniac.chillclub.feature_music_player.presensation.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -18,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.layoutId
@@ -31,13 +40,11 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
-import androidx.constraintlayout.compose.Visibility
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.ui.components.CustomIconButton
 import com.xeniac.chillclub.core.ui.components.VerticalSlider
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
-import timber.log.Timber
 
 @Composable
 fun MusicPlayerMediaControls(
@@ -131,10 +138,6 @@ fun VolumeControlButton(
 
             width = Dimension.value(volumeSliderWidth)
             height = Dimension.value(volumeSliderHeight)
-
-            visibility = if (musicPlayerState.isVolumeSliderVisible) {
-                Visibility.Visible
-            } else Visibility.Gone
         }
     }
 
@@ -142,16 +145,29 @@ fun VolumeControlButton(
         constraintSet = constraintSet,
         modifier = modifier
     ) {
-        VolumeSlider(
-            musicPlayerState = musicPlayerState,
-            sliderWidth = volumeSliderWidth,
-            sliderHeight = volumeSliderHeight,
-            onVolumeSliderShown = onVolumeSliderShown,
-            onValueChange = { newValue ->
-
-            },
+        AnimatedVisibility(
+            visible = musicPlayerState.isVolumeSliderVisible,
+            enter = scaleIn(
+                animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                transformOrigin = TransformOrigin(pivotFractionX = 0.5f, pivotFractionY = 1f)
+            ),
+            exit = scaleOut(
+                animationSpec = spring(stiffness = Spring.StiffnessMedium),
+                transformOrigin = TransformOrigin(pivotFractionX = 0.5f, pivotFractionY = 1f)
+            ),
             modifier = Modifier.layoutId("volumeSlider")
-        )
+        ) {
+            VolumeSlider(
+                musicPlayerState = musicPlayerState,
+                sliderWidth = volumeSliderWidth,
+                sliderHeight = volumeSliderHeight,
+                onVolumeSliderShown = onVolumeSliderShown,
+                onValueChange = { newValue ->
+
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+        }
 
         CustomIconButton(
             icon = icon,
@@ -172,14 +188,23 @@ fun VolumeSlider(
     sliderWidth: Dp,
     sliderHeight: Dp,
     modifier: Modifier = Modifier,
-//    sliderInitialPosition: Float = musicPlayerState.musicVolumePercentage ?: 0f,
     volumeSliderShape: Shape = RoundedCornerShape(90.dp),
     volumeSliderBackground: Color = MaterialTheme.colorScheme.surface,
     onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
     onValueChange: (newValue: Float) -> Unit // TODO: RENAME
 ) {
-    //musicPlayerState.musicVolumePercentage ?: 0f
-//    var sliderPosition by remember { mutableFloatStateOf(sliderInitialPosition) }
+    var startVolumeSliderAnimation by remember { mutableStateOf(false) }
+    val animatedVolumeSliderPosition by animateFloatAsState(
+        targetValue = if (startVolumeSliderAnimation) {
+            musicPlayerState.musicVolumePercentage ?: 0f
+        } else 0f,
+        animationSpec = spring(stiffness = Spring.StiffnessLow),
+        label = "animatedVolumeSliderPosition"
+    )
+
+    LaunchedEffect(key1 = Unit) {
+        startVolumeSliderAnimation = true
+    }
 
     Box(
         modifier = modifier
@@ -191,14 +216,10 @@ fun VolumeSlider(
             }
     ) {
         VerticalSlider(
-//            value = sliderPosition,
-            value = musicPlayerState.musicVolumePercentage ?: 0f,
+            value = animatedVolumeSliderPosition,
             onValueChange = { newValue ->
 //                sliderPosition = newValue
             },
-//            onValueChangeFinished = {
-//                Timber.i("onValueChangeFinished")
-//            },
             paddingValues = PaddingValues(
                 start = 42.dp,
                 end = 8.dp
