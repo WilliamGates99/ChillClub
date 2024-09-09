@@ -27,7 +27,9 @@ import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.ANDROID
 import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -79,6 +81,7 @@ internal object AppModule {
         expectSuccess = true
 
         install(Logging) {
+            logger = Logger.ANDROID
             level = LogLevel.INFO
             sanitizeHeader { header -> header == HttpHeaders.Authorization }
         }
