@@ -18,7 +18,7 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -33,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xeniac.chillclub.core.presentation.utils.ObserverAsEvent
 import com.xeniac.chillclub.core.presentation.utils.UiEvent
 import com.xeniac.chillclub.core.presentation.utils.getStatusBarHeightDp
+import com.xeniac.chillclub.core.presentation.utils.toDp
 import com.xeniac.chillclub.core.ui.components.SwipeableSnackbar
 import com.xeniac.chillclub.feature_music_player.presensation.components.MusicPlayer
 import com.xeniac.chillclub.feature_music_player.presensation.components.MusicPlayerBackground
@@ -53,7 +54,7 @@ fun MusicPlayerScreen(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     val musicPlayerState by viewModel.musicPlayerState.collectAsStateWithLifecycle()
-    var bottomSheetPeekHeight by remember { mutableStateOf(0.dp) }
+    var bottomSheetPeekHeightPx by remember { mutableIntStateOf(0) }
 
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         snackbarHostState = snackbarHostState,
@@ -120,8 +121,8 @@ fun MusicPlayerScreen(
             RadioStationsBottomSheet(
                 musicPlayerState = musicPlayerState,
                 sheetState = bottomSheetScaffoldState.bottomSheetState,
-                onHeaderHeightCalculated = { height ->
-                    bottomSheetPeekHeight = height
+                onHeaderHeightCalculated = { heightPx ->
+                    bottomSheetPeekHeightPx = heightPx
                 },
                 onHeaderClick = {
                     scope.launch {
@@ -145,7 +146,7 @@ fun MusicPlayerScreen(
                 modifier = Modifier.fillMaxWidth()
             )
         },
-        sheetPeekHeight = bottomSheetPeekHeight,
+        sheetPeekHeight = bottomSheetPeekHeightPx.toDp(),
         sheetShape = RoundedCornerShape(
             topStart = 36.dp,
             topEnd = 36.dp

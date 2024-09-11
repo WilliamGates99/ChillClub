@@ -33,20 +33,19 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.toUpperCase
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.domain.models.RadioStation
+import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeight
 import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeightDp
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
 
@@ -55,9 +54,9 @@ fun RadioStationsBottomSheet(
     musicPlayerState: MusicPlayerState,
     sheetState: SheetState,
     modifier: Modifier = Modifier,
-    density: Density = LocalDensity.current,
+    navigationBarHeightPx: Int = getNavigationBarHeight(),
     navigationBarHeight: Dp = getNavigationBarHeightDp(),
-    onHeaderHeightCalculated: (height: Dp) -> Unit,
+    onHeaderHeightCalculated: (heightPx: Int) -> Unit,
     onHeaderClick: () -> Unit,
     onRadioStationClick: (radioStation: RadioStation) -> Unit
 ) {
@@ -72,8 +71,7 @@ fun RadioStationsBottomSheet(
                     indication = null
                 )
                 .onSizeChanged { size ->
-                    val headerHeight = with(density) { size.height.toDp() }
-                    onHeaderHeightCalculated(headerHeight + navigationBarHeight)
+                    onHeaderHeightCalculated(size.height + navigationBarHeightPx)
                 }
         )
 
