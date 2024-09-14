@@ -21,6 +21,7 @@ inAppBrowser = "1.8.0"
 timber = "5.0.1"
 lottieCompose = "6.5.2"
 coil-bom = "2.7.0"
+youtubePlayerView = "12.1.0"
 playReview = "2.0.1"
 playAppUpdate = "2.1.0"
 truth = "1.4.4"
@@ -112,6 +113,9 @@ coil-bom = { module = "io.coil-kt:coil-bom", version.ref = "coil-bom" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose" }
 coil-svg = { group = "io.coil-kt", name = "coil-svg" }
 coil-gif = { group = "io.coil-kt", name = "coil-gif" }
+
+# YouTube Player Library
+youtube-player = { module = "com.pierfrancescosoffritti.androidyoutubeplayer:core", version.ref = "youtubePlayerView" }
 
 # Google Play In-App Reviews API
 play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }

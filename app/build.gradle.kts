@@ -324,6 +324,9 @@ dependencies {
     implementation(libs.coil.svg)
     implementation(libs.coil.gif)
 
+    // YouTube Player Library
+    implementation(libs.youtube.player)
+
     // Google Play In-App Reviews API
     implementation(libs.play.review.ktx)
 

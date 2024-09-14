@@ -44,11 +44,10 @@
                 android:value="true" />
         </service>
 
-        <!--        TODO IMPLEMENT-->
-        <!--        <service-->
-        <!--            android:name=".YoutubePlayerService"-->
-        <!--            android:exported="false"-->
-        <!--            android:foregroundServiceType="mediaPlayback" />-->
+        <service
+            android:name=".feature_music_player.services.YouTubePlayerService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
 
         <service
             android:name=".feature_firebase_cloud_messaging.services.FirebaseCloudMessagingService"

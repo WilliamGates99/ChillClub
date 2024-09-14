@@ -7,6 +7,10 @@
     <string name="notification_fcm_channel_name_miscellaneous">Miscellaneous</string>
 
 
+    <string name="notification_player_channel_group_name">Music Player</string>
+    <string name="notification_player_channel_name_service">Music Player Service</string>
+
+
     <string name="permissions_error_notification_declined">This app requires notifications permission to continue playing in the background.</string>
     <string name="permissions_error_notification_declined_permanently">It looks like you\'ve permanently denied notifications permission. You can go to the app settings to grant it.</string>
     <string name="permissions_error_btn_open_settings">App Settings</string>
@@ -35,6 +39,8 @@
     <string name="music_player_radio_stations_sheet_content_description_show">Show</string>
     <string name="music_player_radio_stations_sheet_content_description_hide">Hide</string>
     <string name="music_player_radio_stations_sheet_content_description_radio_cover">Radio Cover</string>
+    <!--Placeholder is for the radio station title-->
+    <string name="music_player_notification_message">Now Playing: %s</string>
 
 
     <string name="settings_app_bar_title">Settings</string>
