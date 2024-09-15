@@ -113,7 +113,10 @@ class MusicPlayerViewModel @Inject constructor(
                 is Result.Success -> {
                     getRadioStationsResult.data.let { radioStations ->
                         _musicPlayerState.update {
-                            it.copy(radioStations = radioStations)
+                            it.copy(
+                                radioStations = radioStations,
+                                isRadioStationsLoading = false
+                            )
                         }
                     }
                 }

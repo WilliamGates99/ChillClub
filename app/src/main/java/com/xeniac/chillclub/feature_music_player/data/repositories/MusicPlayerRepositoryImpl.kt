@@ -139,10 +139,10 @@ class MusicPlayerRepositoryImpl @Inject constructor(
     ): Flow<Result<List<RadioStation>, GetRadioStationsError>> = flow {
         try {
             val localRadioStationEntities = dao.get().getRadioStations()
+            emit(Result.Success(localRadioStationEntities.map { it.toRadioStation() }))
 
             val shouldJustLoadFromCache = localRadioStationEntities.isNotEmpty() && !fetchFromRemote
             if (shouldJustLoadFromCache) {
-                emit(Result.Success(localRadioStationEntities.map { it.toRadioStation() }))
                 return@flow
             }
 
