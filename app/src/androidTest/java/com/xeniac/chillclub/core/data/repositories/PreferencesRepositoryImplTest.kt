@@ -55,7 +55,7 @@ class PreferencesRepositoryImplTest {
 
     @Before
     fun setUp() {
-        testScope.launch(context = testDispatcher) {
+        testScope.launch {
             testDataStore.edit { it.clear() }
         }
     }
