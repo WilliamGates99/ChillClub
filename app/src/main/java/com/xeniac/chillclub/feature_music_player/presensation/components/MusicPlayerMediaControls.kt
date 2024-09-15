@@ -7,13 +7,17 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.popup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
@@ -179,6 +184,7 @@ fun VolumeControlButton(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VolumeSlider(
     musicPlayerState: MusicPlayerState,
@@ -212,6 +218,8 @@ fun VolumeSlider(
                 onVolumeSliderShown(coordinates.boundsInWindow())
             }
     ) {
+        val interactionSource = remember { MutableInteractionSource() }
+
         VerticalSlider(
             value = animatedVolumeSliderPosition,
             onValueChange = adjustMusicVolume,
@@ -220,7 +228,27 @@ fun VolumeSlider(
                 end = 8.dp
             ),
             width = sliderWidth,
-            height = sliderHeight
+            height = sliderHeight,
+            interactionSource = interactionSource,
+            thumb = {
+                SliderDefaults.Thumb(
+                    interactionSource = interactionSource,
+                    thumbSize = DpSize(
+                        width = 16.dp,
+                        height = 16.dp
+                    ),
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            },
+            track = { sliderState ->
+                SliderDefaults.Track(
+                    sliderState = sliderState,
+                    drawStopIndicator = null,
+                    thumbTrackGapSize = 0.dp,
+                    trackInsideCornerSize = 0.dp,
+                    modifier = Modifier.height(4.dp)
+                )
+            }
         )
     }
 }
