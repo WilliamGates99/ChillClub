@@ -136,9 +136,15 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
             val isResponseHttpStatusOk = getRadioStationsHttpStatusCode == HttpStatusCode.OK
             val getRadioStationsResponseDto = if (isResponseHttpStatusOk) {
                 addDummyRadioStations()
-                GetRadioStationsResponseDto(radioStationDtos = radioStationEntities.map { it.toRadioStationDto() })
+                GetRadioStationsResponseDto(
+                    version = 1,
+                    radioStationDtos = radioStationEntities.map { it.toRadioStationDto() },
+                )
             } else {
-                GetRadioStationsResponseDto(radioStationDtos = emptyList())
+                GetRadioStationsResponseDto(
+                    version = 1,
+                    radioStationDtos = emptyList()
+                )
             }
 
             respond(

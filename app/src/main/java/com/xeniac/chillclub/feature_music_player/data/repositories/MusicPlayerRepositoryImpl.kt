@@ -6,9 +6,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
 import android.os.Build
-import androidx.room.withTransaction
-import com.xeniac.chillclub.core.data.local.ChillClubDatabase
 import com.xeniac.chillclub.core.data.local.RadioStationsDao
+import com.xeniac.chillclub.core.data.local.entities.RadioStationsVersionEntity
 import com.xeniac.chillclub.core.data.utils.scaleToUnitInterval
 import com.xeniac.chillclub.core.domain.models.RadioStation
 import com.xeniac.chillclub.core.domain.utils.Result
@@ -47,7 +46,6 @@ import kotlin.math.roundToInt
 class MusicPlayerRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val httpClient: HttpClient,
-    private val db: Lazy<ChillClubDatabase>,
     private val dao: Lazy<RadioStationsDao>,
     private val audioManager: AudioManager,
     private val musicStreamType: MUSIC_STREAM_TYPE
@@ -156,16 +154,32 @@ class MusicPlayerRepositoryImpl @Inject constructor(
 
             when (response.status) {
                 HttpStatusCode.OK -> {
-                    val remoteRadioStationDtos = response
-                        .body<GetRadioStationsResponseDto>()
-                        .radioStationDtos
+                    val getRadioStationsResponseDto = response.body<GetRadioStationsResponseDto>()
 
-                    db.get().withTransaction {
-                        dao.get().clearRadioStations()
-                        dao.get().insertRadioStations(
-                            radioStationEntities = remoteRadioStationDtos.map { it.toRadioStationEntity() }
-                        )
+                    val radioStationsVersions = dao.get().getRadioStationsVersions()
+                    val isFirstTimeFetchingRadioStations = radioStationsVersions.isEmpty()
+                    val shouldReplaceAllRadioStations = if (isFirstTimeFetchingRadioStations) {
+                        true
+                    } else {
+                        val currentVersion = radioStationsVersions.first().version
+                        val newVersion = getRadioStationsResponseDto.version
+                        val isLocalRadioStationsOutdated = currentVersion < newVersion
+                        isLocalRadioStationsOutdated
                     }
+
+                    if (!shouldReplaceAllRadioStations) {
+                        emit(Result.Success(localRadioStationEntities.map { it.toRadioStation() }))
+                        return@flow
+                    }
+
+                    dao.get().replaceAllRadioStations(
+                        radioStationsVersionEntity = RadioStationsVersionEntity(
+                            version = getRadioStationsResponseDto.version
+                        ),
+                        radioStationEntities = getRadioStationsResponseDto.radioStationDtos.map {
+                            it.toRadioStationEntity()
+                        }
+                    )
 
                     val radioStations = dao.get().getRadioStations().map { it.toRadioStation() }
                     emit(Result.Success(radioStations))

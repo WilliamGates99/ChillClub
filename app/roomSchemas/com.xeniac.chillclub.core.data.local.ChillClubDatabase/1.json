@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9fd7de12eeb64e8ee658112e59969b77",
+    "identityHash": "349713bb1de48cc75dd2c433d9fa937b",
     "entities": [
       {
         "tableName": "radio_stations",
@@ -59,12 +59,38 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "radio_stations_version",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`version` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT)",
+        "fields": [
+          {
+            "fieldPath": "version",
+            "columnName": "version",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9fd7de12eeb64e8ee658112e59969b77')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '349713bb1de48cc75dd2c433d9fa937b')"
     ]
   }
 }

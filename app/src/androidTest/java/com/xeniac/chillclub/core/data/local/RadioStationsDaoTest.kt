@@ -3,6 +3,7 @@ package com.xeniac.chillclub.core.data.local
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.core.data.local.entities.RadioStationEntity
+import com.xeniac.chillclub.core.data.local.entities.RadioStationsVersionEntity
 import com.xeniac.chillclub.core.domain.models.Channel
 import com.xeniac.chillclub.core.domain.models.SocialLinks
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -42,6 +43,58 @@ class RadioStationsDaoTest {
     @After
     fun tearDown() {
         database.close()
+    }
+
+    @Test
+    fun replaceAllRadioStations() = runTest {
+        val radioStationsVersionEntity = RadioStationsVersionEntity(
+            version = 1,
+            id = 1
+        )
+
+        val dummyRadioStations = mutableListOf<RadioStationEntity>()
+        repeat(times = 10) { index ->
+            val radioStationEntity = RadioStationEntity(
+                youtubeVideoId = "videoId$index",
+                title = "Test Title $index",
+                channel = Channel(
+                    name = "Test Channel $index",
+                    avatarUrl = "https://gravatar.com/avatar/b555351fc297b35d3eb1a7857740accd?s=800&d=mp&r=x",
+                    socialLinks = SocialLinks(
+                        youtube = "https://www.youtube.com"
+                    )
+                ),
+                category = "Test",
+                tags = listOf("tag1", "tag2"),
+                id = index.toLong()
+            )
+
+            dummyRadioStations.add(radioStationEntity)
+        }
+
+        dao.replaceAllRadioStations(
+            radioStationsVersionEntity = radioStationsVersionEntity,
+            radioStationEntities = dummyRadioStations
+        )
+
+        val radioStationsVersions = dao.getRadioStationsVersions()
+        assertThat(radioStationsVersions).contains(radioStationsVersionEntity)
+
+        val radioStations = dao.getRadioStations()
+        assertThat(radioStations).isNotEmpty()
+        assertThat(radioStations).containsExactlyElementsIn(dummyRadioStations)
+    }
+
+    @Test
+    fun insertRadioStationsVersion() = runTest {
+        val radioStationsVersionEntity = RadioStationsVersionEntity(
+            version = 1,
+            id = 1
+        )
+        dao.insertRadioStationsVersion(radioStationsVersionEntity)
+
+        val radioStationsVersions = dao.getRadioStationsVersions()
+        assertThat(radioStationsVersions).contains(radioStationsVersionEntity)
     }
 
     @Test
@@ -93,6 +146,24 @@ class RadioStationsDaoTest {
         val radioStations = dao.getRadioStations()
         assertThat(radioStations).isNotEmpty()
         assertThat(radioStations).containsExactlyElementsIn(dummyRadioStations)
+    }
+
+    @Test
+    fun clearRadioStationsVersions() = runTest {
+        val radioStationsVersionEntity = RadioStationsVersionEntity(
+            version = 1,
+            id = 1
+        )
+        dao.insertRadioStationsVersion(radioStationsVersionEntity)
+
+        val radioStationsVersions = dao.getRadioStationsVersions()
+        assertThat(radioStationsVersions).isNotEmpty()
+        assertThat(radioStationsVersions).contains(radioStationsVersionEntity)
+
+        dao.clearRadioStationsVersions()
+
+        val radioStationsVersionsAfterClear = dao.getRadioStationsVersions()
+        assertThat(radioStationsVersionsAfterClear).isEmpty()
     }
 
     @Test

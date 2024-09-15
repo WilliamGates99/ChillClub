@@ -7,10 +7,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GetRadioStationsResponseDto(
+    @SerialName("version")
+    val version: Int,
     @SerialName("data")
     val radioStationDtos: List<RadioStationDto>
 ) {
     fun toGetRadioStationsResponse(): GetRadioStationsResponse = GetRadioStationsResponse(
+        version = version,
         radioStations = radioStationDtos.map { it.toRadioStation() }
     )
 }
