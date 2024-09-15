@@ -34,11 +34,8 @@ import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
-    private val musicPlayerUseCases: MusicPlayerUseCases,
-//    private val savedStateHandle: SavedStateHandle
+    private val musicPlayerUseCases: MusicPlayerUseCases
 ) : ViewModel() {
-
-//    private val mutex: Mutex = Mutex()
 
     private val _musicPlayerState = MutableStateFlow(MusicPlayerState())
     val musicPlayerState = combine(
