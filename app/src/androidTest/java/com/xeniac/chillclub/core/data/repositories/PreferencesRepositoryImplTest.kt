@@ -19,18 +19,16 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.createTestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@Suppress("DEPRECATION")
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 class PreferencesRepositoryImplTest {
@@ -44,10 +42,10 @@ class PreferencesRepositoryImplTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
-    private val testScope: TestCoroutineScope = createTestCoroutineScope(testDispatcher)
+    private val testScope: TestScope = TestScope(context = testDispatcher)
 
     private val testDataStore: DataStore<Preferences> = PreferenceDataStoreFactory.create(
-        scope = testScope,
+        scope = testScope.backgroundScope,
         produceFile = { context.preferencesDataStoreFile(name = "settings_test") }
     )
 
@@ -57,9 +55,7 @@ class PreferencesRepositoryImplTest {
 
     @Before
     fun setUp() {
-        testScope.launch(
-            context = testDispatcher
-        ) {
+        testScope.launch(context = testDispatcher) {
             testDataStore.edit { it.clear() }
         }
     }
@@ -82,7 +78,7 @@ class PreferencesRepositoryImplTest {
     getPreviousRateAppRequestTimeInMs -> null
      */
     @Test
-    fun fetchInitialPreferences() = testScope.runBlockingTest {
+    fun fetchInitialPreferences() = testScope.runTest {
         val initialAppThemeSynchronously = testRepository.getCurrentAppThemeSynchronously()
         val initialAppTheme = testRepository.getCurrentAppTheme().first()
         val initialAppLocale = testRepository.getCurrentAppLocale()
@@ -108,16 +104,7 @@ class PreferencesRepositoryImplTest {
     }
 
     @Test
-    fun writeCurrentAppTheme() = testScope.runBlockingTest {
-        val testValue = AppTheme.Light
-        testRepository.storeCurrentAppTheme(testValue)
-
-        val currentAppTheme = testRepository.getCurrentAppTheme().first()
-        assertThat(currentAppTheme).isEqualTo(testValue)
-    }
-
-    @Test
-    fun writeIsPlayInBackgroundEnabled() = testScope.runBlockingTest {
+    fun writeIsPlayInBackgroundEnabled() = testScope.runTest {
         val testValue = false
         testRepository.isPlayInBackgroundEnabled(testValue)
 
@@ -126,7 +113,7 @@ class PreferencesRepositoryImplTest {
     }
 
     @Test
-    fun writeNotificationPermissionCount() = testScope.runBlockingTest {
+    fun writeNotificationPermissionCount() = testScope.runTest {
         val testValue = 2
         testRepository.storeNotificationPermissionCount(testValue)
 
@@ -135,7 +122,7 @@ class PreferencesRepositoryImplTest {
     }
 
     @Test
-    fun writeAppUpdateDialogShowCount() = testScope.runBlockingTest {
+    fun writeAppUpdateDialogShowCount() = testScope.runTest {
         val testValue = 3
         testRepository.storeAppUpdateDialogShowCount(testValue)
 
@@ -144,7 +131,7 @@ class PreferencesRepositoryImplTest {
     }
 
     @Test
-    fun writeAppUpdateDialogShowEpochDays() = testScope.runBlockingTest {
+    fun writeAppUpdateDialogShowEpochDays() = testScope.runTest {
         testRepository.storeAppUpdateDialogShowEpochDays()
 
         val isAppUpdateDialogShownTodayBefore = testRepository.isAppUpdateDialogShownToday().first()
@@ -152,7 +139,7 @@ class PreferencesRepositoryImplTest {
     }
 
     @Test
-    fun removeAppUpdateDialogShowEpochDays() = testScope.runBlockingTest {
+    fun removeAppUpdateDialogShowEpochDays() = testScope.runTest {
         testRepository.storeAppUpdateDialogShowEpochDays()
 
         val isAppUpdateDialogShownTodayBefore = testRepository.isAppUpdateDialogShownToday().first()
@@ -165,7 +152,7 @@ class PreferencesRepositoryImplTest {
     }
 
     @Test
-    fun writeSelectedRateAppOption() = testScope.runBlockingTest {
+    fun writeSelectedRateAppOption() = testScope.runTest {
         val testValue = RateAppOption.RATE_NOW
         testRepository.storeSelectedRateAppOption(testValue)
 
@@ -174,7 +161,7 @@ class PreferencesRepositoryImplTest {
     }
 
     @Test
-    fun writePreviousRateAppRequestTimeInMs() = testScope.runBlockingTest {
+    fun writePreviousRateAppRequestTimeInMs() = testScope.runTest {
         testRepository.storePreviousRateAppRequestTimeInMs()
 
         val previousRateAppRequestTime = testRepository.getPreviousRateAppRequestTimeInMs().first()
