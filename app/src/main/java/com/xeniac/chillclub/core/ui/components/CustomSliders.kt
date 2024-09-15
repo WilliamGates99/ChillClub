@@ -10,6 +10,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -33,6 +34,20 @@ fun VerticalSlider(
     valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
     @IntRange(from = 0)
     steps: Int = 0,
+    thumb: @Composable (SliderState) -> Unit = {
+        SliderDefaults.Thumb(
+            enabled = isEnabled,
+            colors = colors,
+            interactionSource = interactionSource
+        )
+    },
+    track: @Composable (SliderState) -> Unit = { sliderState ->
+        SliderDefaults.Track(
+            enabled = isEnabled,
+            colors = colors,
+            sliderState = sliderState
+        )
+    },
     onValueChangeFinished: (() -> Unit)? = null,
     onValueChange: (newValue: Float) -> Unit
 ) {
@@ -43,20 +58,8 @@ fun VerticalSlider(
         onValueChangeFinished = onValueChangeFinished,
         valueRange = valueRange,
         steps = steps,
-        thumb = {
-            SliderDefaults.Thumb(
-                enabled = isEnabled,
-                colors = colors,
-                interactionSource = interactionSource
-            )
-        },
-        track = { sliderState ->
-            SliderDefaults.Track(
-                enabled = isEnabled,
-                colors = colors,
-                sliderState = sliderState
-            )
-        },
+        thumb = thumb,
+        track = track,
         modifier = modifier
             .graphicsLayer {
                 rotationZ = -90f
