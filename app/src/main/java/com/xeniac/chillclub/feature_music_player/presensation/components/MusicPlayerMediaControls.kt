@@ -95,7 +95,7 @@ fun PlayPauseButton(
         onClick = {
             if (musicPlayerState.isMusicPlaying) {
                 onAction(MusicPlayerAction.PauseMusic)
-            } else onAction(MusicPlayerAction.PlayMusic)
+            } else onAction(MusicPlayerAction.PlayMusic(musicPlayerState.currentRadioStation))
         },
         modifier = modifier
     )

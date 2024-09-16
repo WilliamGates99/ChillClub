@@ -22,6 +22,10 @@ interface MusicPlayerRepository {
         fetchFromRemote: Boolean
     ): Flow<Result<List<RadioStation>, GetRadioStationsError>>
 
+    fun getCurrentlyPlayingRadioStation(
+        radioStationId: Long
+    ): Flow<RadioStation>
+
     sealed class EndPoints(val url: String) {
         data object GetRadioStations : EndPoints(
             url = "${BuildConfig.KTOR_HTTP_BASE_URL}/radio.json"

@@ -34,6 +34,7 @@ data class RadioStationEntity(
         title = title,
         channel = channel,
         category = category,
-        tags = tags
+        tags = tags,
+        id = id
     )
 }

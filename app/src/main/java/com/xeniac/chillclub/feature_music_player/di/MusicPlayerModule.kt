@@ -6,11 +6,14 @@ import com.xeniac.chillclub.core.data.local.RadioStationsDao
 import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.AdjustMusicVolumeUseCase
+import com.xeniac.chillclub.feature_music_player.domain.use_cases.GetCurrentlyPlayingRadioStationIdUseCase
+import com.xeniac.chillclub.feature_music_player.domain.use_cases.GetCurrentlyPlayingRadioStationUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.GetIsPlayInBackgroundEnabledUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.GetNotificationPermissionCountUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.GetRadioStationsUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.MusicPlayerUseCases
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.ObserveMusicVolumeChangesUseCase
+import com.xeniac.chillclub.feature_music_player.domain.use_cases.StoreCurrentlyPlayingRadioStationIdUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.StoreNotificationPermissionCountUseCase
 import dagger.Module
 import dagger.Provides
@@ -54,6 +57,20 @@ object MusicPlayerModule {
 
     @Provides
     @ViewModelScoped
+    fun provideGetCurrentlyPlayingRadioStationIdUseCase(
+        preferencesRepository: PreferencesRepository
+    ): GetCurrentlyPlayingRadioStationIdUseCase =
+        GetCurrentlyPlayingRadioStationIdUseCase(preferencesRepository)
+
+    @Provides
+    @ViewModelScoped
+    fun provideGetCurrentlyPlayingRadioStationUseCase(
+        musicPlayerRepository: MusicPlayerRepository
+    ): GetCurrentlyPlayingRadioStationUseCase =
+        GetCurrentlyPlayingRadioStationUseCase(musicPlayerRepository)
+
+    @Provides
+    @ViewModelScoped
     fun provideGetIsPlayInBackgroundEnabledUseCase(
         preferencesRepository: PreferencesRepository
     ): GetIsPlayInBackgroundEnabledUseCase =
@@ -68,6 +85,13 @@ object MusicPlayerModule {
 
     @Provides
     @ViewModelScoped
+    fun provideStoreCurrentlyPlayingRadioStationIdUseCase(
+        preferencesRepository: PreferencesRepository
+    ): StoreCurrentlyPlayingRadioStationIdUseCase =
+        StoreCurrentlyPlayingRadioStationIdUseCase(preferencesRepository)
+
+    @Provides
+    @ViewModelScoped
     fun provideStoreNotificationPermissionCountUseCase(
         preferencesRepository: PreferencesRepository
     ): StoreNotificationPermissionCountUseCase =
@@ -79,15 +103,21 @@ object MusicPlayerModule {
         observeMusicVolumeChangesUseCase: ObserveMusicVolumeChangesUseCase,
         adjustMusicVolumeUseCase: AdjustMusicVolumeUseCase,
         getRadioStationsUseCase: GetRadioStationsUseCase,
+        getCurrentlyPlayingRadioStationIdUseCase: GetCurrentlyPlayingRadioStationIdUseCase,
+        getCurrentlyPlayingRadioStationUseCase: GetCurrentlyPlayingRadioStationUseCase,
         getIsPlayInBackgroundEnabledUseCase: GetIsPlayInBackgroundEnabledUseCase,
         getNotificationPermissionCountUseCase: GetNotificationPermissionCountUseCase,
+        storeCurrentlyPlayingRadioStationIdUseCase: StoreCurrentlyPlayingRadioStationIdUseCase,
         storeNotificationPermissionCountUseCase: StoreNotificationPermissionCountUseCase
     ): MusicPlayerUseCases = MusicPlayerUseCases(
         { observeMusicVolumeChangesUseCase },
         { adjustMusicVolumeUseCase },
         { getRadioStationsUseCase },
+        { getCurrentlyPlayingRadioStationIdUseCase },
+        { getCurrentlyPlayingRadioStationUseCase },
         { getIsPlayInBackgroundEnabledUseCase },
         { getNotificationPermissionCountUseCase },
+        { storeCurrentlyPlayingRadioStationIdUseCase },
         { storeNotificationPermissionCountUseCase }
     )
 }

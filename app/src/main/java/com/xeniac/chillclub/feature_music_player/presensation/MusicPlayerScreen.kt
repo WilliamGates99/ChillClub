@@ -1,5 +1,8 @@
 package com.xeniac.chillclub.feature_music_player.presensation
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +21,7 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -27,6 +31,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xeniac.chillclub.core.presentation.utils.ObserverAsEvent
@@ -67,6 +72,20 @@ fun MusicPlayerScreen(
         )
     )
 
+    @SuppressLint("InlinedApi")
+    var isPostNotificationsPermissionGranted by remember {
+        mutableStateOf(
+            when (ActivityCompat.checkSelfPermission(
+                /* context = */ context,
+                /* permission = */ Manifest.permission.POST_NOTIFICATIONS
+            )) {
+                PackageManager.PERMISSION_GRANTED -> true
+                PackageManager.PERMISSION_DENIED -> false
+                else -> false
+            }
+        )
+    }
+
     ObserverAsEvent(flow = viewModel.getRadioStationsEventChannel) { event ->
         when (event) {
             is UiEvent.ShowLongSnackbar -> {
@@ -79,6 +98,22 @@ fun MusicPlayerScreen(
                     )
                 }
             }
+        }
+    }
+
+    ObserverAsEvent(flow = viewModel.playMusicEventChannel) { event ->
+        when (event) {
+            is UiEvent.ShowLongSnackbar -> {
+                scope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+
+                    snackbarHostState.showSnackbar(
+                        message = event.message.asString(context),
+                        duration = SnackbarDuration.Long
+                    )
+                }
+            }
+            else -> Unit
         }
     }
 
@@ -101,6 +136,8 @@ fun MusicPlayerScreen(
     PostNotificationPermissionHandler(
         musicPlayerState = musicPlayerState,
         onPermissionResult = { permission, isGranted ->
+            isPostNotificationsPermissionGranted = isGranted
+
             viewModel.onAction(
                 MusicPlayerAction.OnPermissionResult(
                     permission = permission,
@@ -140,7 +177,8 @@ fun MusicPlayerScreen(
                     scope.launch {
                         bottomSheetScaffoldState.bottomSheetState.partialExpand()
                     }
-                    // TODO: IMPLEMENT
+                    // TODO: REPLACE WITH ONACTION FUNCTION
+                    viewModel.onAction(MusicPlayerAction.PlayMusic(radioStation))
                 },
                 modifier = Modifier.fillMaxWidth()
             )

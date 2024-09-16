@@ -4,7 +4,6 @@ import android.graphics.Rect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xeniac.chillclub.core.domain.models.RadioStation
-import com.xeniac.chillclub.core.domain.models.SocialLinks
 import com.xeniac.chillclub.core.domain.repositories.ConnectivityObserver
 import com.xeniac.chillclub.core.domain.utils.Result
 import com.xeniac.chillclub.core.presentation.utils.Event
@@ -41,11 +40,13 @@ class MusicPlayerViewModel @Inject constructor(
     val musicPlayerState = combine(
         flow = _musicPlayerState,
         flow2 = musicPlayerUseCases.observeMusicVolumeChangesUseCase.get()(),
-        flow3 = musicPlayerUseCases.getIsPlayInBackgroundEnabledUseCase.get()(),
-        flow4 = musicPlayerUseCases.getNotificationPermissionCountUseCase.get()()
-    ) { musicPlayerState, musicVolumePercentage, isPlayInBackgroundEnabled, notificationPermissionCount ->
+        flow3 = musicPlayerUseCases.getCurrentlyPlayingRadioStationIdUseCase.get()(),
+        flow4 = musicPlayerUseCases.getIsPlayInBackgroundEnabledUseCase.get()(),
+        flow5 = musicPlayerUseCases.getNotificationPermissionCountUseCase.get()()
+    ) { musicPlayerState, musicVolumePercentage, currentlyPlayingRadioStationId, isPlayInBackgroundEnabled, notificationPermissionCount ->
         musicPlayerState.copy(
             musicVolumePercentage = musicVolumePercentage,
+            currentRadioStationId = currentlyPlayingRadioStationId,
             isPlayInBackgroundEnabled = isPlayInBackgroundEnabled,
             notificationPermissionCount = notificationPermissionCount
         )
@@ -58,38 +59,21 @@ class MusicPlayerViewModel @Inject constructor(
     private val _getRadioStationsEventChannel = Channel<Event>()
     val getRadioStationsEventChannel = _getRadioStationsEventChannel.receiveAsFlow()
 
+    private val _playMusicEventChannel = Channel<UiEvent>()
+    val playMusicEventChannel = _playMusicEventChannel.receiveAsFlow()
+
     private val _adjustMusicVolumeEventChannel = Channel<UiEvent>()
     val adjustMusicVolumeEventChannel = _adjustMusicVolumeEventChannel.receiveAsFlow()
 
     init {
         getRadioStations()
-
-        // TODO: TEMP - REMOVE
-        viewModelScope.launch {
-            val station = RadioStation(
-                youtubeVideoId = "videoId_1",
-                title = "Test Title",
-                channel = com.xeniac.chillclub.core.domain.models.Channel(
-                    name = "Test Channel",
-                    avatarUrl = "https://gravatar.com/avatar/b555351fc297b35d3eb1a7857740accd?s=800&d=mp&r=x",
-                    socialLinks = SocialLinks(
-                        youtube = "https://www.youtube.com"
-                    )
-                ),
-                category = "Test",
-                tags = listOf("tag1", "tag2")
-            )
-
-            _musicPlayerState.update {
-                it.copy(currentRadioStations = station)
-            }
-        }
     }
 
     fun onAction(action: MusicPlayerAction) {
         when (action) {
             MusicPlayerAction.GetRadioStations -> getRadioStations()
-            MusicPlayerAction.PlayMusic -> playMusic()
+            MusicPlayerAction.GetCurrentRadioStation -> getCurrentRadioStation()
+            is MusicPlayerAction.PlayMusic -> playMusic(action.radiosStation)
             MusicPlayerAction.PauseMusic -> pauseMusic()
             MusicPlayerAction.ShowVolumeSlider -> showVolumeSlider()
             MusicPlayerAction.HideVolumeSlider -> hideVolumeSlider()
@@ -157,10 +141,35 @@ class MusicPlayerViewModel @Inject constructor(
         }.launchIn(scope = viewModelScope)
     }
 
-    private fun playMusic() {
+    private fun getCurrentRadioStation() {
+        musicPlayerUseCases.getCurrentlyPlayingRadioStationUseCase.get()(
+            radioStationId = musicPlayerState.value.currentRadioStationId
+        ).onEach { radioStation ->
+            _musicPlayerState.update {
+                it.copy(
+                    currentRadioStation = radioStation
+                )
+            }
+        }.launchIn(scope = viewModelScope)
+    }
+
+    private fun playMusic(radiosStation: RadioStation?) = viewModelScope.launch {
         // TODO: MODIFY AFTER ADDING YOUTUBE PLAYER
-        _musicPlayerState.update {
-            it.copy(isMusicPlaying = true)
+        radiosStation?.id?.let { id ->
+            when (val result = musicPlayerUseCases.storeCurrentlyPlayingRadioStationIdUseCase.get()(
+                radioStationId = id
+            )) {
+                is Result.Success -> {
+                    _musicPlayerState.update {
+                        it.copy(isMusicPlaying = true)
+                    }
+                }
+                is Result.Error -> {
+                    _playMusicEventChannel.send(
+                        UiEvent.ShowShortSnackbar(result.error.asUiText())
+                    )
+                }
+            }
         }
     }
 

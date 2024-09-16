@@ -36,6 +36,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.SerializationException
 import timber.log.Timber
 import java.util.Locale
@@ -227,5 +228,11 @@ class MusicPlayerRepositoryImpl @Inject constructor(
                 emit(Result.Error(GetRadioStationsError.Network.Offline))
             } else emit(Result.Error(GetRadioStationsError.Network.SomethingWentWrong))
         }
+    }
+
+    override fun getCurrentlyPlayingRadioStation(
+        radioStationId: Long
+    ): Flow<RadioStation> = dao.get().observeRadioStation(id = radioStationId).map {
+        it.toRadioStation()
     }
 }

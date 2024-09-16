@@ -58,9 +58,9 @@ fun MusicPlayer(
 private fun MusicPlayerTitle(
     musicPlayerState: MusicPlayerState,
     modifier: Modifier = Modifier,
-    title: String = if (musicPlayerState.currentRadioStations == null) stringResource(
+    title: String = if (musicPlayerState.currentRadioStation == null) stringResource(
         id = R.string.music_player_title_not_playing
-    ) else musicPlayerState.currentRadioStations.title,
+    ) else musicPlayerState.currentRadioStation.title,
     titleFontSize: TextUnit = 56.sp,
     titleLineHeight: TextUnit = 60.sp,
     titleLetterSpacing: TextUnit = 0.sp,
@@ -85,7 +85,7 @@ private fun CurrentRadioStation(
     onAction: (action: MusicPlayerAction) -> Unit
 ) {
     AnimatedVisibility(
-        visible = musicPlayerState.currentRadioStations != null,
+        visible = musicPlayerState.currentRadioStation != null,
         enter = fadeIn(),
         exit = fadeOut(),
         modifier = modifier
@@ -95,7 +95,7 @@ private fun CurrentRadioStation(
             modifier = Modifier.fillMaxSize()
         ) {
             CurrentRadioStationTitle(
-                title = musicPlayerState.currentRadioStations!!.channel.name
+                title = musicPlayerState.currentRadioStation!!.channel.name
             )
 
             MusicPlayerMediaControls(
