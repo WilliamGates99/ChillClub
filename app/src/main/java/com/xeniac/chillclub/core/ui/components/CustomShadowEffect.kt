@@ -31,7 +31,6 @@ fun Modifier.customShadow(
         val frameworkPaint = paint.asFrameworkPaint()
 
         // on android 9 and below, blur radius does not work, hence the spread must be set to 0px
-        // TODO: TEST AND UPDATE VERSION ACCORDINGLY
         val spreadPixel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             spread.toPx()
         } else 0f.dp.toPx()
@@ -77,7 +76,7 @@ fun Modifier.customOvalShadow(
         val paint = Paint()
         val frameworkPaint = paint.asFrameworkPaint()
 
-        // TODO: TEST AND UPDATE VERSION ACCORDINGLY
+        // on android 9 and below, blur radius does not work, hence the spread must be set to 0px
         val spreadPixel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             spread.toPx()
         } else 0f.dp.toPx()
