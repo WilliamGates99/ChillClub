@@ -12,6 +12,7 @@ import com.xeniac.chillclub.core.domain.repositories.IsAppUpdateDialogShownToday
 import com.xeniac.chillclub.core.domain.repositories.IsBackgroundPlayEnabled
 import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import com.xeniac.chillclub.core.domain.repositories.PreviousRateAppRequestTimeInMs
+import com.xeniac.chillclub.core.domain.repositories.RadioStationId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.Clock
@@ -28,6 +29,7 @@ class FakePreferencesRepositoryImpl @Inject constructor() : PreferencesRepositor
     var currentAppTheme: AppTheme = AppTheme.Dark
     var currentLocale: AppLocale = AppLocale.Default
     var isPlayInBackgroundEnabled = SnapshotStateList<Boolean>().apply { add(true) }
+    var currentlyPlayingRadioStationId: RadioStationId? = null
     var notificationPermissionCount = 0
     var appUpdateDialogShowCount = 0
     var appUpdateDialogShowEpochDays: Int? = null
@@ -48,6 +50,10 @@ class FakePreferencesRepositoryImpl @Inject constructor() : PreferencesRepositor
 
     override fun isPlayInBackgroundEnabled(): Flow<IsBackgroundPlayEnabled> = snapshotFlow {
         isPlayInBackgroundEnabled.first()
+    }
+
+    override fun getCurrentlyPlayingRadioStationId(): Flow<RadioStationId?> = flow {
+        emit(currentlyPlayingRadioStationId)
     }
 
     override fun getNotificationPermissionCount(): Flow<Int> = flow {
@@ -98,6 +104,10 @@ class FakePreferencesRepositoryImpl @Inject constructor() : PreferencesRepositor
             clear()
             add(isEnabled)
         }
+    }
+
+    override suspend fun storeCurrentlyPlayingRadioStationId(id: Long) {
+        currentlyPlayingRadioStationId = id
     }
 
     override suspend fun storeNotificationPermissionCount(count: Int) {

@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 typealias IsBackgroundPlayEnabled = Boolean
 typealias IsActivityRestartNeeded = Boolean
+typealias RadioStationId = Long
 typealias AppUpdateDialogShowCount = Int
 typealias IsAppUpdateDialogShownToday = Boolean
 typealias PreviousRateAppRequestTimeInMs = Long
@@ -23,6 +24,8 @@ interface PreferencesRepository {
 
     fun getNotificationPermissionCount(): Flow<Int>
 
+    fun getCurrentlyPlayingRadioStationId(): Flow<RadioStationId?>
+
     fun getAppUpdateDialogShowCount(): Flow<AppUpdateDialogShowCount>
 
     fun isAppUpdateDialogShownToday(): Flow<IsAppUpdateDialogShownToday>
@@ -38,6 +41,8 @@ interface PreferencesRepository {
     suspend fun isPlayInBackgroundEnabled(isEnabled: Boolean)
 
     suspend fun storeNotificationPermissionCount(count: Int)
+
+    suspend fun storeCurrentlyPlayingRadioStationId(id: Long)
 
     suspend fun storeAppUpdateDialogShowCount(count: Int)
 

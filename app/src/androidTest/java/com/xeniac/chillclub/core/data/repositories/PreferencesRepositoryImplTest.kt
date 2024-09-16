@@ -71,6 +71,7 @@ class PreferencesRepositoryImplTest {
     getCurrentAppTheme -> AppTheme.Dark
     getCurrentAppLocale -> AppLocale.Default
     isPlayInBackgroundEnabled -> true
+    getCurrentlyPlayingRadioStationId -> null
     getNotificationPermissionCount -> 0
     getAppUpdateDialogShowCount -> 0
     isAppUpdateDialogShownToday -> false
@@ -83,6 +84,8 @@ class PreferencesRepositoryImplTest {
         val initialAppTheme = testRepository.getCurrentAppTheme().first()
         val initialAppLocale = testRepository.getCurrentAppLocale()
         val initialIsPlayInBackgroundEnabled = testRepository.isPlayInBackgroundEnabled().first()
+        val initialCurrentlyPlayingRadioStationId =
+            testRepository.getCurrentlyPlayingRadioStationId().first()
         val initialNotificationPermissionCount =
             testRepository.getNotificationPermissionCount().first()
         val initialAppUpdateDialogShowCount = testRepository.getAppUpdateDialogShowCount().first()
@@ -96,6 +99,7 @@ class PreferencesRepositoryImplTest {
         assertThat(initialAppTheme).isEqualTo(AppTheme.Dark)
         assertThat(initialAppLocale).isEqualTo(AppLocale.Default)
         assertThat(initialIsPlayInBackgroundEnabled).isTrue()
+        assertThat(initialCurrentlyPlayingRadioStationId).isNull()
         assertThat(initialNotificationPermissionCount).isEqualTo(0)
         assertThat(initialAppUpdateDialogShowCount).isEqualTo(0)
         assertThat(initialIsAppUpdateDialogShownToday).isFalse()
@@ -110,6 +114,15 @@ class PreferencesRepositoryImplTest {
 
         val isPlayInBackgroundEnabled = testRepository.isPlayInBackgroundEnabled().first()
         assertThat(isPlayInBackgroundEnabled).isEqualTo(testValue)
+    }
+
+    @Test
+    fun writeCurrentlyPlayingRadioStationId() = testScope.runTest {
+        val testValue = 5L
+        testRepository.storeCurrentlyPlayingRadioStationId(testValue)
+
+        val notificationPermissionCount = testRepository.getCurrentlyPlayingRadioStationId().first()
+        assertThat(notificationPermissionCount).isEqualTo(testValue)
     }
 
     @Test

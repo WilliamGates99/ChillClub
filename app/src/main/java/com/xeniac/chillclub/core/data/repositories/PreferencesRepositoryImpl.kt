@@ -19,6 +19,7 @@ import com.xeniac.chillclub.core.domain.repositories.IsAppUpdateDialogShownToday
 import com.xeniac.chillclub.core.domain.repositories.IsBackgroundPlayEnabled
 import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import com.xeniac.chillclub.core.domain.repositories.PreviousRateAppRequestTimeInMs
+import com.xeniac.chillclub.core.domain.repositories.RadioStationId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
@@ -42,6 +43,9 @@ class PreferencesRepositoryImpl @Inject constructor(
             name = "isPlayInBackgroundEnabled"
         )
         val NOTIFICATION_PERMISSION_COUNT = intPreferencesKey(name = "notificationPermissionCount")
+        val CURRENTLY_PLAYING_RADIO_STATION_ID = longPreferencesKey(
+            name = "currentlyPlayingRadioStationId"
+        )
         val APP_UPDATE_DIALOG_SHOW_COUNT = intPreferencesKey(name = "AppUpdateDialogShowCount")
         val APP_UPDATE_DIALOG_SHOW_EPOCH_DAYS = intPreferencesKey(
             name = "appUpdateDialogShowEpochDays"
@@ -120,6 +124,14 @@ class PreferencesRepositoryImpl @Inject constructor(
         Timber.e("getNotificationPermissionCount failed:")
         e.printStackTrace()
     }
+
+    override fun getCurrentlyPlayingRadioStationId(): Flow<RadioStationId?> =
+        settingsDataStore.data.map {
+            it[PreferencesKeys.CURRENTLY_PLAYING_RADIO_STATION_ID]
+        }.catch { e ->
+            Timber.e("getNotificationPermissionCount failed:")
+            e.printStackTrace()
+        }
 
     override fun getAppUpdateDialogShowCount(): Flow<AppUpdateDialogShowCount> =
         settingsDataStore.data.map {
@@ -217,6 +229,18 @@ class PreferencesRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Timber.e("storeNotificationPermissionCount failed:")
+            e.printStackTrace()
+        }
+    }
+
+    override suspend fun storeCurrentlyPlayingRadioStationId(id: Long) {
+        try {
+            settingsDataStore.edit { preferences ->
+                preferences[PreferencesKeys.CURRENTLY_PLAYING_RADIO_STATION_ID] = id
+                Timber.i("Currently playing radio station id edited to $id")
+            }
+        } catch (e: Exception) {
+            Timber.e("storeCurrentlyPlayingRadioStationId failed:")
             e.printStackTrace()
         }
     }
