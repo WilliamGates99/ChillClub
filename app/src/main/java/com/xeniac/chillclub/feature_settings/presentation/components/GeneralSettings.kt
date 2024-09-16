@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.domain.models.AppTheme
+import com.xeniac.chillclub.feature_settings.presentation.SettingsAction
 import com.xeniac.chillclub.feature_settings.presentation.states.SettingsState
 import com.xeniac.chillclub.feature_settings.presentation.utils.TestTags
 
@@ -31,9 +32,8 @@ fun GeneralSettings(
     titleFontSize: TextUnit = 20.sp,
     titleLineHeight: TextUnit = 20.sp,
     titleFontWeight: FontWeight = FontWeight.Normal,
-    onThemeChange: (newAppTheme: AppTheme) -> Unit,
-    onPlayInBackgroundChange: (isChecked: Boolean) -> Unit,
-    onPlayInBackgroundClick: () -> Unit
+    onPlayInBackgroundClick: () -> Unit,
+    onAction: (action: SettingsAction) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(space = 16.dp),
@@ -63,8 +63,8 @@ fun GeneralSettings(
             testTag = TestTags.SWITCH_THEME,
             onCheckedChange = { isChecked ->
                 when (isChecked) {
-                    true -> onThemeChange(AppTheme.Dark)
-                    false -> onThemeChange(AppTheme.Light)
+                    true -> onAction(SettingsAction.StoreCurrentAppTheme(AppTheme.Dark))
+                    false -> onAction(SettingsAction.StoreCurrentAppTheme(AppTheme.Light))
                 }
             }
         )
@@ -76,7 +76,9 @@ fun GeneralSettings(
             description = stringResource(id = R.string.settings_general_background_play_description),
             isChecked = isPostNotificationsPermissionGranted && settingsState.isPlayInBackgroundEnabled == true,
             testTag = TestTags.SWITCH_BACKGROUND_PLAYER,
-            onCheckedChange = onPlayInBackgroundChange,
+            onCheckedChange = { isChecked ->
+                onAction(SettingsAction.StorePlayInBackgroundSwitch(isChecked))
+            },
             onRowClick = if (isPostNotificationsPermissionGranted) null else onPlayInBackgroundClick
         )
     }

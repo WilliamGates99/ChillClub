@@ -27,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
@@ -49,18 +48,14 @@ import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.ui.components.CustomIconButton
 import com.xeniac.chillclub.core.ui.components.VerticalSlider
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
+import com.xeniac.chillclub.feature_music_player.presensation.MusicPlayerAction
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
 
 @Composable
 fun MusicPlayerMediaControls(
     musicPlayerState: MusicPlayerState,
     modifier: Modifier = Modifier,
-    onPlayClick: () -> Unit,
-    onPauseClick: () -> Unit,
-    showVolumeSlider: () -> Unit,
-    hideVolumeSlider: () -> Unit,
-    onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
-    adjustMusicVolume: (newPercentage: Float) -> Unit
+    onAction: (action: MusicPlayerAction) -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(
@@ -72,16 +67,12 @@ fun MusicPlayerMediaControls(
     ) {
         PlayPauseButton(
             musicPlayerState = musicPlayerState,
-            onPlayClick = onPlayClick,
-            onPauseClick = onPauseClick
+            onAction = onAction
         )
 
         VolumeControlButton(
             musicPlayerState = musicPlayerState,
-            onVolumeSliderShown = onVolumeSliderShown,
-            showVolumeSlider = showVolumeSlider,
-            hideVolumeSlider = hideVolumeSlider,
-            adjustMusicVolume = adjustMusicVolume
+            onAction = onAction
         )
     }
 }
@@ -96,14 +87,15 @@ fun PlayPauseButton(
     contentDescription: String = if (musicPlayerState.isMusicPlaying) stringResource(
         id = R.string.music_player_btn_pause
     ) else stringResource(id = R.string.music_player_btn_play),
-    onPlayClick: () -> Unit,
-    onPauseClick: () -> Unit
+    onAction: (action: MusicPlayerAction) -> Unit
 ) {
     CustomIconButton(
         icon = icon,
         contentDescription = contentDescription,
         onClick = {
-            if (musicPlayerState.isMusicPlaying) onPauseClick() else onPlayClick()
+            if (musicPlayerState.isMusicPlaying) {
+                onAction(MusicPlayerAction.PauseMusic)
+            } else onAction(MusicPlayerAction.PlayMusic)
         },
         modifier = modifier
     )
@@ -117,10 +109,7 @@ fun VolumeControlButton(
     contentDescription: String = stringResource(id = R.string.music_player_btn_volume_control),
     volumeSliderWidth: Dp = 48.dp,
     volumeSliderHeight: Dp = 148.dp,
-    showVolumeSlider: () -> Unit,
-    hideVolumeSlider: () -> Unit,
-    onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
-    adjustMusicVolume: (newPercentage: Float) -> Unit
+    onAction: (action: MusicPlayerAction) -> Unit
 ) {
     val constraintSet = ConstraintSet {
         val volumeBtn = createRefFor(id = "volumeBtn")
@@ -165,8 +154,7 @@ fun VolumeControlButton(
                 musicPlayerState = musicPlayerState,
                 sliderWidth = volumeSliderWidth,
                 sliderHeight = volumeSliderHeight,
-                onVolumeSliderShown = onVolumeSliderShown,
-                adjustMusicVolume = adjustMusicVolume,
+                onAction = onAction,
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -176,8 +164,8 @@ fun VolumeControlButton(
             contentDescription = contentDescription,
             onClick = {
                 if (musicPlayerState.isVolumeSliderVisible) {
-                    hideVolumeSlider()
-                } else showVolumeSlider()
+                    onAction(MusicPlayerAction.HideVolumeSlider)
+                } else onAction(MusicPlayerAction.ShowVolumeSlider)
             },
             modifier = Modifier.layoutId("volumeBtn")
         )
@@ -193,8 +181,7 @@ fun VolumeSlider(
     modifier: Modifier = Modifier,
     volumeSliderShape: Shape = RoundedCornerShape(90.dp),
     volumeSliderBackground: Color = MaterialTheme.colorScheme.surface,
-    onVolumeSliderShown: (volumeSliderBounds: Rect) -> Unit,
-    adjustMusicVolume: (newPercentage: Float) -> Unit
+    onAction: (action: MusicPlayerAction) -> Unit
 ) {
     var startVolumeSliderAnimation by remember { mutableStateOf(false) }
     val animatedVolumeSliderPosition by animateFloatAsState(
@@ -215,14 +202,26 @@ fun VolumeSlider(
             .clip(volumeSliderShape)
             .background(volumeSliderBackground)
             .onGloballyPositioned { coordinates ->
-                onVolumeSliderShown(coordinates.boundsInWindow())
+                val bounds = coordinates.boundsInWindow()
+                onAction(
+                    MusicPlayerAction.SetVolumeSliderBounds(
+                        android.graphics.Rect(
+                            /* left = */ bounds.left.toInt(),
+                            /* top = */ bounds.top.toInt(),
+                            /* right = */ bounds.right.toInt(),
+                            /* bottom = */ bounds.bottom.toInt()
+                        )
+                    )
+                )
             }
     ) {
         val interactionSource = remember { MutableInteractionSource() }
 
         VerticalSlider(
             value = animatedVolumeSliderPosition,
-            onValueChange = adjustMusicVolume,
+            onValueChange = { newPercentage ->
+                onAction(MusicPlayerAction.AdjustMusicVolume(newPercentage))
+            },
             paddingValues = PaddingValues(
                 start = 42.dp,
                 end = 8.dp

@@ -1,6 +1,5 @@
 package com.xeniac.chillclub.feature_music_player.presensation
 
-import android.graphics.Rect
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -196,33 +195,7 @@ fun MusicPlayerScreen(
 
             MusicPlayer(
                 musicPlayerState = musicPlayerState,
-                onPlayClick = {
-                    viewModel.onAction(MusicPlayerAction.PlayMusic)
-                },
-                onPauseClick = {
-                    viewModel.onAction(MusicPlayerAction.PauseMusic)
-                },
-                showVolumeSlider = {
-                    viewModel.onAction(MusicPlayerAction.ShowVolumeSlider)
-                },
-                hideVolumeSlider = {
-                    viewModel.onAction(MusicPlayerAction.HideVolumeSlider)
-                },
-                onVolumeSliderShown = { bounds ->
-                    viewModel.onAction(
-                        MusicPlayerAction.SetVolumeSliderBounds(
-                            Rect(
-                                /* left = */ bounds.left.toInt(),
-                                /* top = */ bounds.top.toInt(),
-                                /* right = */ bounds.right.toInt(),
-                                /* bottom = */ bounds.bottom.toInt()
-                            )
-                        )
-                    )
-                },
-                adjustMusicVolume = { newPercentage ->
-                    viewModel.onAction(MusicPlayerAction.AdjustMusicVolume(newPercentage))
-                },
+                onAction = viewModel::onAction,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)

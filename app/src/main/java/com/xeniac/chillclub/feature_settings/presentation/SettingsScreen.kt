@@ -109,7 +109,6 @@ fun SettingsScreen(
         }
     )
 
-
     ObserverAsEvent(flow = viewModel.setAppThemeEventChannel) { event ->
         when (event) {
             is SettingsUiEvent.UpdateAppTheme -> event.newAppTheme.setAppTheme()
@@ -194,15 +193,12 @@ fun SettingsScreen(
             GeneralSettings(
                 settingsState = settingsState,
                 isPostNotificationsPermissionGranted = isPostNotificationsPermissionGranted,
-                onThemeChange = { newAppTheme ->
-                    viewModel.onAction(SettingsAction.StoreCurrentAppTheme(newAppTheme))
-                },
-                onPlayInBackgroundChange = { isChecked ->
-                    viewModel.onAction(SettingsAction.StorePlayInBackgroundSwitch(isChecked))
-                },
                 onPlayInBackgroundClick = {
-                    postNotificationPermissionResultLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    postNotificationPermissionResultLauncher.launch(
+                        input = Manifest.permission.POST_NOTIFICATIONS
+                    )
                 },
+                onAction = viewModel::onAction,
                 modifier = Modifier.fillMaxWidth()
             )
 
