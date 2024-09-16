@@ -19,6 +19,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -84,6 +85,10 @@ fun MusicPlayerScreen(
                 else -> false
             }
         )
+    }
+
+    LaunchedEffect(musicPlayerState.currentRadioStationId) {
+        viewModel.onAction(MusicPlayerAction.GetCurrentRadioStation)
     }
 
     ObserverAsEvent(flow = viewModel.getRadioStationsEventChannel) { event ->
