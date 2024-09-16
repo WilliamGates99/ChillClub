@@ -41,10 +41,12 @@ class MusicPlayerViewModel @Inject constructor(
     val musicPlayerState = combine(
         flow = _musicPlayerState,
         flow2 = musicPlayerUseCases.observeMusicVolumeChangesUseCase.get()(),
-        flow3 = musicPlayerUseCases.getNotificationPermissionCountUseCase.get()()
-    ) { musicPlayerState, musicVolumePercentage, notificationPermissionCount ->
+        flow3 = musicPlayerUseCases.getIsPlayInBackgroundEnabledUseCase.get()(),
+        flow4 = musicPlayerUseCases.getNotificationPermissionCountUseCase.get()()
+    ) { musicPlayerState, musicVolumePercentage, isPlayInBackgroundEnabled, notificationPermissionCount ->
         musicPlayerState.copy(
             musicVolumePercentage = musicVolumePercentage,
+            isPlayInBackgroundEnabled = isPlayInBackgroundEnabled,
             notificationPermissionCount = notificationPermissionCount
         )
     }.stateIn(

@@ -17,6 +17,7 @@ data class MusicPlayerState(
     val isVolumeSliderVisible: Boolean = false,
     val volumeSliderBounds: Rect? = null,
     val isPermissionDialogVisible: Boolean = false,
+    val isPlayInBackgroundEnabled: Boolean? = null,
     val notificationPermissionCount: Int = 0,
     val permissionDialogQueue: List<String> = emptyList()
 ) : Parcelable

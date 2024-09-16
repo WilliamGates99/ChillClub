@@ -6,6 +6,7 @@ import com.xeniac.chillclub.core.data.local.RadioStationsDao
 import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.AdjustMusicVolumeUseCase
+import com.xeniac.chillclub.feature_music_player.domain.use_cases.GetIsPlayInBackgroundEnabledUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.GetNotificationPermissionCountUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.GetRadioStationsUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.MusicPlayerUseCases
@@ -53,6 +54,13 @@ object MusicPlayerModule {
 
     @Provides
     @ViewModelScoped
+    fun provideGetIsPlayInBackgroundEnabledUseCase(
+        preferencesRepository: PreferencesRepository
+    ): GetIsPlayInBackgroundEnabledUseCase =
+        GetIsPlayInBackgroundEnabledUseCase(preferencesRepository)
+
+    @Provides
+    @ViewModelScoped
     fun provideGetNotificationPermissionCountUseCase(
         preferencesRepository: PreferencesRepository
     ): GetNotificationPermissionCountUseCase =
@@ -71,12 +79,14 @@ object MusicPlayerModule {
         observeMusicVolumeChangesUseCase: ObserveMusicVolumeChangesUseCase,
         adjustMusicVolumeUseCase: AdjustMusicVolumeUseCase,
         getRadioStationsUseCase: GetRadioStationsUseCase,
+        getIsPlayInBackgroundEnabledUseCase: GetIsPlayInBackgroundEnabledUseCase,
         getNotificationPermissionCountUseCase: GetNotificationPermissionCountUseCase,
         storeNotificationPermissionCountUseCase: StoreNotificationPermissionCountUseCase
     ): MusicPlayerUseCases = MusicPlayerUseCases(
         { observeMusicVolumeChangesUseCase },
         { adjustMusicVolumeUseCase },
         { getRadioStationsUseCase },
+        { getIsPlayInBackgroundEnabledUseCase },
         { getNotificationPermissionCountUseCase },
         { storeNotificationPermissionCountUseCase }
     )
