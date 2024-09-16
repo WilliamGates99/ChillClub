@@ -4,28 +4,29 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.xeniac.chillclub.core.ui.navigation.Screen
+import com.xeniac.chillclub.core.ui.navigation.MusicPlayerScreen
+import com.xeniac.chillclub.core.ui.navigation.SettingsScreen
 import com.xeniac.chillclub.feature_music_player.presensation.MusicPlayerScreen
 import com.xeniac.chillclub.feature_settings.presentation.SettingsScreen
 
 @Composable
 fun SetupRootNavGraph(
     rootNavController: NavHostController,
-    startDestination: Screen = Screen.MusicPlayerScreen
+    startDestination: Any = MusicPlayerScreen
 ) {
     NavHost(
         navController = rootNavController,
         startDestination = startDestination
     ) {
-        composable<Screen.MusicPlayerScreen> {
+        composable<MusicPlayerScreen> {
             MusicPlayerScreen(
                 onNavigateToSettingsScreen = {
-                    rootNavController.navigate(Screen.SettingsScreen)
+                    rootNavController.navigate(SettingsScreen)
                 }
             )
         }
 
-        composable<Screen.SettingsScreen> {
+        composable<SettingsScreen> {
             SettingsScreen(
                 onNavigateUp = rootNavController::navigateUp
             )

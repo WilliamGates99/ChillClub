@@ -24,7 +24,7 @@ import com.xeniac.chillclub.BuildConfig
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.presentation.MainActivity
 import com.xeniac.chillclub.core.presentation.utils.TestTags.BTN_SETTINGS
-import com.xeniac.chillclub.core.ui.navigation.Screen
+import com.xeniac.chillclub.core.ui.navigation.MusicPlayerScreen
 import com.xeniac.chillclub.core.ui.navigation.nav_graph.SetupRootNavGraph
 import com.xeniac.chillclub.core.ui.theme.ChillClubTheme
 import com.xeniac.chillclub.feature_settings.presentation.utils.Constants
@@ -68,7 +68,7 @@ class SettingsScreenTest {
 
                     SetupRootNavGraph(
                         rootNavController = testNavController,
-                        startDestination = Screen.MusicPlayerScreen
+                        startDestination = MusicPlayerScreen
                     )
                 }
             }
