@@ -1,6 +1,6 @@
 package com.xeniac.chillclub.core.di
 
-import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
+import com.xeniac.chillclub.core.domain.repositories.SettingsDataStoreRepository
 import com.xeniac.chillclub.core.domain.use_cases.GetCurrentAppLocaleUseCase
 import dagger.Module
 import dagger.Provides
@@ -15,6 +15,6 @@ internal object CoreModule {
     @Provides
     @ViewModelScoped
     fun provideGetCurrentAppLocaleUseCase(
-        preferencesRepository: PreferencesRepository
-    ): GetCurrentAppLocaleUseCase = GetCurrentAppLocaleUseCase(preferencesRepository)
+        settingsDataStoreRepository: SettingsDataStoreRepository
+    ): GetCurrentAppLocaleUseCase = GetCurrentAppLocaleUseCase(settingsDataStoreRepository)
 }

@@ -14,7 +14,7 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import com.xeniac.chillclub.core.data.local.ChillClubDatabase
 import com.xeniac.chillclub.core.domain.models.AppTheme
-import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
+import com.xeniac.chillclub.core.domain.repositories.SettingsDataStoreRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,6 +45,7 @@ import kotlinx.serialization.json.Json
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
@@ -134,20 +135,49 @@ internal object AppModule {
     @OptIn(InternalCoroutinesApi::class)
     @Provides
     @Singleton
+    @SettingsDataStoreQualifier
     fun provideSettingsDataStore(
         @ApplicationContext context: Context
     ): DataStore<Preferences> = synchronized(lock = SynchronizedObject()) {
         PreferenceDataStoreFactory.create(
             corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
             scope = CoroutineScope(context = Dispatchers.IO + SupervisorJob()),
-            produceFile = { context.preferencesDataStoreFile(name = "settings") }
+            produceFile = { context.preferencesDataStoreFile(name = "Settings") }
+        )
+    }
+
+    @OptIn(InternalCoroutinesApi::class)
+    @Provides
+    @Singleton
+    @MusicPlayerDataStoreQualifier
+    fun provideMusicPlayerDataStore(
+        @ApplicationContext context: Context
+    ): DataStore<Preferences> = synchronized(lock = SynchronizedObject()) {
+        PreferenceDataStoreFactory.create(
+            corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
+            scope = CoroutineScope(context = Dispatchers.IO + SupervisorJob()),
+            produceFile = { context.preferencesDataStoreFile(name = "MusicPlayer") }
+        )
+    }
+
+    @OptIn(InternalCoroutinesApi::class)
+    @Provides
+    @Singleton
+    @MiscellaneousDataStoreQualifier
+    fun provideMiscellaneousDataStore(
+        @ApplicationContext context: Context
+    ): DataStore<Preferences> = synchronized(lock = SynchronizedObject()) {
+        PreferenceDataStoreFactory.create(
+            corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
+            scope = CoroutineScope(context = Dispatchers.IO + SupervisorJob()),
+            produceFile = { context.preferencesDataStoreFile(name = "Miscellaneous") }
         )
     }
 
     @Provides
     fun provideCurrentAppTheme(
-        preferencesRepository: PreferencesRepository
-    ): AppTheme = preferencesRepository.getCurrentAppThemeSynchronously()
+        settingsDataStoreRepository: SettingsDataStoreRepository
+    ): AppTheme = settingsDataStoreRepository.getCurrentAppThemeSynchronously()
 
     @Provides
     @Singleton
@@ -156,3 +186,15 @@ internal object AppModule {
         /* symbols = */ DecimalFormatSymbols(Locale.US)
     )
 }
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class SettingsDataStoreQualifier
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class MusicPlayerDataStoreQualifier
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class MiscellaneousDataStoreQualifier

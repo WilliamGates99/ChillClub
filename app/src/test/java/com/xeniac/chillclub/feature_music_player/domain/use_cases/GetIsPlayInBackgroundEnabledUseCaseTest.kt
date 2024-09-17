@@ -3,7 +3,7 @@ package com.xeniac.chillclub.feature_music_player.domain.use_cases
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
-import com.xeniac.chillclub.core.data.repositories.FakePreferencesRepositoryImpl
+import com.xeniac.chillclub.core.data.repositories.FakeSettingsDataStoreRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -23,14 +23,14 @@ class GetIsPlayInBackgroundEnabledUseCaseTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
-    private lateinit var fakePreferencesRepository: FakePreferencesRepositoryImpl
+    private lateinit var fakeSettingsDataStoreRepository: FakeSettingsDataStoreRepositoryImpl
     private lateinit var getIsPlayInBackgroundEnabledUseCase: GetIsPlayInBackgroundEnabledUseCase
 
     @Before
     fun setUp() {
-        fakePreferencesRepository = FakePreferencesRepositoryImpl()
+        fakeSettingsDataStoreRepository = FakeSettingsDataStoreRepositoryImpl()
         getIsPlayInBackgroundEnabledUseCase = GetIsPlayInBackgroundEnabledUseCase(
-            preferencesRepository = fakePreferencesRepository
+            settingsDataStoreRepository = fakeSettingsDataStoreRepository
         )
     }
 
@@ -38,7 +38,7 @@ class GetIsPlayInBackgroundEnabledUseCaseTest {
     fun getIsPlayInBackgroundEnabled_returnsIsPlayInBackgroundEnabled() = runTest {
         val isPlayInBackgroundEnabled = getIsPlayInBackgroundEnabledUseCase().first()
         assertThat(isPlayInBackgroundEnabled).isEqualTo(
-            fakePreferencesRepository.isPlayInBackgroundEnabled.first()
+            fakeSettingsDataStoreRepository.isPlayInBackgroundEnabled.first()
         )
     }
 }

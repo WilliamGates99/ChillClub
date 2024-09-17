@@ -3,7 +3,7 @@ package com.xeniac.chillclub.feature_music_player.domain.use_cases
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
-import com.xeniac.chillclub.core.data.repositories.FakePreferencesRepositoryImpl
+import com.xeniac.chillclub.core.data.repositories.FakeMusicPlayerDataStoreRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -23,20 +23,20 @@ class GetCurrentlyPlayingRadioStationIdUseCaseTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
-    private lateinit var fakePreferencesRepository: FakePreferencesRepositoryImpl
+    private lateinit var fakeMusicPlayerDataStoreRepository: FakeMusicPlayerDataStoreRepositoryImpl
     private lateinit var getCurrentlyPlayingRadioStationIdUseCase: GetCurrentlyPlayingRadioStationIdUseCase
 
     @Before
     fun setUp() {
-        fakePreferencesRepository = FakePreferencesRepositoryImpl()
+        fakeMusicPlayerDataStoreRepository = FakeMusicPlayerDataStoreRepositoryImpl()
         getCurrentlyPlayingRadioStationIdUseCase = GetCurrentlyPlayingRadioStationIdUseCase(
-            preferencesRepository = fakePreferencesRepository
+            musicPlayerDataStoreRepository = fakeMusicPlayerDataStoreRepository
         )
     }
 
     @Test
     fun getCurrentlyPlayingRadioStationId_returnsCurrentlyPlayingRadioStationId() = runTest {
         val radioStationId = getCurrentlyPlayingRadioStationIdUseCase().first()
-        assertThat(radioStationId).isEqualTo(fakePreferencesRepository.currentlyPlayingRadioStationId)
+        assertThat(radioStationId).isEqualTo(fakeMusicPlayerDataStoreRepository.currentlyPlayingRadioStationId)
     }
 }

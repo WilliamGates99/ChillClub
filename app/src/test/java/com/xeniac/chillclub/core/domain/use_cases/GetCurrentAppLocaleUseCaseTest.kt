@@ -3,7 +3,7 @@ package com.xeniac.chillclub.core.domain.use_cases
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
-import com.xeniac.chillclub.core.data.repositories.FakePreferencesRepositoryImpl
+import com.xeniac.chillclub.core.data.repositories.FakeSettingsDataStoreRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -22,20 +22,20 @@ class GetCurrentAppLocaleUseCaseTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
-    private lateinit var fakePreferencesRepository: FakePreferencesRepositoryImpl
+    private lateinit var fakeSettingsDataStoreRepository: FakeSettingsDataStoreRepositoryImpl
     private lateinit var getCurrentAppLocaleUseCase: GetCurrentAppLocaleUseCase
 
     @Before
     fun setUp() {
-        fakePreferencesRepository = FakePreferencesRepositoryImpl()
+        fakeSettingsDataStoreRepository = FakeSettingsDataStoreRepositoryImpl()
         getCurrentAppLocaleUseCase = GetCurrentAppLocaleUseCase(
-            preferencesRepository = fakePreferencesRepository
+            settingsDataStoreRepository = fakeSettingsDataStoreRepository
         )
     }
 
     @Test
     fun getCurrentAppLocale_returnsCurrentAppLocaleValue() = runTest {
         val currentAppLocale = getCurrentAppLocaleUseCase()
-        assertThat(currentAppLocale).isEqualTo(fakePreferencesRepository.currentLocale)
+        assertThat(currentAppLocale).isEqualTo(fakeSettingsDataStoreRepository.currentLocale)
     }
 }

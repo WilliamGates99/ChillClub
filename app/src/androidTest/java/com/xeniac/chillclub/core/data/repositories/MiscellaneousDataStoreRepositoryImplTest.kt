@@ -11,10 +11,8 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
-import com.xeniac.chillclub.core.domain.models.AppLocale
-import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.models.RateAppOption
-import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
+import com.xeniac.chillclub.core.domain.repositories.MiscellaneousDataStoreRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
@@ -31,7 +29,7 @@ import org.junit.runner.RunWith
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
-class PreferencesRepositoryImplTest {
+class MiscellaneousDataStoreRepositoryImplTest {
 
     @get:Rule
     var instanceTaskExecutorRule = InstantTaskExecutorRule()
@@ -46,12 +44,13 @@ class PreferencesRepositoryImplTest {
 
     private val testDataStore: DataStore<Preferences> = PreferenceDataStoreFactory.create(
         scope = testScope.backgroundScope,
-        produceFile = { context.preferencesDataStoreFile(name = "settings_test") }
+        produceFile = { context.preferencesDataStoreFile(name = "Miscellaneous-Test") }
     )
 
-    private val testRepository: PreferencesRepository = PreferencesRepositoryImpl(
-        settingsDataStore = testDataStore
-    )
+    private val testRepository: MiscellaneousDataStoreRepository =
+        MiscellaneousDataStoreRepositoryImpl(
+            dataStore = testDataStore
+        )
 
     @Before
     fun setUp() {
@@ -67,12 +66,6 @@ class PreferencesRepositoryImplTest {
 
     /*
     Fetch Initial Preferences Test Cases:
-    getCurrentAppThemeSynchronously -> AppTheme.Dark
-    getCurrentAppTheme -> AppTheme.Dark
-    getCurrentAppLocale -> AppLocale.Default
-    isPlayInBackgroundEnabled -> true
-    getCurrentlyPlayingRadioStationId -> null
-    getNotificationPermissionCount -> 0
     getAppUpdateDialogShowCount -> 0
     isAppUpdateDialogShownToday -> false
     getSelectedRateAppOption -> RateAppOption.NOT_SHOWN_YET
@@ -80,58 +73,18 @@ class PreferencesRepositoryImplTest {
      */
     @Test
     fun fetchInitialPreferences() = testScope.runTest {
-        val initialAppThemeSynchronously = testRepository.getCurrentAppThemeSynchronously()
-        val initialAppTheme = testRepository.getCurrentAppTheme().first()
-        val initialAppLocale = testRepository.getCurrentAppLocale()
-        val initialIsPlayInBackgroundEnabled = testRepository.isPlayInBackgroundEnabled().first()
-        val initialCurrentlyPlayingRadioStationId =
-            testRepository.getCurrentlyPlayingRadioStationId().first()
-        val initialNotificationPermissionCount =
-            testRepository.getNotificationPermissionCount().first()
         val initialAppUpdateDialogShowCount = testRepository.getAppUpdateDialogShowCount().first()
-        val initialIsAppUpdateDialogShownToday =
-            testRepository.isAppUpdateDialogShownToday().first()
-        val initialSelectedRateAppOption = testRepository.getSelectedRateAppOption().first()
-        val initialPreviousRateAppRequestTime =
-            testRepository.getPreviousRateAppRequestTimeInMs().first()
+        val initialIsAppUpdateDialogShownToday = testRepository
+            .isAppUpdateDialogShownToday().first()
+        val initialSelectedRateAppOption = testRepository
+            .getSelectedRateAppOption().first()
+        val initialPreviousRateAppRequestTime = testRepository
+            .getPreviousRateAppRequestTimeInMs().first()
 
-        assertThat(initialAppThemeSynchronously).isEqualTo(AppTheme.Dark)
-        assertThat(initialAppTheme).isEqualTo(AppTheme.Dark)
-        assertThat(initialAppLocale).isEqualTo(AppLocale.Default)
-        assertThat(initialIsPlayInBackgroundEnabled).isTrue()
-        assertThat(initialCurrentlyPlayingRadioStationId).isNull()
-        assertThat(initialNotificationPermissionCount).isEqualTo(0)
         assertThat(initialAppUpdateDialogShowCount).isEqualTo(0)
         assertThat(initialIsAppUpdateDialogShownToday).isFalse()
         assertThat(initialSelectedRateAppOption).isEqualTo(RateAppOption.NOT_SHOWN_YET)
         assertThat(initialPreviousRateAppRequestTime).isNull()
-    }
-
-    @Test
-    fun writeIsPlayInBackgroundEnabled() = testScope.runTest {
-        val testValue = false
-        testRepository.isPlayInBackgroundEnabled(testValue)
-
-        val isPlayInBackgroundEnabled = testRepository.isPlayInBackgroundEnabled().first()
-        assertThat(isPlayInBackgroundEnabled).isEqualTo(testValue)
-    }
-
-    @Test
-    fun writeCurrentlyPlayingRadioStationId() = testScope.runTest {
-        val testValue = 5L
-        testRepository.storeCurrentlyPlayingRadioStationId(testValue)
-
-        val notificationPermissionCount = testRepository.getCurrentlyPlayingRadioStationId().first()
-        assertThat(notificationPermissionCount).isEqualTo(testValue)
-    }
-
-    @Test
-    fun writeNotificationPermissionCount() = testScope.runTest {
-        val testValue = 2
-        testRepository.storeNotificationPermissionCount(testValue)
-
-        val notificationPermissionCount = testRepository.getNotificationPermissionCount().first()
-        assertThat(notificationPermissionCount).isEqualTo(testValue)
     }
 
     @Test

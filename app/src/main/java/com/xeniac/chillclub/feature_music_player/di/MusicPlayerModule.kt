@@ -3,7 +3,8 @@ package com.xeniac.chillclub.feature_music_player.di
 import android.media.AudioManager
 import com.xeniac.chillclub.core.data.local.ChillClubDatabase
 import com.xeniac.chillclub.core.data.local.RadioStationsDao
-import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
+import com.xeniac.chillclub.core.domain.repositories.MusicPlayerDataStoreRepository
+import com.xeniac.chillclub.core.domain.repositories.SettingsDataStoreRepository
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.AdjustMusicVolumeUseCase
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.GetCurrentlyPlayingRadioStationIdUseCase
@@ -58,9 +59,9 @@ object MusicPlayerModule {
     @Provides
     @ViewModelScoped
     fun provideGetCurrentlyPlayingRadioStationIdUseCase(
-        preferencesRepository: PreferencesRepository
+        musicPlayerDataStoreRepository: MusicPlayerDataStoreRepository
     ): GetCurrentlyPlayingRadioStationIdUseCase =
-        GetCurrentlyPlayingRadioStationIdUseCase(preferencesRepository)
+        GetCurrentlyPlayingRadioStationIdUseCase(musicPlayerDataStoreRepository)
 
     @Provides
     @ViewModelScoped
@@ -72,30 +73,30 @@ object MusicPlayerModule {
     @Provides
     @ViewModelScoped
     fun provideGetIsPlayInBackgroundEnabledUseCase(
-        preferencesRepository: PreferencesRepository
+        settingsDataStoreRepository: SettingsDataStoreRepository
     ): GetIsPlayInBackgroundEnabledUseCase =
-        GetIsPlayInBackgroundEnabledUseCase(preferencesRepository)
+        GetIsPlayInBackgroundEnabledUseCase(settingsDataStoreRepository)
 
     @Provides
     @ViewModelScoped
     fun provideGetNotificationPermissionCountUseCase(
-        preferencesRepository: PreferencesRepository
+        settingsDataStoreRepository: SettingsDataStoreRepository
     ): GetNotificationPermissionCountUseCase =
-        GetNotificationPermissionCountUseCase(preferencesRepository)
+        GetNotificationPermissionCountUseCase(settingsDataStoreRepository)
 
     @Provides
     @ViewModelScoped
     fun provideStoreCurrentlyPlayingRadioStationIdUseCase(
-        preferencesRepository: PreferencesRepository
+        musicPlayerDataStoreRepository: MusicPlayerDataStoreRepository
     ): StoreCurrentlyPlayingRadioStationIdUseCase =
-        StoreCurrentlyPlayingRadioStationIdUseCase(preferencesRepository)
+        StoreCurrentlyPlayingRadioStationIdUseCase(musicPlayerDataStoreRepository)
 
     @Provides
     @ViewModelScoped
     fun provideStoreNotificationPermissionCountUseCase(
-        preferencesRepository: PreferencesRepository
+        settingsDataStoreRepository: SettingsDataStoreRepository
     ): StoreNotificationPermissionCountUseCase =
-        StoreNotificationPermissionCountUseCase(preferencesRepository)
+        StoreNotificationPermissionCountUseCase(settingsDataStoreRepository)
 
     @Provides
     @ViewModelScoped

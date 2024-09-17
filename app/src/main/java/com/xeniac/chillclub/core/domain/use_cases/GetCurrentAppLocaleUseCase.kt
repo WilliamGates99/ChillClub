@@ -1,10 +1,10 @@
 package com.xeniac.chillclub.core.domain.use_cases
 
 import com.xeniac.chillclub.core.domain.models.AppLocale
-import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
+import com.xeniac.chillclub.core.domain.repositories.SettingsDataStoreRepository
 
 class GetCurrentAppLocaleUseCase(
-    private val preferencesRepository: PreferencesRepository
+    private val settingsDataStoreRepository: SettingsDataStoreRepository
 ) {
-    operator fun invoke(): AppLocale = preferencesRepository.getCurrentAppLocale()
+    operator fun invoke(): AppLocale = settingsDataStoreRepository.getCurrentAppLocale()
 }
