@@ -90,7 +90,7 @@ fun PlayPauseButton(
     onAction: (action: MusicPlayerAction) -> Unit
 ) {
     CustomIconButton(
-        isLoading = musicPlayerState.isMusicBuffering,
+        isLoading = musicPlayerState.isMusicBuffering || musicPlayerState.youtubePlayer == null,
         icon = icon,
         contentDescription = contentDescription,
         onClick = {

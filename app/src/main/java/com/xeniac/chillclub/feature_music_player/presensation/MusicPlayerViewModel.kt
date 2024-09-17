@@ -59,9 +59,6 @@ class MusicPlayerViewModel @Inject constructor(
         initialValue = MusicPlayerState()
     )
 
-    private val _getRadioStationsEventChannel = Channel<Event>()
-    val getRadioStationsEventChannel = _getRadioStationsEventChannel.receiveAsFlow()
-
     private val _playMusicEventChannel = Channel<Event>()
     val playMusicEventChannel = _playMusicEventChannel.receiveAsFlow()
 
@@ -114,22 +111,8 @@ class MusicPlayerViewModel @Inject constructor(
                     }
                 }
                 is Result.Error -> {
-                    when (val error = getRadioStationsResult.error) {
-//                        GetRadioStationsError.Network.Offline -> TODO()
-//                        GetRadioStationsError.Network.ConnectTimeoutException -> TODO()
-//                        GetRadioStationsError.Network.HttpRequestTimeoutException -> TODO()
-//                        GetRadioStationsError.Network.SocketTimeoutException -> TODO()
-//                        GetRadioStationsError.Network.RedirectResponseException -> TODO()
-//                        GetRadioStationsError.Network.ClientRequestException -> TODO()
-//                        GetRadioStationsError.Network.ServerResponseException -> TODO()
-//                        GetRadioStationsError.Network.SerializationException -> TODO()
-//                        GetRadioStationsError.Network.SomethingWentWrong -> TODO()
-//                        GetRadioStationsError.Local.SomethingWentWrong -> TODO()
-                        else -> {
-                            _getRadioStationsEventChannel.send(
-                                UiEvent.ShowLongSnackbar(error.asUiText())
-                            )
-                        }
+                    _musicPlayerState.update {
+                        it.copy(errorMessage = getRadioStationsResult.error.asUiText())
                     }
                 }
             }

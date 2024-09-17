@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.xeniac.chillclub.core.presentation.utils.ObserverAsEvent
 import com.xeniac.chillclub.core.presentation.utils.UiEvent
 import com.xeniac.chillclub.core.presentation.utils.getStatusBarHeightDp
@@ -45,6 +46,7 @@ import com.xeniac.chillclub.feature_music_player.presensation.components.RadioSt
 import com.xeniac.chillclub.feature_music_player.presensation.components.YouTubePlayer
 import com.xeniac.chillclub.feature_music_player.presensation.utils.MusicPlayerUiEvent
 import com.xeniac.chillclub.feature_music_player.services.YouTubePlayerService
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,37 +79,26 @@ fun MusicPlayerScreen(
         viewModel.onAction(MusicPlayerAction.GetCurrentRadioStation)
     }
 
-    ObserverAsEvent(flow = viewModel.getRadioStationsEventChannel) { event ->
-        when (event) {
-            is UiEvent.ShowLongSnackbar -> {
-                scope.launch {
-                    snackbarHostState.currentSnackbarData?.dismiss()
-
-                    snackbarHostState.showSnackbar(
-                        message = event.message.asString(context),
-                        duration = SnackbarDuration.Long
-                    )
-                }
-            }
-        }
-    }
-
     ObserverAsEvent(flow = viewModel.playMusicEventChannel) { event ->
         when (event) {
-            MusicPlayerUiEvent.StartYouTubePlayerService -> {
-                Intent(context, YouTubePlayerService::class.java).also {
-                    it.action = YouTubePlayerService.Actions.START_SERVICE.toString()
+            MusicPlayerUiEvent.StartYouTubePlayerService -> scope.launch {
+                if (musicPlayerState.isPlayInBackgroundEnabled == true) {
+                    delay(timeMillis = 100) // 100ms delay to ensure current radio station is updated
 
-                    it.putExtra(
-                        /* name = */ YouTubePlayerService.EXTRAS_RADIO_STATION_CHANNEL_NAME,
-                        /* value = */ musicPlayerState.currentRadioStation?.channel?.name
-                    )
-                    it.putExtra(
-                        /* name = */ YouTubePlayerService.EXTRAS_RADIO_STATION_TITLE,
-                        /* value = */ musicPlayerState.currentRadioStation?.title
-                    )
+                    Intent(context, YouTubePlayerService::class.java).also {
+                        it.action = YouTubePlayerService.Actions.START_SERVICE.toString()
 
-                    context.startService(it)
+                        it.putExtra(
+                            /* name = */ YouTubePlayerService.EXTRAS_RADIO_STATION_CHANNEL_NAME,
+                            /* value = */ musicPlayerState.currentRadioStation?.channel?.name
+                        )
+                        it.putExtra(
+                            /* name = */ YouTubePlayerService.EXTRAS_RADIO_STATION_TITLE,
+                            /* value = */ musicPlayerState.currentRadioStation?.title
+                        )
+
+                        context.startService(it)
+                    }
                 }
             }
             MusicPlayerUiEvent.StopYouTubePlayerService -> {
@@ -188,7 +179,14 @@ fun MusicPlayerScreen(
                     scope.launch {
                         bottomSheetScaffoldState.bottomSheetState.partialExpand()
                     }
-                    // TODO: REPLACE WITH ONACTION FUNCTION
+
+                    if (musicPlayerState.youtubePlayer == null) {
+                        viewModel.onAction(
+                            MusicPlayerAction.ShowYouTubePlayerError(PlayerConstants.PlayerError.VIDEO_NOT_FOUND)
+                        )
+                        return@RadioStationsBottomSheet
+                    }
+
                     viewModel.onAction(MusicPlayerAction.PlayMusic(radioStation))
                 },
                 modifier = Modifier.fillMaxWidth()
