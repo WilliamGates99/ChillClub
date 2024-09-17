@@ -41,6 +41,11 @@
     <string name="music_player_radio_stations_sheet_content_description_radio_cover">Radio Cover</string>
     <!--Placeholder is for the radio station title-->
     <string name="music_player_notification_message">Now Playing: %s</string>
+    <string name="music_player_error_video_not_found">There was a problem loading this radio. Please select another one.</string>
+    <string name="music_player_error_video_not_playable">There was a problem loading this radio. Please select another one.</string>
+    <string name="music_player_error_invalid_parameter">There was a problem loading this radio. Please select another one.</string>
+    <string name="music_player_error_html_5">There was a problem loading this radio. Please select another one.</string>
+    <string name="music_player_error_unknown">There was a problem loading this radio. Please select another one.</string>
 
 
     <string name="settings_app_bar_title">Settings</string>

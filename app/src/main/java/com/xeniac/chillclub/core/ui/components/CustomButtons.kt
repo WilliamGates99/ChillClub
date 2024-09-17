@@ -8,6 +8,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ripple
@@ -29,8 +30,12 @@ fun CustomIconButton(
     icon: Painter,
     modifier: Modifier = Modifier,
     isSystemInDarkTheme: Boolean = isSystemInDarkTheme(),
+    isLoading: Boolean = false,
     size: Dp = 56.dp,
     shape: Shape = CircleShape,
+    progressIndicatorColor: Color = MaterialTheme.colorScheme.onPrimary,
+    progressIndicatorStrokeWidth: Dp = 3.dp,
+    progressIndicatorSize: Dp = 28.dp,
     containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,
     shadowColorLight: Color = BlackAlpha24,
@@ -57,17 +62,26 @@ fun CustomIconButton(
             .clip(shape)
             .background(containerColor)
             .clickable(
+                enabled = !isLoading,
                 onClick = onClick,
                 role = Role.Button,
                 indication = indication,
                 interactionSource = interactionSource
             )
     ) {
-        Icon(
-            painter = icon,
-            contentDescription = contentDescription,
-            tint = contentColor,
-            modifier = Modifier.size(iconSize)
-        )
+        if (isLoading) {
+            CircularProgressIndicator(
+                color = progressIndicatorColor,
+                strokeWidth = progressIndicatorStrokeWidth,
+                modifier = Modifier.size(progressIndicatorSize)
+            )
+        } else {
+            Icon(
+                painter = icon,
+                contentDescription = contentDescription,
+                tint = contentColor,
+                modifier = Modifier.size(iconSize)
+            )
+        }
     }
 }

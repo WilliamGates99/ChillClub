@@ -1,13 +1,12 @@
 package com.xeniac.chillclub.feature_music_player.presensation
 
-import android.Manifest
-import android.annotation.SuppressLint
-import android.content.pm.PackageManager
+import android.content.Intent
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -32,7 +30,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xeniac.chillclub.core.presentation.utils.ObserverAsEvent
@@ -45,6 +42,9 @@ import com.xeniac.chillclub.feature_music_player.presensation.components.MusicPl
 import com.xeniac.chillclub.feature_music_player.presensation.components.MusicPlayerTopAppBar
 import com.xeniac.chillclub.feature_music_player.presensation.components.PostNotificationPermissionHandler
 import com.xeniac.chillclub.feature_music_player.presensation.components.RadioStationsBottomSheet
+import com.xeniac.chillclub.feature_music_player.presensation.components.YouTubePlayer
+import com.xeniac.chillclub.feature_music_player.presensation.utils.MusicPlayerUiEvent
+import com.xeniac.chillclub.feature_music_player.services.YouTubePlayerService
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,20 +73,6 @@ fun MusicPlayerScreen(
         )
     )
 
-    @SuppressLint("InlinedApi")
-    var isPostNotificationsPermissionGranted by remember {
-        mutableStateOf(
-            when (ActivityCompat.checkSelfPermission(
-                /* context = */ context,
-                /* permission = */ Manifest.permission.POST_NOTIFICATIONS
-            )) {
-                PackageManager.PERMISSION_GRANTED -> true
-                PackageManager.PERMISSION_DENIED -> false
-                else -> false
-            }
-        )
-    }
-
     LaunchedEffect(musicPlayerState.currentRadioStationId) {
         viewModel.onAction(MusicPlayerAction.GetCurrentRadioStation)
     }
@@ -108,6 +94,28 @@ fun MusicPlayerScreen(
 
     ObserverAsEvent(flow = viewModel.playMusicEventChannel) { event ->
         when (event) {
+            MusicPlayerUiEvent.StartYouTubePlayerService -> {
+                Intent(context, YouTubePlayerService::class.java).also {
+                    it.action = YouTubePlayerService.Actions.START_SERVICE.toString()
+
+                    it.putExtra(
+                        /* name = */ YouTubePlayerService.EXTRAS_RADIO_STATION_CHANNEL_NAME,
+                        /* value = */ musicPlayerState.currentRadioStation?.channel?.name
+                    )
+                    it.putExtra(
+                        /* name = */ YouTubePlayerService.EXTRAS_RADIO_STATION_TITLE,
+                        /* value = */ musicPlayerState.currentRadioStation?.title
+                    )
+
+                    context.startService(it)
+                }
+            }
+            MusicPlayerUiEvent.StopYouTubePlayerService -> {
+                Intent(context, YouTubePlayerService::class.java).also {
+                    it.action = YouTubePlayerService.Actions.STOP_SERVICE.toString()
+                    context.startService(it)
+                }
+            }
             is UiEvent.ShowLongSnackbar -> {
                 scope.launch {
                     snackbarHostState.currentSnackbarData?.dismiss()
@@ -141,8 +149,6 @@ fun MusicPlayerScreen(
     PostNotificationPermissionHandler(
         musicPlayerState = musicPlayerState,
         onPermissionResult = { permission, isGranted ->
-            isPostNotificationsPermissionGranted = isGranted
-
             viewModel.onAction(
                 MusicPlayerAction.OnPermissionResult(
                     permission = permission,
@@ -200,6 +206,12 @@ fun MusicPlayerScreen(
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { innerPadding ->
+        YouTubePlayer(
+            musicPlayerState = musicPlayerState,
+            onAction = viewModel::onAction,
+            modifier = Modifier.size(0.dp)
+        )
+
         MusicPlayerBackground()
 
         Column(

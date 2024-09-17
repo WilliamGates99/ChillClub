@@ -90,12 +90,13 @@ fun PlayPauseButton(
     onAction: (action: MusicPlayerAction) -> Unit
 ) {
     CustomIconButton(
+        isLoading = musicPlayerState.isMusicBuffering,
         icon = icon,
         contentDescription = contentDescription,
         onClick = {
             if (musicPlayerState.isMusicPlaying) {
                 onAction(MusicPlayerAction.PauseMusic)
-            } else onAction(MusicPlayerAction.PlayMusic(musicPlayerState.currentRadioStation))
+            } else onAction(MusicPlayerAction.ResumeMusic)
         },
         modifier = modifier
     )
