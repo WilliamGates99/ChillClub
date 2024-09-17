@@ -195,4 +195,14 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
             else -> emit(Result.Error(GetRadioStationsError.Network.SomethingWentWrong))
         }
     }
+
+    override fun getCurrentlyPlayingRadioStation(
+        radioStationId: Long
+    ): Flow<RadioStation> = flow {
+        val currentRadioStation = radioStationEntities.find {
+            it.id == radioStationId
+        }?.toRadioStation()
+
+        currentRadioStation?.let { emit(it) }
+    }
 }
