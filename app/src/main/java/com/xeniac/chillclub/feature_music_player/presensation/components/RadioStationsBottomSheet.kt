@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -48,6 +49,7 @@ import com.xeniac.chillclub.core.domain.models.RadioStation
 import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeight
 import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeightDp
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
+import com.xeniac.chillclub.feature_music_player.presensation.utils.TestTags
 
 @Composable
 fun RadioStationsBottomSheet(
@@ -122,12 +124,14 @@ private fun BottomSheetHeader(
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(
-            start = 36.dp,
-            end = 36.dp,
-            top = 32.dp,
-            bottom = 18.dp // 32 - 14 (from radio station item) = 18.dp
-        )
+        modifier = modifier
+            .padding(
+                start = 36.dp,
+                end = 36.dp,
+                top = 32.dp,
+                bottom = 18.dp // 32 - 14 (from radio station item) = 18.dp
+            )
+            .testTag(TestTags.BOTTOM_SHEET_HEADER)
     ) {
         Text(
             text = title,
@@ -164,7 +168,7 @@ private fun RadioStations(
             fadeIn().togetherWith(exit = fadeOut())
         },
         label = "radioStationsAnimatedContent",
-        modifier = modifier
+        modifier = modifier.testTag(TestTags.BOTTOM_SHEET_RADIO_STATIONS)
     ) { isLoading ->
         if (isLoading) {
             RadioStationsLoading(modifier = modifier)
