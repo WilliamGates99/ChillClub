@@ -35,7 +35,6 @@ fun CustomIconButton(
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,
     shadowColorLight: Color = BlackAlpha24,
     shadowColorDark: Color = BlackAlpha24,
-    shadowCornerRadius: Dp = 90.dp,
     shadowBlurRadius: Dp = 16.dp,
     shadowSpread: Dp = 4.dp,
     contentDescription: String? = null,
@@ -48,11 +47,10 @@ fun CustomIconButton(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(size)
-            .customShadow(
+            .customOvalShadow(
                 isSystemInDarkTheme = isSystemInDarkTheme,
                 lightThemeShadowColor = shadowColorLight,
                 darkThemeShadowColor = shadowColorDark,
-                shadowCornerRadius = shadowCornerRadius,
                 blurRadius = shadowBlurRadius,
                 spread = shadowSpread
             )
