@@ -18,7 +18,7 @@ import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import coil.util.DebugLogger
 import com.xeniac.chillclub.core.domain.models.AppTheme
-import com.xeniac.chillclub.core.ui.theme.GreenNotificationLight
+import com.xeniac.chillclub.core.ui.theme.PurpleNotificationLight
 import dagger.hilt.android.HiltAndroidApp
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
@@ -31,6 +31,9 @@ class BaseApplication : Application(), ImageLoaderFactory {
     companion object {
         const val NOTIFICATION_CHANNEL_GROUP_ID_FCM = "group_fcm"
         const val NOTIFICATION_CHANNEL_ID_FCM_MISCELLANEOUS = "channel_fcm_miscellaneous"
+
+        const val NOTIFICATION_CHANNEL_GROUP_ID_MUSIC_PLAYER = "group_music_player"
+        const val NOTIFICATION_CHANNEL_ID_MUSIC_PLAYER_SERVICE = "channel_music_player_service"
     }
 
     @Inject
@@ -48,6 +51,9 @@ class BaseApplication : Application(), ImageLoaderFactory {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createFcmNotificationChannelGroup()
             createMiscellaneousFcmNotificationChannel()
+
+            createMusicPlayerNotificationChannelGroup()
+            createMusicPlayerServiceNotificationChannel()
         }
     }
 
@@ -74,11 +80,36 @@ class BaseApplication : Application(), ImageLoaderFactory {
         ).apply {
             group = NOTIFICATION_CHANNEL_GROUP_ID_FCM
             lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-            lightColor = GreenNotificationLight.toArgb() // TODO: CHANGE COLOR BASED ON APP ICON
+            lightColor = PurpleNotificationLight.toArgb()
             enableLights(true)
         }
 
         notificationManager.createNotificationChannel(miscellaneousNotificationChannel)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createMusicPlayerNotificationChannelGroup() {
+        val notificationChannelGroup = NotificationChannelGroup(
+            /* id = */ NOTIFICATION_CHANNEL_GROUP_ID_MUSIC_PLAYER,
+            /* name = */ getString(R.string.notification_player_channel_group_name)
+        )
+
+        notificationManager.createNotificationChannelGroup(notificationChannelGroup)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createMusicPlayerServiceNotificationChannel() {
+        val channel = NotificationChannel(
+            /* id = */ NOTIFICATION_CHANNEL_ID_MUSIC_PLAYER_SERVICE,
+            /* name = */ getString(R.string.notification_player_channel_name_service),
+            /* importance = */ NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            group = NOTIFICATION_CHANNEL_GROUP_ID_MUSIC_PLAYER
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            enableLights(false)
+        }
+
+        notificationManager.createNotificationChannel(channel)
     }
 
     override fun newImageLoader(): ImageLoader = ImageLoader(context = this).newBuilder().apply {

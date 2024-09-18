@@ -5,6 +5,6 @@ import dagger.Lazy
 data class SettingsUseCases(
     val getCurrentAppThemeUseCase: Lazy<GetCurrentAppThemeUseCase>,
     val getIsPlayInBackgroundEnabledUseCase: Lazy<GetIsPlayInBackgroundEnabledUseCase>,
-    val setCurrentAppThemeUseCase: Lazy<SetCurrentAppThemeUseCase>,
-    val setIsPlayInBackgroundEnabledUseCase: Lazy<SetIsPlayInBackgroundEnabledUseCase>
+    val storeCurrentAppThemeUseCase: Lazy<StoreCurrentAppThemeUseCase>,
+    val storeIsPlayInBackgroundEnabledUseCase: Lazy<StoreIsPlayInBackgroundEnabledUseCase>
 )

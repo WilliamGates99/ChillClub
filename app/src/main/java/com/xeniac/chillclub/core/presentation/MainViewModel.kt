@@ -3,8 +3,8 @@ package com.xeniac.chillclub.core.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.xeniac.chillclub.core.domain.states.MainActivityState
 import com.xeniac.chillclub.core.domain.use_cases.GetCurrentAppLocaleUseCase
+import com.xeniac.chillclub.core.presentation.states.MainActivityState
 import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

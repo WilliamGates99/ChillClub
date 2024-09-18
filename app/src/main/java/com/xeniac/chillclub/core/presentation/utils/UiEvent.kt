@@ -6,6 +6,6 @@ sealed class UiEvent : Event() {
     data class ShowActionSnackbar(val message: UiText) : UiEvent()
     data class ShowOfflineSnackbar(val message: UiText) : UiEvent()
 
-    data class Navigate(val route: String) : UiEvent() // TODO: CHANGE PARAM
+    data class Navigate(val screen: Any) : UiEvent()
     data object NavigateUp : UiEvent()
 }

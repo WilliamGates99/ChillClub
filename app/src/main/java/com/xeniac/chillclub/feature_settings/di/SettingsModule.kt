@@ -1,11 +1,11 @@
 package com.xeniac.chillclub.feature_settings.di
 
-import com.xeniac.chillclub.core.domain.repositories.PreferencesRepository
+import com.xeniac.chillclub.core.domain.repositories.SettingsDataStoreRepository
 import com.xeniac.chillclub.feature_settings.domain.use_cases.GetCurrentAppThemeUseCase
 import com.xeniac.chillclub.feature_settings.domain.use_cases.GetIsPlayInBackgroundEnabledUseCase
-import com.xeniac.chillclub.feature_settings.domain.use_cases.SetCurrentAppThemeUseCase
-import com.xeniac.chillclub.feature_settings.domain.use_cases.SetIsPlayInBackgroundEnabledUseCase
 import com.xeniac.chillclub.feature_settings.domain.use_cases.SettingsUseCases
+import com.xeniac.chillclub.feature_settings.domain.use_cases.StoreCurrentAppThemeUseCase
+import com.xeniac.chillclub.feature_settings.domain.use_cases.StoreIsPlayInBackgroundEnabledUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,40 +19,40 @@ internal object SettingsModule {
     @Provides
     @ViewModelScoped
     fun provideGetCurrentAppThemeUseCase(
-        preferencesRepository: PreferencesRepository
-    ): GetCurrentAppThemeUseCase = GetCurrentAppThemeUseCase(preferencesRepository)
+        settingsDataStoreRepository: SettingsDataStoreRepository
+    ): GetCurrentAppThemeUseCase = GetCurrentAppThemeUseCase(settingsDataStoreRepository)
 
     @Provides
     @ViewModelScoped
     fun provideGetIsPlayInBackgroundEnabledUseCase(
-        preferencesRepository: PreferencesRepository
+        settingsDataStoreRepository: SettingsDataStoreRepository
     ): GetIsPlayInBackgroundEnabledUseCase =
-        GetIsPlayInBackgroundEnabledUseCase(preferencesRepository)
+        GetIsPlayInBackgroundEnabledUseCase(settingsDataStoreRepository)
 
     @Provides
     @ViewModelScoped
-    fun provideSetCurrentAppThemeUseCase(
-        preferencesRepository: PreferencesRepository
-    ): SetCurrentAppThemeUseCase = SetCurrentAppThemeUseCase(preferencesRepository)
+    fun provideStoreCurrentAppThemeUseCase(
+        settingsDataStoreRepository: SettingsDataStoreRepository
+    ): StoreCurrentAppThemeUseCase = StoreCurrentAppThemeUseCase(settingsDataStoreRepository)
 
     @Provides
     @ViewModelScoped
-    fun provideSetIsPlayInBackgroundEnabledUseCase(
-        preferencesRepository: PreferencesRepository
-    ): SetIsPlayInBackgroundEnabledUseCase =
-        SetIsPlayInBackgroundEnabledUseCase(preferencesRepository)
+    fun provideStoreIsPlayInBackgroundEnabledUseCase(
+        settingsDataStoreRepository: SettingsDataStoreRepository
+    ): StoreIsPlayInBackgroundEnabledUseCase =
+        StoreIsPlayInBackgroundEnabledUseCase(settingsDataStoreRepository)
 
     @Provides
     @ViewModelScoped
     fun provideSettingsUseCases(
-        setCurrentAppThemeUseCase: SetCurrentAppThemeUseCase,
-        getIsPlayInBackgroundEnabledUseCase: GetIsPlayInBackgroundEnabledUseCase,
         getCurrentAppThemeUseCase: GetCurrentAppThemeUseCase,
-        setIsPlayInBackgroundEnabledUseCase: SetIsPlayInBackgroundEnabledUseCase
+        getIsPlayInBackgroundEnabledUseCase: GetIsPlayInBackgroundEnabledUseCase,
+        storeCurrentAppThemeUseCase: StoreCurrentAppThemeUseCase,
+        storeIsPlayInBackgroundEnabledUseCase: StoreIsPlayInBackgroundEnabledUseCase
     ): SettingsUseCases = SettingsUseCases(
         { getCurrentAppThemeUseCase },
         { getIsPlayInBackgroundEnabledUseCase },
-        { setCurrentAppThemeUseCase },
-        { setIsPlayInBackgroundEnabledUseCase }
+        { storeCurrentAppThemeUseCase },
+        { storeIsPlayInBackgroundEnabledUseCase }
     )
 }

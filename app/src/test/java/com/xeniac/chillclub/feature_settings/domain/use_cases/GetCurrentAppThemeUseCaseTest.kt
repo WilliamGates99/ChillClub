@@ -3,7 +3,7 @@ package com.xeniac.chillclub.feature_settings.domain.use_cases
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
-import com.xeniac.chillclub.core.data.repositories.FakePreferencesRepositoryImpl
+import com.xeniac.chillclub.core.data.repositories.FakeSettingsDataStoreRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -23,20 +23,20 @@ class GetCurrentAppThemeUseCaseTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
-    private lateinit var fakePreferencesRepository: FakePreferencesRepositoryImpl
+    private lateinit var fakeSettingsDataStoreRepository: FakeSettingsDataStoreRepositoryImpl
     private lateinit var getCurrentAppThemeUseCase: GetCurrentAppThemeUseCase
 
     @Before
     fun setUp() {
-        fakePreferencesRepository = FakePreferencesRepositoryImpl()
+        fakeSettingsDataStoreRepository = FakeSettingsDataStoreRepositoryImpl()
         getCurrentAppThemeUseCase = GetCurrentAppThemeUseCase(
-            preferencesRepository = fakePreferencesRepository
+            settingsDataStoreRepository = fakeSettingsDataStoreRepository
         )
     }
 
     @Test
     fun getCurrentAppTheme_returnsCurrentAppTheme() = runTest {
         val currentAppTheme = getCurrentAppThemeUseCase().first()
-        assertThat(currentAppTheme).isEqualTo(fakePreferencesRepository.appTheme)
+        assertThat(currentAppTheme).isEqualTo(fakeSettingsDataStoreRepository.currentAppTheme)
     }
 }

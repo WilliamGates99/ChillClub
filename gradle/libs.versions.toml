@@ -1,26 +1,27 @@
 [versions]
-desugar_jdk_libs = "2.0.4"
+desugar_jdk_libs = "2.1.2"
 coreKtx = "1.13.1"
 appcompat = "1.7.0"
 coreSplashscreen = "1.0.1"
-kotlinxSerializationJson = "1.7.1"
-kotlinxDatetime = "0.6.0"
-compose-bom = "2024.06.00"
-activityCompose = "1.9.1"
+kotlinxSerializationJson = "1.7.2"
+kotlinxDatetime = "0.6.1"
+compose-bom = "2024.09.01"
+activityCompose = "1.9.2"
 constraintlayoutCompose = "1.0.1"
-navigationCompose = "2.8.0-beta07"
+navigationCompose = "2.8.0"
 hiltNavigationCompose = "1.2.0"
 hilt = "2.52"
-androidLifecycle = "2.8.4"
-coroutines = "1.8.1"
+androidLifecycle = "2.8.5"
+coroutines = "1.9.0"
 ktor = "2.3.12"
 room = "2.6.1"
 datastorePreferences = "1.1.1"
-firebase-bom = "33.1.2"
+firebase-bom = "33.3.0"
 inAppBrowser = "1.8.0"
 timber = "5.0.1"
-lottieCompose = "6.5.0"
+lottieCompose = "6.5.2"
 coil-bom = "2.7.0"
+youtubePlayerView = "12.1.0"
 playReview = "2.0.1"
 playAppUpdate = "2.1.0"
 truth = "1.4.4"
@@ -28,12 +29,12 @@ junit = "4.13.2"
 archCoreTesting = "2.2.0"
 testCore = "1.6.1"
 testExtJunit = "1.2.1"
-testRunner = "1.6.1"
+testRunner = "1.6.2"
 testRules = "1.6.1"
 espresso = "3.6.1"
 
 # Plugins
-agp = "8.5.2"
+agp = "8.6.0"
 kotlin = "2.0.0"
 ksp = "2.0.0-1.0.22"
 googleServices = "4.4.2"
@@ -112,6 +113,9 @@ coil-bom = { module = "io.coil-kt:coil-bom", version.ref = "coil-bom" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose" }
 coil-svg = { group = "io.coil-kt", name = "coil-svg" }
 coil-gif = { group = "io.coil-kt", name = "coil-gif" }
+
+# YouTube Player Library
+youtube-player = { module = "com.pierfrancescosoffritti.androidyoutubeplayer:core", version.ref = "youtubePlayerView" }
 
 # Google Play In-App Reviews API
 play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }

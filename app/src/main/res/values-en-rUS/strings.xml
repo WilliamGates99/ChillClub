@@ -7,7 +7,11 @@
     <string name="notification_fcm_channel_name_miscellaneous">Miscellaneous</string>
 
 
-    <string name="permissions_error_notification_declined">This app requires notifications permission to receive notifications.</string>
+    <string name="notification_player_channel_group_name">Music Player</string>
+    <string name="notification_player_channel_name_service">Music Player Service</string>
+
+
+    <string name="permissions_error_notification_declined">This app requires notifications permission to continue playing in the background.</string>
     <string name="permissions_error_notification_declined_permanently">It looks like you\'ve permanently denied notifications permission. You can go to the app settings to grant it.</string>
     <string name="permissions_error_btn_open_settings">App Settings</string>
     <string name="permissions_error_btn_confirm">Confirm</string>
@@ -23,5 +27,69 @@
 
 
     <string name="core_content_description_back">Return</string>
+
+
+    <string name="music_player_app_bar_title_welcome">Welcome</string>
+    <string name="music_player_btn_settings">Settings</string>
+    <string name="music_player_title_not_playing">Choose a Station to Play</string>
+    <string name="music_player_btn_play">Play</string>
+    <string name="music_player_btn_pause">Pause</string>
+    <string name="music_player_btn_volume_control">Volume Control</string>
+    <string name="music_player_radio_stations_sheet_title"><![CDATA[<b>Select</b> a Station]]></string>
+    <string name="music_player_radio_stations_sheet_content_description_show">Show</string>
+    <string name="music_player_radio_stations_sheet_content_description_hide">Hide</string>
+    <string name="music_player_radio_stations_sheet_content_description_radio_cover">Radio Cover</string>
+    <!--Placeholder is for the radio station title-->
+    <string name="music_player_notification_message">Now Playing: %s</string>
+    <string name="music_player_error_video_not_found">There was a problem loading this radio. Please select another one.</string>
+    <string name="music_player_error_video_not_playable">There was a problem loading this radio. Please select another one.</string>
+    <string name="music_player_error_invalid_parameter">There was a problem loading this radio. Please select another one.</string>
+    <string name="music_player_error_html_5">There was a problem loading this radio. Please select another one.</string>
+    <string name="music_player_error_unknown">There was a problem loading this radio. Please select another one.</string>
+
+
+    <string name="settings_app_bar_title">Settings</string>
+    <string name="settings_general_title">General</string>
+    <string name="settings_general_theme_title">Dark Mode</string>
+    <string name="settings_general_background_player_title">Background Player</string>
+    <string name="settings_general_background_play_description">Keep listening when the app is in the background.</string>
+    <string name="settings_about_title">About</string>
+    <string name="settings_about_about_us_title">About Us</string>
+    <string name="settings_about_contact_us_title">Contact Us</string>
+    <!--Placeholder is for the Device Model-->
+    <string name="settings_support_contact_us_email_device_model">Device Model: %s</string>
+    <!--Placeholder is for the Android Version-->
+    <string name="settings_support_contact_us_email_android_version">Android Version: %s</string>
+    <!--Placeholder is for the App Version-->
+    <string name="settings_support_contact_us_email_app_version">App Version: %s</string>
+    <!--
+    Placeholders:
+    • %1$s: Device Model
+    • %2$s: Android Version
+    • %3$s: App Version
+    Sample:
+    Device Model: Pixel 9
+    Android Version: 15
+    App Version: 1.0.0
+    ..................
+    Feedback:
+    -->
+    <string name="settings_support_contact_us_email_text">%1$s\n%2$s\n%3$s\n--------------------------------------\nFeedback:</string>
+    <string name="settings_about_contact_us_app_chooser_title">Contact us via…</string>
+    <string name="settings_about_source_title">Source</string>
+    <string name="settings_about_donate_title">Donate</string>
+    <string name="settings_about_share_title">Share</string>
+    <!--
+    Placeholders:
+    • %1$s: App Title
+    • %2$s: Download Link
+    -->
+    <string name="settings_about_share_message">I\'m using %1$s app and thought you might like it too. Download it from here:\n\n%2$s</string>
+    <string name="settings_about_share_app_chooser_title">Share via…</string>
+    <string name="settings_support_title">Support</string>
+    <string name="settings_support_ask_question_title">Ask a Question</string>
+    <string name="settings_support_privacy_policy_title">Privacy Policy</string>
+    <!--Placeholder is for the App Version-->
+    <string name="settings_app_version">v%s</string>
 
 </resources>

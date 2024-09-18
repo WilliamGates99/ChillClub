@@ -46,6 +46,11 @@ android {
         )
     }
 
+    sourceSets {
+        // Adds room exported schema location as test app assets
+        getByName("androidTest").assets.srcDirs("$projectDir/roomSchemas")
+    }
+
     signingConfigs {
         create("release") {
             storeFile = file(path = properties.getProperty("KEY_STORE_PATH"))
@@ -57,7 +62,7 @@ android {
 
     buildTypes {
         debug {
-            versionNameSuffix = " - debug"
+            versionNameSuffix = " - Debug"
             applicationIdSuffix = ".debug"
 
             resValue(
@@ -102,7 +107,7 @@ android {
             resValue(
                 type = "color",
                 name = "appIconBackground",
-                value = "#FF0C160D" // Dark Green // TODO: UPDATE ICON BACKGROUND COLOR
+                value = "#FF182118" // Dark Green
             )
         }
 
@@ -113,7 +118,7 @@ android {
             buildConfigField(
                 type = "String",
                 name = "URL_APP_STORE",
-                value = "\"https://play.google.com/store/apps/details?id=com.xeniac.chillclubt\""
+                value = "\"https://play.google.com/store/apps/details?id=com.xeniac.chillclub\""
             )
 
             buildConfigField(
@@ -129,7 +134,7 @@ android {
             buildConfigField(
                 type = "String",
                 name = "URL_APP_STORE",
-                value = "\"https://github.com/WilliamGates99/FUTSale\""
+                value = "\"https://github.com/WilliamGates99/ChillClub\""
             )
 
             buildConfigField(
@@ -145,7 +150,7 @@ android {
             buildConfigField(
                 type = "String",
                 name = "URL_APP_STORE",
-                value = "\"https://cafebazaar.ir/app/com.xeniac.chillclubt\""
+                value = "\"https://cafebazaar.ir/app/com.xeniac.chillclub\""
             )
 
             buildConfigField(
@@ -161,7 +166,7 @@ android {
             buildConfigField(
                 type = "String",
                 name = "URL_APP_STORE",
-                value = "\"https://myket.ir/app/com.xeniac.chillclubt\""
+                value = "\"https://myket.ir/app/com.xeniac.chillclub\""
             )
 
             buildConfigField(
@@ -319,6 +324,9 @@ dependencies {
     implementation(libs.coil.svg)
     implementation(libs.coil.gif)
 
+    // YouTube Player Library
+    implementation(libs.youtube.player)
+
     // Google Play In-App Reviews API
     implementation(libs.play.review.ktx)
 
@@ -363,7 +371,7 @@ val bundleDestDir: String = properties.getProperty("BUNDLE_DESTINATION_DIR")
 val obfuscationDestDir: String = properties.getProperty("OBFUSCATION_DESTINATION_DIR")
 
 val versionName = "${android.defaultConfig.versionName}"
-val renamedFileName = "FUTSale $versionName"
+val renamedFileName = "Chill Club $versionName"
 
 tasks.register<Copy>("copyDevPreviewBundle") {
     val bundleFile = "app-dev-playStore-release.aab"
