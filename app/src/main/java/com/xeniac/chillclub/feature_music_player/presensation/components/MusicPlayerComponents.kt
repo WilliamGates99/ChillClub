@@ -136,9 +136,12 @@ private fun CurrentRadioStation(
         exit = fadeOut(),
         modifier = modifier
     ) {
+        if (musicPlayerState.currentRadioStation != null) {
+
+        }
         Column(verticalArrangement = Arrangement.spacedBy(space = 48.dp)) {
             CurrentRadioStationTitle(
-                title = musicPlayerState.currentRadioStation!!.channel.name
+                title = musicPlayerState.currentRadioStation?.channel?.name ?: ""
             )
 
             MusicPlayerMediaControls(

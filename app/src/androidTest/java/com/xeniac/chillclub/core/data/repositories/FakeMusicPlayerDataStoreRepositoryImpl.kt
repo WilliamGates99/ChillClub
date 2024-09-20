@@ -18,4 +18,8 @@ class FakeMusicPlayerDataStoreRepositoryImpl @Inject constructor(
     override suspend fun storeCurrentlyPlayingRadioStationId(id: Long) {
         currentlyPlayingRadioStationId = id
     }
+
+    override suspend fun removeCurrentlyPlayingRadioStationId() {
+        currentlyPlayingRadioStationId = null
+    }
 }

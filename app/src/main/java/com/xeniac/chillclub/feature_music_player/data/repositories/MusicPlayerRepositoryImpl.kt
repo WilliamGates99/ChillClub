@@ -6,10 +6,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
 import android.os.Build
+import androidx.room.withTransaction
+import com.xeniac.chillclub.core.data.local.ChillClubDatabase
 import com.xeniac.chillclub.core.data.local.RadioStationsDao
 import com.xeniac.chillclub.core.data.local.entities.RadioStationsVersionEntity
 import com.xeniac.chillclub.core.data.utils.scaleToUnitInterval
 import com.xeniac.chillclub.core.domain.models.RadioStation
+import com.xeniac.chillclub.core.domain.repositories.MusicPlayerDataStoreRepository
 import com.xeniac.chillclub.core.domain.utils.Result
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadioStationsResponseDto
 import com.xeniac.chillclub.feature_music_player.di.MUSIC_STREAM_TYPE
@@ -47,7 +50,9 @@ import kotlin.math.roundToInt
 class MusicPlayerRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val httpClient: HttpClient,
+    private val database: Lazy<ChillClubDatabase>,
     private val dao: Lazy<RadioStationsDao>,
+    private val musicPlayerDataStoreRepository: Lazy<MusicPlayerDataStoreRepository>,
     private val audioManager: AudioManager,
     private val musicStreamType: MUSIC_STREAM_TYPE
 ) : MusicPlayerRepository {
@@ -173,14 +178,18 @@ class MusicPlayerRepositoryImpl @Inject constructor(
                         return@flow
                     }
 
-                    dao.get().replaceAllRadioStations(
-                        radioStationsVersionEntity = RadioStationsVersionEntity(
-                            version = getRadioStationsResponseDto.version
-                        ),
-                        radioStationEntities = getRadioStationsResponseDto.radioStationDtos.map {
-                            it.toRadioStationEntity()
-                        }
-                    )
+                    database.get().withTransaction {
+                        musicPlayerDataStoreRepository.get().removeCurrentlyPlayingRadioStationId()
+
+                        dao.get().replaceAllRadioStations(
+                            radioStationsVersionEntity = RadioStationsVersionEntity(
+                                version = getRadioStationsResponseDto.version
+                            ),
+                            radioStationEntities = getRadioStationsResponseDto.radioStationDtos.map {
+                                it.toRadioStationEntity()
+                            }
+                        )
+                    }
 
                     val radioStations = dao.get().getRadioStations().map { it.toRadioStation() }
                     emit(Result.Success(radioStations))
@@ -232,7 +241,7 @@ class MusicPlayerRepositoryImpl @Inject constructor(
 
     override fun getCurrentlyPlayingRadioStation(
         radioStationId: Long
-    ): Flow<RadioStation> = dao.get().observeRadioStation(id = radioStationId).map {
-        it.toRadioStation()
+    ): Flow<RadioStation?> = dao.get().observeRadioStation(id = radioStationId).map {
+        it?.toRadioStation()
     }
 }

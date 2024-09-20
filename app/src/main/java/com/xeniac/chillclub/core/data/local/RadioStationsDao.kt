@@ -55,5 +55,5 @@ interface RadioStationsDao {
     fun observeRadioStations(): Flow<List<RadioStationEntity>>
 
     @Query("SELECT * FROM radio_stations WHERE id = :id")
-    fun observeRadioStation(id: Long): Flow<RadioStationEntity>
+    fun observeRadioStation(id: Long): Flow<RadioStationEntity?>
 }

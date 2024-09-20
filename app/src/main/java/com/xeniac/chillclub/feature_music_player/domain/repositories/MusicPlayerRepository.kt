@@ -24,7 +24,7 @@ interface MusicPlayerRepository {
 
     fun getCurrentlyPlayingRadioStation(
         radioStationId: Long
-    ): Flow<RadioStation>
+    ): Flow<RadioStation?>
 
     sealed class EndPoints(val url: String) {
         data object GetRadioStations : EndPoints(
