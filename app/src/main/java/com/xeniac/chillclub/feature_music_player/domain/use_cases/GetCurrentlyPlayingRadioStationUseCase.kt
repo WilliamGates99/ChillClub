@@ -10,7 +10,7 @@ class GetCurrentlyPlayingRadioStationUseCase(
 ) {
     operator fun invoke(
         radioStationId: Long?
-    ): Flow<RadioStation> {
+    ): Flow<RadioStation?> {
         if (radioStationId == null) {
             return emptyFlow()
         }

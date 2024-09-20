@@ -82,4 +82,20 @@ class MusicPlayerDataStoreRepositoryImplTest {
         val notificationPermissionCount = testRepository.getCurrentlyPlayingRadioStationId().first()
         assertThat(notificationPermissionCount).isEqualTo(testValue)
     }
+
+    @Test
+    fun removeCurrentlyPlayingRadioStationId() = testScope.runTest {
+        val testValue = 5L
+        testRepository.storeCurrentlyPlayingRadioStationId(testValue)
+
+        val notificationPermissionCountBefore = testRepository
+            .getCurrentlyPlayingRadioStationId().first()
+        assertThat(notificationPermissionCountBefore).isEqualTo(testValue)
+
+        testRepository.removeCurrentlyPlayingRadioStationId()
+
+        val notificationPermissionCountAfter = testRepository
+            .getCurrentlyPlayingRadioStationId().first()
+        assertThat(notificationPermissionCountAfter).isNull()
+    }
 }

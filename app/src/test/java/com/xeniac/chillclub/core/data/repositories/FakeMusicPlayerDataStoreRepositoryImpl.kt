@@ -16,4 +16,8 @@ class FakeMusicPlayerDataStoreRepositoryImpl : MusicPlayerDataStoreRepository {
     override suspend fun storeCurrentlyPlayingRadioStationId(id: Long) {
         currentlyPlayingRadioStationId = id
     }
+
+    override suspend fun removeCurrentlyPlayingRadioStationId() {
+        currentlyPlayingRadioStationId = null
+    }
 }

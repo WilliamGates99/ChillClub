@@ -9,4 +9,6 @@ interface MusicPlayerDataStoreRepository {
     fun getCurrentlyPlayingRadioStationId(): Flow<RadioStationId?>
 
     suspend fun storeCurrentlyPlayingRadioStationId(id: Long)
+
+    suspend fun removeCurrentlyPlayingRadioStationId()
 }

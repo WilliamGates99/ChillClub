@@ -42,4 +42,16 @@ class MusicPlayerDataStoreRepositoryImpl @Inject constructor(
             e.printStackTrace()
         }
     }
+
+    override suspend fun removeCurrentlyPlayingRadioStationId() {
+        try {
+            dataStore.edit { preferences ->
+                preferences.remove(PreferencesKeys.CURRENTLY_PLAYING_RADIO_STATION_ID)
+                Timber.i("Currently playing radio station id removed")
+            }
+        } catch (e: Exception) {
+            Timber.e("removeCurrentlyPlayingRadioStationId failed:")
+            e.printStackTrace()
+        }
+    }
 }

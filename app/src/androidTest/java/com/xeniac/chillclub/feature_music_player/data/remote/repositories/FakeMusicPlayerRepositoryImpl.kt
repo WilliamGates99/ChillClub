@@ -199,7 +199,7 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
 
     override fun getCurrentlyPlayingRadioStation(
         radioStationId: Long
-    ): Flow<RadioStation> = flow {
+    ): Flow<RadioStation?> = flow {
         val currentRadioStation = radioStationEntities.find {
             it.id == radioStationId
         }?.toRadioStation()
