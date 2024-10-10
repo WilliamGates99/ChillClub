@@ -1,6 +1,9 @@
 # Chill Club
 ![platform](https://img.shields.io/badge/platform-android-success)&nbsp;![GitHub release (latest by date)](https://img.shields.io/github/v/release/WilliamGates99/ChillClub)&nbsp;![GitHub License](https://img.shields.io/github/license/WilliamGates99/ChillClub)
 
+## Download
+<a href="https://play.google.com/store/apps/details?id=com.xeniac.chillclub" target="_blank"><img alt="Get it on Google Play" height="60" align="center" src="/resources/badges/google-play-badge.svg"/></a>
+
 ## Description
 ![Feature Cover](/resources/feature_graphic.jpg)
 <br><br>
