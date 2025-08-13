@@ -35,8 +35,8 @@ espresso = "3.6.1"
 
 # Plugins
 agp = "8.6.1"
-kotlin = "2.0.20"
-ksp = "2.0.20-1.0.25"
+kotlin = "2.2.0"
+ksp = "2.2.0-2.0.2"
 googleServices = "4.4.2"
 firebaseCrashlytics = "3.0.2"
 firebasePerf = "1.4.2"
@@ -145,9 +145,9 @@ compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-mani
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 room = { id = "androidx.room", version.ref = "room" }
