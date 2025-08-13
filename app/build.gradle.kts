@@ -32,7 +32,7 @@ android {
         minSdk = 23
         targetSdk = 36
         versionCode = 3
-        versionName = "1.0.2-Alpha1"
+        versionName = "1.1.0-Alpha1"
 
         testInstrumentationRunner = "com.xeniac.chillclub.HiltTestRunner"
 
