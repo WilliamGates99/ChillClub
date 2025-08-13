@@ -16,14 +16,16 @@ import com.xeniac.chillclub.core.domain.repositories.PreviousRateAppRequestTimeI
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.periodUntil
 import kotlinx.datetime.todayIn
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class MiscellaneousDataStoreRepositoryImpl @Inject constructor(
     @MiscellaneousDataStoreQualifier private val dataStore: DataStore<Preferences>
 ) : MiscellaneousDataStoreRepository {
@@ -101,7 +103,7 @@ class MiscellaneousDataStoreRepositoryImpl @Inject constructor(
             val todayEpochDays = todayLocalDate.toEpochDays()
 
             dataStore.edit {
-                it[PreferencesKeys.APP_UPDATE_DIALOG_SHOW_EPOCH_DAYS] = todayEpochDays
+                it[PreferencesKeys.APP_UPDATE_DIALOG_SHOW_EPOCH_DAYS] = todayEpochDays.toInt()
                 Timber.i("App update dialog show epoch days edited to $todayEpochDays")
             }
         } catch (e: Exception) {

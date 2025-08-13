@@ -36,8 +36,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.SubcomposeAsyncImage
-import coil.compose.rememberAsyncImagePainter
+import coil3.compose.SubcomposeAsyncImage
+import coil3.compose.rememberAsyncImagePainter
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.domain.models.RadioStation
 import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeightDp
