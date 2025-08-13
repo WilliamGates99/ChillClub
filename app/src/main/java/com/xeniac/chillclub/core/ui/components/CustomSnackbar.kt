@@ -1,6 +1,6 @@
 package com.xeniac.chillclub.core.ui.components
 
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SwipeToDismissBox
@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SwipeableSnackbar(
     hostState: SnackbarHostState,
@@ -31,7 +30,7 @@ fun SwipeableSnackbar(
     val layoutDirection = LocalLayoutDirection.current
 
     // Set the layout direction to LTR to solve the opposite swipe direction in RTL layouts
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+    CompositionLocalProvider(value = LocalLayoutDirection provides LayoutDirection.Ltr) {
         LaunchedEffect(dismissSnackbarState.currentValue) {
             if (dismissSnackbarState.currentValue != SwipeToDismissBoxValue.Settled) {
                 dismissSnackbarState.reset()
@@ -41,9 +40,9 @@ fun SwipeableSnackbar(
         SwipeToDismissBox(
             state = dismissSnackbarState,
             backgroundContent = {},
-            modifier = modifier
+            modifier = modifier.fillMaxWidth()
         ) {
-            CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+            CompositionLocalProvider(value = LocalLayoutDirection provides layoutDirection) {
                 SnackbarHost(hostState = hostState)
             }
         }
