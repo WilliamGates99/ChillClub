@@ -1,13 +1,14 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
-    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
@@ -16,7 +17,10 @@ plugins {
     alias(libs.plugins.firebase.perf)
 }
 
-val properties = gradleLocalProperties(rootDir, providers)
+val properties = gradleLocalProperties(
+    projectRootDir = rootDir,
+    providers = providers
+)
 
 android {
     namespace = "com.xeniac.chillclub"
@@ -29,9 +33,6 @@ android {
         targetSdk = 35
         versionCode = 2
         versionName = "1.0.1"
-
-        // Keeps language resources for only the locales specified below.
-        resourceConfigurations.addAll(listOf("en-rUS"))
 
         testInstrumentationRunner = "com.xeniac.chillclub.HiltTestRunner"
 
@@ -46,9 +47,11 @@ android {
         )
     }
 
-    sourceSets {
-        // Adds room exported schema location as test app assets
-        getByName("androidTest").assets.srcDirs("$projectDir/roomSchemas")
+    androidResources {
+        generateLocaleConfig = true
+
+        // Keeps language resources for only the locales specified below.
+        localeFilters.addAll(listOf("en-rUS"))
     }
 
     signingConfigs {
@@ -75,14 +78,13 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
+            ndk.debugSymbolLevel = "FULL" // Include native debug symbols file in app bundle
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-
-            signingConfig = signingConfigs.getByName("release")
-
-            ndk.debugSymbolLevel = "FULL" // Include native debug symbols file in app bundle
         }
     }
 
@@ -186,16 +188,23 @@ android {
         // Java 8+ API Desugaring Support
         isCoreLibraryDesugaringEnabled = true
 
-        sourceCompatibility = JavaVersion.VERSION_22
-        targetCompatibility = JavaVersion.VERSION_22
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "22"
+    kotlin {
+        compilerOptions {
+            jvmTarget = JvmTarget.fromTarget(target = "17")
+        }
     }
 
     room {
-        schemaDirectory("$projectDir/roomSchemas")
+        schemaDirectory(path = "$projectDir/roomSchemas")
+    }
+
+    sourceSets {
+        // Adds room exported schema location as test app assets
+        getByName("androidTest").assets.srcDirs("$projectDir/roomSchemas")
     }
 
     packaging {
@@ -418,8 +427,7 @@ tasks.register<Copy>("copyReleaseApk") {
 
 tasks.register<Copy>("copyReleaseBundle") {
     val playStoreBundleFile = "app-prod-playStore-release.aab"
-    val playStoreBundleSourceDir =
-        "${releaseRootDir}/prodPlayStore/release/${playStoreBundleFile}"
+    val playStoreBundleSourceDir = "${releaseRootDir}/prodPlayStore/release/${playStoreBundleFile}"
 
     from(playStoreBundleSourceDir)
     into(bundleDestDir)
