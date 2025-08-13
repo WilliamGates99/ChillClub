@@ -106,7 +106,7 @@ fun ChillClubTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = getTypography(),
         content = content
     )
 }
