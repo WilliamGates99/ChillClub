@@ -27,10 +27,10 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xeniac.chillclub.R
-import com.xeniac.chillclub.core.presentation.utils.toPx
-import com.xeniac.chillclub.core.ui.theme.Black
-import com.xeniac.chillclub.core.ui.theme.BlackAlpha48
-import com.xeniac.chillclub.core.ui.theme.White
+import com.xeniac.chillclub.core.presentation.common.ui.components.toPx
+import com.xeniac.chillclub.core.presentation.common.ui.theme.Black
+import com.xeniac.chillclub.core.presentation.common.ui.theme.BlackAlpha48
+import com.xeniac.chillclub.core.presentation.common.ui.theme.White
 import com.xeniac.chillclub.feature_music_player.presensation.MusicPlayerAction
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
 

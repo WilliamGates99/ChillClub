@@ -1,8 +1,7 @@
 package com.xeniac.chillclub.core.domain.repositories
 
+import com.xeniac.chillclub.core.domain.models.RadioStationId
 import kotlinx.coroutines.flow.Flow
-
-typealias RadioStationId = Long
 
 interface MusicPlayerDataStoreRepository {
 

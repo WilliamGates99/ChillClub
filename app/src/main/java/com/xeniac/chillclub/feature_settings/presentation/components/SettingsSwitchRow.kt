@@ -31,10 +31,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.xeniac.chillclub.core.ui.components.addClickable
-import com.xeniac.chillclub.core.ui.components.addTestTag
-import com.xeniac.chillclub.core.ui.theme.Gray60
-import com.xeniac.chillclub.core.ui.theme.Gray80
+import com.xeniac.chillclub.core.presentation.common.ui.components.addClickable
+import com.xeniac.chillclub.core.presentation.common.ui.components.addTestTag
+import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray60
+import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray80
 
 @Composable
 fun SettingsSwitchRow(

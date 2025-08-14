@@ -3,11 +3,11 @@ package com.xeniac.chillclub.feature_music_player.data.remote.repositories
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.xeniac.chillclub.core.data.local.entities.RadioStationEntity
-import com.xeniac.chillclub.core.data.utils.scaleToUnitInterval
+import com.xeniac.chillclub.core.domain.utils.scaleToUnitInterval
 import com.xeniac.chillclub.core.domain.models.Channel
 import com.xeniac.chillclub.core.domain.models.RadioStation
 import com.xeniac.chillclub.core.domain.models.SocialLinks
-import com.xeniac.chillclub.core.domain.utils.Result
+import com.xeniac.chillclub.core.domain.models.Result
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadioStationsResponseDto
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
@@ -31,7 +31,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import kotlin.math.roundToInt

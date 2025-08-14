@@ -46,8 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.domain.models.RadioStation
-import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeight
-import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeightDp
+import com.xeniac.chillclub.core.presentation.common.ui.utils.getNavigationBarHeight
+import com.xeniac.chillclub.core.presentation.common.ui.utils.getNavigationBarHeightDp
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
 import com.xeniac.chillclub.feature_music_player.presensation.utils.TestTags
 

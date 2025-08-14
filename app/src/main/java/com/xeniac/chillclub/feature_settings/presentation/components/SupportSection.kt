@@ -30,7 +30,11 @@ fun SupportSection(
     titleFontWeight: FontWeight = FontWeight.Normal,
     openUrlInInAppBrowser: (url: String) -> Unit,
 ) {
-    Column(modifier = modifier.background(background)) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(background)
+    ) {
         Text(
             text = title,
             fontSize = titleFontSize,

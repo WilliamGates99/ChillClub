@@ -38,6 +38,7 @@ fun GeneralSettings(
     Column(
         verticalArrangement = Arrangement.spacedBy(space = 16.dp),
         modifier = modifier
+            .fillMaxWidth()
             .background(background)
             .padding(
                 horizontal = 20.dp,

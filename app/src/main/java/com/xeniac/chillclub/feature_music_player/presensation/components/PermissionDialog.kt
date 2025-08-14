@@ -11,8 +11,8 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.xeniac.chillclub.core.presentation.utils.findActivity
-import com.xeniac.chillclub.core.ui.components.NotificationPermissionDialog
+import com.xeniac.chillclub.core.presentation.common.ui.components.NotificationPermissionDialog
+import com.xeniac.chillclub.core.presentation.common.utils.findActivity
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
 
 @Composable

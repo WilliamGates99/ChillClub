@@ -8,7 +8,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.xeniac.chillclub.BaseApplication.Companion.NOTIFICATION_CHANNEL_ID_MUSIC_PLAYER_SERVICE
 import com.xeniac.chillclub.R
-import com.xeniac.chillclub.core.presentation.MainActivity
+import com.xeniac.chillclub.core.presentation.main_activity.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

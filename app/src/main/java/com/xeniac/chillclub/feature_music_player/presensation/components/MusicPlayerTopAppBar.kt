@@ -39,9 +39,9 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xeniac.chillclub.R
-import com.xeniac.chillclub.core.presentation.utils.TestTags
-import com.xeniac.chillclub.core.ui.theme.White
-import com.xeniac.chillclub.core.ui.theme.WhiteAlpha64
+import com.xeniac.chillclub.core.presentation.common.utils.TestTags
+import com.xeniac.chillclub.core.presentation.common.ui.theme.White
+import com.xeniac.chillclub.core.presentation.common.ui.theme.WhiteAlpha64
 
 @Composable
 fun MusicPlayerTopAppBar(

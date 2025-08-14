@@ -33,7 +33,11 @@ fun AboutSection(
     onContactUsClick: () -> Unit,
     onShareClick: () -> Unit
 ) {
-    Column(modifier = modifier.background(background)) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(background)
+    ) {
         Text(
             text = title,
             fontSize = titleFontSize,

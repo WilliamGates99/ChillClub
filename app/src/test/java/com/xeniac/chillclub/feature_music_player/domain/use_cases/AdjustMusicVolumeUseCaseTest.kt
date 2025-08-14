@@ -3,7 +3,7 @@ package com.xeniac.chillclub.feature_music_player.domain.use_cases
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
-import com.xeniac.chillclub.core.domain.utils.Result
+import com.xeniac.chillclub.core.domain.models.Result
 import com.xeniac.chillclub.feature_music_player.data.remote.repositories.FakeMusicPlayerRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first

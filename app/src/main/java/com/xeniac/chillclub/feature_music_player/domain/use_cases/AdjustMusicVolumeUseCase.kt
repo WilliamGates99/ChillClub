@@ -1,6 +1,6 @@
 package com.xeniac.chillclub.feature_music_player.domain.use_cases
 
-import com.xeniac.chillclub.core.domain.utils.Result
+import com.xeniac.chillclub.core.domain.models.Result
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
 import com.xeniac.chillclub.feature_music_player.domain.utils.AdjustVolumeError

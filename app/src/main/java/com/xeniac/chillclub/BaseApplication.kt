@@ -21,7 +21,9 @@ import coil3.request.crossfade
 import coil3.svg.SvgDecoder
 import coil3.util.DebugLogger
 import com.xeniac.chillclub.core.domain.models.AppTheme
-import com.xeniac.chillclub.core.ui.theme.PurpleNotificationLight
+import com.xeniac.chillclub.core.domain.repositories.ConnectivityObserver
+import com.xeniac.chillclub.core.presentation.common.ui.theme.PurpleNotificationLight
+import com.xeniac.chillclub.core.presentation.common.utils.NetworkObserverHelper
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import javax.inject.Inject
@@ -43,11 +45,15 @@ class BaseApplication : Application(), SingletonImageLoader.Factory {
     @Inject
     lateinit var notificationManager: NotificationManager
 
+    @Inject
+    lateinit var connectivityObserver: ConnectivityObserver
+
     override fun onCreate() {
         super.onCreate()
 
         setupTimber()
         setAppTheme()
+        observeNetworkConnection()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createFcmNotificationChannelGroup()
@@ -61,6 +67,10 @@ class BaseApplication : Application(), SingletonImageLoader.Factory {
     private fun setupTimber() = Timber.plant(Timber.DebugTree())
 
     private fun setAppTheme() = currentAppTheme.setAppTheme()
+
+    private fun observeNetworkConnection() {
+        NetworkObserverHelper.observeNetworkConnection(connectivityObserver)
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createFcmNotificationChannelGroup() {

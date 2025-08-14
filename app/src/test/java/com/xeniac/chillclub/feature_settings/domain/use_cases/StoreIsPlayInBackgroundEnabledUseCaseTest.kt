@@ -4,7 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
 import com.xeniac.chillclub.core.data.repositories.FakeSettingsDataStoreRepositoryImpl
-import com.xeniac.chillclub.core.domain.utils.Result
+import com.xeniac.chillclub.core.domain.models.Result
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest

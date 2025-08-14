@@ -3,7 +3,7 @@ package com.xeniac.chillclub.feature_music_player.presensation.states
 import android.graphics.Rect
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.xeniac.chillclub.core.domain.models.RadioStation
-import com.xeniac.chillclub.core.presentation.utils.UiText
+import com.xeniac.chillclub.core.presentation.common.utils.UiText
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
 
 data class MusicPlayerState(

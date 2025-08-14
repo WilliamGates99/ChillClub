@@ -27,6 +27,10 @@
 
 
     <string name="core_content_description_back">Return</string>
+    <string name="core_locale_default">System Default</string>
+    <string name="core_locale_english_us">English (US)</string>
+    <string name="core_locale_english_gb">English (UK)</string>
+    <string name="core_locale_farsi_ir">Persian</string>
 
 
     <string name="music_player_app_bar_title_welcome">Welcome</string>

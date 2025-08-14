@@ -2,7 +2,7 @@ package com.xeniac.chillclub.feature_music_player.presensation.utils
 
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.xeniac.chillclub.R
-import com.xeniac.chillclub.core.presentation.utils.UiText
+import com.xeniac.chillclub.core.presentation.common.utils.UiText
 
 fun PlayerConstants.PlayerError.asUiText(): UiText = when (this) {
     PlayerConstants.PlayerError.VIDEO_NOT_FOUND -> UiText.StringResource(R.string.music_player_error_video_not_found)

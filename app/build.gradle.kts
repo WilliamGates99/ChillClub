@@ -42,8 +42,8 @@ android {
 
         buildConfigField(
             type = "String",
-            name = "KTOR_HTTP_BASE_URL",
-            value = properties.getProperty("KTOR_HTTP_BASE_URL")
+            name = "HTTP_BASE_URL",
+            value = properties.getProperty("HTTP_BASE_URL")
         )
     }
 

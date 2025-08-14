@@ -3,12 +3,11 @@ package com.xeniac.chillclub.feature_settings.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xeniac.chillclub.core.domain.models.AppTheme
-import com.xeniac.chillclub.core.domain.utils.Result
-import com.xeniac.chillclub.core.presentation.utils.Event
-import com.xeniac.chillclub.core.presentation.utils.UiEvent
+import com.xeniac.chillclub.core.domain.models.Result
+import com.xeniac.chillclub.core.presentation.common.utils.Event
+import com.xeniac.chillclub.core.presentation.common.utils.UiEvent
 import com.xeniac.chillclub.feature_settings.domain.use_cases.SettingsUseCases
 import com.xeniac.chillclub.feature_settings.presentation.states.SettingsState
-import com.xeniac.chillclub.feature_settings.presentation.utils.SettingsUiEvent
 import com.xeniac.chillclub.feature_settings.presentation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel

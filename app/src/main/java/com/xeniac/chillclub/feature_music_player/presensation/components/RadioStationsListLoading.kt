@@ -27,8 +27,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeightDp
-import com.xeniac.chillclub.core.ui.components.shimmerEffect
+import com.xeniac.chillclub.core.presentation.common.ui.utils.getNavigationBarHeightDp
+import com.xeniac.chillclub.core.presentation.common.ui.components.shimmerEffect
 import kotlin.random.Random
 
 @Composable

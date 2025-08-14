@@ -13,8 +13,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.xeniac.chillclub.core.ui.theme.Gray5
-import com.xeniac.chillclub.core.ui.theme.Gray80
+import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray5
+import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray80
 
 @Composable
 fun SettingsHorizontalDivider(

@@ -45,8 +45,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import com.xeniac.chillclub.R
-import com.xeniac.chillclub.core.ui.components.CustomIconButton
-import com.xeniac.chillclub.core.ui.components.VerticalSlider
+import com.xeniac.chillclub.core.presentation.common.ui.components.CustomIconButton
+import com.xeniac.chillclub.core.presentation.common.ui.components.VerticalSlider
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
 import com.xeniac.chillclub.feature_music_player.presensation.MusicPlayerAction
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState

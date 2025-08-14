@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.SubcomposeAsyncImage
 import com.xeniac.chillclub.R
-import com.xeniac.chillclub.core.ui.components.shimmerEffect
+import com.xeniac.chillclub.core.presentation.common.ui.components.shimmerEffect
 import kotlin.random.Random
 
 @Composable

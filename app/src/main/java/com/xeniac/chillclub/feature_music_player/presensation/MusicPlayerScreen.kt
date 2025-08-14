@@ -33,11 +33,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
-import com.xeniac.chillclub.core.presentation.utils.ObserverAsEvent
-import com.xeniac.chillclub.core.presentation.utils.UiEvent
-import com.xeniac.chillclub.core.presentation.utils.getStatusBarHeightDp
-import com.xeniac.chillclub.core.presentation.utils.toDp
-import com.xeniac.chillclub.core.ui.components.SwipeableSnackbar
+import com.xeniac.chillclub.core.presentation.common.utils.ObserverAsEvent
+import com.xeniac.chillclub.core.presentation.common.utils.UiEvent
+import com.xeniac.chillclub.core.presentation.common.ui.utils.getStatusBarHeightDp
+import com.xeniac.chillclub.core.presentation.common.ui.components.toDp
+import com.xeniac.chillclub.core.presentation.common.ui.components.SwipeableSnackbar
 import com.xeniac.chillclub.feature_music_player.presensation.components.MusicPlayer
 import com.xeniac.chillclub.feature_music_player.presensation.components.MusicPlayerBackground
 import com.xeniac.chillclub.feature_music_player.presensation.components.MusicPlayerTopAppBar

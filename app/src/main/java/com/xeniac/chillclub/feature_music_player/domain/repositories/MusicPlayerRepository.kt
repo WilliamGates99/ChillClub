@@ -2,7 +2,7 @@ package com.xeniac.chillclub.feature_music_player.domain.repositories
 
 import com.xeniac.chillclub.BuildConfig
 import com.xeniac.chillclub.core.domain.models.RadioStation
-import com.xeniac.chillclub.core.domain.utils.Result
+import com.xeniac.chillclub.core.domain.models.Result
 import com.xeniac.chillclub.feature_music_player.domain.utils.AdjustVolumeError
 import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadioStationsError
 import kotlinx.coroutines.flow.Flow

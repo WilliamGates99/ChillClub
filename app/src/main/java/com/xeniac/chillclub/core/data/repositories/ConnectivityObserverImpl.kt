@@ -2,6 +2,7 @@ package com.xeniac.chillclub.core.data.repositories
 
 import android.net.ConnectivityManager
 import android.net.Network
+import android.net.NetworkCapabilities
 import android.os.Build
 import com.xeniac.chillclub.core.domain.repositories.ConnectivityObserver
 import kotlinx.coroutines.channels.awaitClose
@@ -15,41 +16,44 @@ class ConnectivityObserverImpl @Inject constructor(
     private val connectivityManager: ConnectivityManager
 ) : ConnectivityObserver {
 
-    override fun observe(): Flow<ConnectivityObserver.Status> = callbackFlow {
-        val callback = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                super.onAvailable(network)
-                launch { send(ConnectivityObserver.Status.AVAILABLE) }
-            }
-
-            override fun onLosing(network: Network, maxMsToLive: Int) {
-                super.onLosing(network, maxMsToLive)
-                launch { send(ConnectivityObserver.Status.LOSING) }
-            }
-
-            override fun onLost(network: Network) {
-                super.onLost(network)
-                launch { send(ConnectivityObserver.Status.LOST) }
-            }
-
-            override fun onUnavailable() {
-                super.onUnavailable()
-                launch { send(ConnectivityObserver.Status.UNAVAILABLE) }
-            }
-        }
-
+    override fun observeNetworkConnection(): Flow<ConnectivityObserver.Status> = callbackFlow {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            connectivityManager.registerDefaultNetworkCallback(
-                /* networkCallback = */ callback
-            )
+            val callback = object : ConnectivityManager.NetworkCallback() {
+                override fun onCapabilitiesChanged(
+                    network: Network,
+                    networkCapabilities: NetworkCapabilities
+                ) {
+                    super.onCapabilitiesChanged(network, networkCapabilities)
+                    val isConnectionValidated = networkCapabilities.hasCapability(
+                        /* capability = */ NetworkCapabilities.NET_CAPABILITY_VALIDATED
+                    )
+                    if (isConnectionValidated) {
+                        launch { send(ConnectivityObserver.Status.VALIDATED) }
+                    }
+                }
+
+                override fun onAvailable(network: Network) {
+                    super.onAvailable(network)
+                    launch { send(ConnectivityObserver.Status.AVAILABLE) }
+                }
+
+                override fun onLost(network: Network) {
+                    super.onLost(network)
+                    launch { send(ConnectivityObserver.Status.LOST) }
+                }
+
+                override fun onUnavailable() {
+                    super.onUnavailable()
+                    launch { send(ConnectivityObserver.Status.UNAVAILABLE) }
+                }
+            }
+
+            connectivityManager.registerDefaultNetworkCallback(callback)
+
+            awaitClose { connectivityManager.unregisterNetworkCallback(callback) }
         } else {
             send(ConnectivityObserver.Status.AVAILABLE)
-        }
-
-        awaitClose {
-            connectivityManager.unregisterNetworkCallback(
-                /* networkCallback = */ callback
-            )
+            awaitClose { }
         }
     }.distinctUntilChanged()
 }

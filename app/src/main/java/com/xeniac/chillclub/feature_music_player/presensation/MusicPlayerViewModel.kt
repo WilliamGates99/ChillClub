@@ -7,10 +7,10 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstan
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.xeniac.chillclub.core.domain.models.RadioStation
 import com.xeniac.chillclub.core.domain.repositories.ConnectivityObserver
-import com.xeniac.chillclub.core.domain.utils.Result
-import com.xeniac.chillclub.core.presentation.utils.Event
-import com.xeniac.chillclub.core.presentation.utils.NetworkObserverHelper
-import com.xeniac.chillclub.core.presentation.utils.UiEvent
+import com.xeniac.chillclub.core.domain.models.Result
+import com.xeniac.chillclub.core.presentation.common.utils.Event
+import com.xeniac.chillclub.core.presentation.common.utils.NetworkObserverHelper
+import com.xeniac.chillclub.core.presentation.common.utils.UiEvent
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.MusicPlayerUseCases
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState

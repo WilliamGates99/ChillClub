@@ -2,9 +2,9 @@ package com.xeniac.chillclub.core.domain.repositories
 
 import com.xeniac.chillclub.core.domain.models.AppLocale
 import com.xeniac.chillclub.core.domain.models.AppTheme
+import com.xeniac.chillclub.core.domain.models.IsBackgroundPlayEnabled
 import kotlinx.coroutines.flow.Flow
 
-typealias IsBackgroundPlayEnabled = Boolean
 typealias IsActivityRestartNeeded = Boolean
 
 interface SettingsDataStoreRepository {
@@ -13,17 +13,13 @@ interface SettingsDataStoreRepository {
 
     fun getCurrentAppTheme(): Flow<AppTheme>
 
-    fun getCurrentAppLocale(): AppLocale
-
-    fun isPlayInBackgroundEnabled(): Flow<IsBackgroundPlayEnabled>
-
-    fun getNotificationPermissionCount(): Flow<Int>
-
     suspend fun storeCurrentAppTheme(appTheme: AppTheme)
+
+    fun getCurrentAppLocale(): AppLocale
 
     suspend fun storeCurrentAppLocale(newAppLocale: AppLocale): IsActivityRestartNeeded
 
-    suspend fun isPlayInBackgroundEnabled(isEnabled: Boolean)
+    fun isPlayInBackgroundEnabled(): Flow<IsBackgroundPlayEnabled>
 
-    suspend fun storeNotificationPermissionCount(count: Int)
+    suspend fun isPlayInBackgroundEnabled(isEnabled: Boolean)
 }

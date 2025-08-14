@@ -40,13 +40,13 @@ import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.domain.models.RadioStation
-import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeightDp
-import com.xeniac.chillclub.core.ui.components.shimmerEffect
-import com.xeniac.chillclub.core.ui.theme.Gray10
-import com.xeniac.chillclub.core.ui.theme.Gray20
-import com.xeniac.chillclub.core.ui.theme.Gray40
-import com.xeniac.chillclub.core.ui.theme.Gray70
-import com.xeniac.chillclub.core.ui.theme.Gray90
+import com.xeniac.chillclub.core.presentation.common.ui.utils.getNavigationBarHeightDp
+import com.xeniac.chillclub.core.presentation.common.ui.components.shimmerEffect
+import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray10
+import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray20
+import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray40
+import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray70
+import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray90
 
 @Composable
 fun RadioStationsList(
