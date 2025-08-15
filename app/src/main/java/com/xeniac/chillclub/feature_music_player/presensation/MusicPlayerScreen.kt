@@ -157,7 +157,7 @@ fun MusicPlayerScreen(
             .nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { innerPadding ->
         YouTubePlayer(
-            state = state,
+            isPlayInBackgroundEnabled = state.isPlayInBackgroundEnabled,
             onAction = viewModel::onAction
         )
 

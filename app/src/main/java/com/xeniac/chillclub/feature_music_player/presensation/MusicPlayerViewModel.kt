@@ -17,14 +17,12 @@ import com.xeniac.chillclub.feature_music_player.presensation.utils.MusicPlayerU
 import com.xeniac.chillclub.feature_music_player.presensation.utils.asUiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -58,7 +56,6 @@ class MusicPlayerViewModel @Inject constructor(
 
         _state.value
     }.onStart {
-        observeIsPlayInBackgroundEnabled()
         observeCurrentRadioStationId()
         getRadioStations()
     }.stateIn(
@@ -72,6 +69,17 @@ class MusicPlayerViewModel @Inject constructor(
 
     private val _adjustMusicVolumeEventChannel = Channel<UiEvent>()
     val adjustMusicVolumeEventChannel = _adjustMusicVolumeEventChannel.receiveAsFlow()
+
+    override fun onCleared() {
+        val continuePlayingInBackground = with(_state.value) {
+            isMusicPlaying && isPlayInBackgroundEnabled == true
+        }
+        if (continuePlayingInBackground) {
+            return
+        }
+
+        super.onCleared()
+    }
 
     fun onAction(action: MusicPlayerAction) {
         when (action) {
@@ -93,19 +101,6 @@ class MusicPlayerViewModel @Inject constructor(
             )
             is MusicPlayerAction.DismissPermissionDialog -> dismissPermissionDialog(action.permission)
         }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun observeIsPlayInBackgroundEnabled() {
-        _state.distinctUntilChangedBy {
-            it.isPlayInBackgroundEnabled
-        }.mapLatest {
-            it.isPlayInBackgroundEnabled != null
-        }.onEach { shouldCreateYouTubePlayer ->
-            _state.update {
-                it.copy(shouldCreateYouTubePlayer = shouldCreateYouTubePlayer)
-            }
-        }.launchIn(scope = viewModelScope)
     }
 
     private fun observeCurrentRadioStationId() {
