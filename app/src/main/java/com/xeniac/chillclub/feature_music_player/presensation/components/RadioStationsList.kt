@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,41 +31,41 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.domain.models.RadioStation
-import com.xeniac.chillclub.core.presentation.common.ui.utils.getNavigationBarHeightDp
 import com.xeniac.chillclub.core.presentation.common.ui.components.shimmerEffect
 import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray10
 import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray20
 import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray40
 import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray70
 import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray90
+import com.xeniac.chillclub.core.presentation.common.ui.utils.getNavigationBarHeightDp
 
 @Composable
 fun RadioStationsList(
     radioStations: List<RadioStation>,
     modifier: Modifier = Modifier,
-    navigationBarHeight: Dp = getNavigationBarHeightDp(),
     onRadioStationClick: (radioStation: RadioStation) -> Unit
 ) {
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(bottom = navigationBarHeight),
-        modifier = modifier
+        contentPadding = PaddingValues(bottom = getNavigationBarHeightDp()),
+        modifier = modifier.fillMaxWidth()
     ) {
-        items(radioStations) { radioStation ->
+        items(
+            items = radioStations
+        ) { radioStation ->
             RadioStationItem(
                 radioStation = radioStation,
-                onClick = { onRadioStationClick(radioStation) },
-                modifier = Modifier.fillMaxWidth()
+                onClick = { onRadioStationClick(radioStation) }
             )
         }
     }
@@ -75,6 +76,10 @@ private fun RadioStationItem(
     radioStation: RadioStation,
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(12.dp),
+    contentPadding: PaddingValues = PaddingValues(
+        horizontal = 20.dp,
+        vertical = 14.dp
+    ),
     linkIcon: Painter = painterResource(R.drawable.ic_music_player_link),
     linkIconSize: Dp = 24.dp,
     linkIconTint: Color = if (isSystemInDarkTheme()) Gray20 else Gray70,
@@ -84,12 +89,10 @@ private fun RadioStationItem(
         horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
+            .fillMaxWidth()
             .clip(shape)
             .clickable { onClick() }
-            .padding(
-                horizontal = 20.dp,
-                vertical = 14.dp
-            )
+            .padding(contentPadding)
     ) {
         RadioStationCover(
             coverUrl = radioStation.channel.avatarUrl
@@ -98,7 +101,7 @@ private fun RadioStationItem(
         RadioStationInfo(
             title = radioStation.title,
             tags = radioStation.tags,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f)
         )
 
         Icon(
@@ -114,16 +117,14 @@ private fun RadioStationItem(
 private fun RadioStationCover(
     coverUrl: String?,
     modifier: Modifier = Modifier,
-    coverSize: Dp = 48.dp,
+    size: Dp = 48.dp,
     shape: Shape = RoundedCornerShape(14.dp),
-    contentScale: ContentScale = ContentScale.Crop,
-    placeholder: Painter = rememberAsyncImagePainter(model = R.drawable.ic_music_player_cover_placeholder),
-    contentDescription: String = stringResource(id = R.string.music_player_radio_stations_sheet_content_description_radio_cover)
+    placeholder: Painter = rememberAsyncImagePainter(model = R.drawable.ic_music_player_cover_placeholder)
 ) {
     SubcomposeAsyncImage(
         model = coverUrl,
-        contentDescription = contentDescription,
-        contentScale = contentScale,
+        contentDescription = stringResource(id = R.string.music_player_radio_stations_sheet_content_description_radio_cover),
+        contentScale = ContentScale.Crop,
         loading = {
             Box(modifier = Modifier.shimmerEffect())
         },
@@ -135,7 +136,7 @@ private fun RadioStationCover(
             )
         },
         modifier = modifier
-            .size(coverSize)
+            .size(size)
             .clip(shape)
     )
 }
@@ -153,15 +154,9 @@ private fun RadioStationInfo(
         ),
         modifier = modifier
     ) {
-        RadioStationTitle(
-            title = title,
-            modifier = Modifier.fillMaxWidth()
-        )
+        RadioStationTitle(title = title)
 
-        RadioStationTags(
-            tags = tags,
-            modifier = Modifier.fillMaxWidth()
-        )
+        RadioStationTags(tags = tags)
     }
 }
 
@@ -169,22 +164,23 @@ private fun RadioStationInfo(
 private fun RadioStationTitle(
     title: String,
     modifier: Modifier = Modifier,
-    titleFontSize: TextUnit = 14.sp,
-    titleLineHeight: TextUnit = 14.sp,
-    titleFontWeight: FontWeight = FontWeight.Bold,
-    titleColor: Color = MaterialTheme.colorScheme.onSurface,
-    titleOverflow: TextOverflow = TextOverflow.Ellipsis,
-    titleMaxLines: Int = 1
+    textStyle: TextStyle = LocalTextStyle.current.copy(
+        fontSize = 14.sp,
+        lineHeight = 14.sp,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurface
+    ),
+    textOverflow: TextOverflow = TextOverflow.Ellipsis,
+    maxLines: Int = 1
 ) {
     Text(
         text = title,
-        fontSize = titleFontSize,
-        lineHeight = titleLineHeight,
-        fontWeight = titleFontWeight,
-        color = titleColor,
-        overflow = titleOverflow,
-        maxLines = titleMaxLines,
-        modifier = modifier.basicMarquee()
+        style = textStyle,
+        overflow = textOverflow,
+        maxLines = maxLines,
+        modifier = modifier
+            .fillMaxWidth()
+            .basicMarquee()
     )
 }
 
@@ -194,26 +190,27 @@ private fun RadioStationTags(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(4.dp),
     background: Color = Gray90,
-    tagFontSize: TextUnit = 14.sp,
-    tagLineHeight: TextUnit = 14.sp,
-    tagFontWeight: FontWeight = FontWeight.Bold,
-    tagColor: Color = if (isSystemInDarkTheme()) Gray10 else Gray40,
-    tagMaxLines: Int = 1
+    textStyle: TextStyle = LocalTextStyle.current.copy(
+        fontSize = 14.sp,
+        lineHeight = 14.sp,
+        fontWeight = FontWeight.Bold,
+        color = if (isSystemInDarkTheme()) Gray10 else Gray40
+    ),
+    maxLines: Int = 1
 ) {
     LazyRow(
         userScrollEnabled = false,
         horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        modifier = modifier.fillMaxWidth()
     ) {
-        items(tags) { tag ->
+        items(
+            items = tags
+        ) { tag ->
             Text(
                 text = tag,
-                fontSize = tagFontSize,
-                lineHeight = tagLineHeight,
-                fontWeight = tagFontWeight,
-                color = tagColor,
-                maxLines = tagMaxLines,
+                style = textStyle,
+                maxLines = maxLines,
                 modifier = modifier
                     .clip(shape)
                     .background(background)

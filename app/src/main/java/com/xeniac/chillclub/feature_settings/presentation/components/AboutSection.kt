@@ -78,7 +78,7 @@ fun AboutSection(
 
         SettingsHorizontalDivider()
 
-        @Suppress("KotlinConstantConditions")
+        @Suppress("KotlinConstantConditions", "SimplifyBooleanWithConstants")
         if (BuildConfig.FLAVOR_market != "myket") {
             SettingsClickableItem(
                 icon = painterResource(id = R.drawable.ic_settings_donate),

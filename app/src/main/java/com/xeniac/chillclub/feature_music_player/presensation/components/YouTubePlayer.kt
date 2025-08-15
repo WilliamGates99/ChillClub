@@ -1,12 +1,9 @@
 package com.xeniac.chillclub.feature_music_player.presensation.components
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -17,50 +14,50 @@ import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayer
 
 @Composable
 fun YouTubePlayer(
-    musicPlayerState: MusicPlayerState,
+    state: MusicPlayerState,
     modifier: Modifier = Modifier,
     onAction: (action: MusicPlayerAction) -> Unit
 ) {
-    var shouldCreateYouTubePlayer by remember { mutableStateOf(false) }
-
-    LaunchedEffect(musicPlayerState.isPlayInBackgroundEnabled) {
-        shouldCreateYouTubePlayer = musicPlayerState.isPlayInBackgroundEnabled != null
-    }
-
-    if (shouldCreateYouTubePlayer) {
+    if (state.shouldCreateYouTubePlayer) {
         AndroidView(
             factory = { context ->
-                YouTubePlayerView(context).apply {
-                    enableBackgroundPlayback(enable = musicPlayerState.isPlayInBackgroundEnabled!!)
+                YouTubePlayerView(
+                    context = context
+                ).apply {
+                    enableBackgroundPlayback(enable = state.isPlayInBackgroundEnabled ?: false)
 
-                    addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-                        override fun onReady(youTubePlayer: YouTubePlayer) {
-                            super.onReady(youTubePlayer)
-                            onAction(MusicPlayerAction.InitializeYouTubePlayer(youTubePlayer))
-                        }
+                    addYouTubePlayerListener(
+                        object : AbstractYouTubePlayerListener() {
+                            override fun onReady(youTubePlayer: YouTubePlayer) {
+                                super.onReady(youTubePlayer)
+                                onAction(
+                                    MusicPlayerAction.InitializeYouTubePlayer(player = youTubePlayer)
+                                )
+                            }
 
-                        override fun onError(
-                            youTubePlayer: YouTubePlayer,
-                            error: PlayerConstants.PlayerError
-                        ) {
-                            super.onError(youTubePlayer, error)
-                            onAction(MusicPlayerAction.ShowYouTubePlayerError(error))
-                        }
+                            override fun onError(
+                                youTubePlayer: YouTubePlayer,
+                                error: PlayerConstants.PlayerError
+                            ) {
+                                super.onError(youTubePlayer, error)
+                                onAction(MusicPlayerAction.ShowYouTubePlayerError(error = error))
+                            }
 
-                        override fun onStateChange(
-                            youTubePlayer: YouTubePlayer,
-                            state: PlayerConstants.PlayerState
-                        ) {
-                            super.onStateChange(youTubePlayer, state)
-                            onAction(MusicPlayerAction.YouTubePlayerStateChanged(state))
+                            override fun onStateChange(
+                                youTubePlayer: YouTubePlayer,
+                                state: PlayerConstants.PlayerState
+                            ) {
+                                super.onStateChange(youTubePlayer, state)
+                                onAction(MusicPlayerAction.YouTubePlayerStateChanged(state = state))
+                            }
                         }
-                    })
+                    )
                 }
             },
             onRelease = { playerView ->
                 playerView.release()
             },
-            modifier = modifier
+            modifier = modifier.size(0.dp) // 0.dp size to hide the player
         )
     }
 }

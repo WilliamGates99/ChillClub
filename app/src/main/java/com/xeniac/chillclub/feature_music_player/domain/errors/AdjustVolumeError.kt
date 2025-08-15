@@ -1,4 +1,4 @@
-package com.xeniac.chillclub.feature_music_player.domain.utils
+package com.xeniac.chillclub.feature_music_player.domain.errors
 
 import com.xeniac.chillclub.core.domain.errors.Error
 

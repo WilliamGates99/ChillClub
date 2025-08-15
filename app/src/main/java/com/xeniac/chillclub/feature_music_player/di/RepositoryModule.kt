@@ -1,7 +1,9 @@
 package com.xeniac.chillclub.feature_music_player.di
 
 import com.xeniac.chillclub.feature_music_player.data.repositories.MusicPlayerRepositoryImpl
+import com.xeniac.chillclub.feature_music_player.data.repositories.MusicVolumeRepositoryImpl
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
+import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumeRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,4 +19,10 @@ abstract class RepositoryModule {
     abstract fun bindMusicPlayerRepository(
         musicPlayerRepositoryImpl: MusicPlayerRepositoryImpl
     ): MusicPlayerRepository
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindMusicVolumeRepository(
+        musicVolumeRepositoryImpl: MusicVolumeRepositoryImpl
+    ): MusicVolumeRepository
 }

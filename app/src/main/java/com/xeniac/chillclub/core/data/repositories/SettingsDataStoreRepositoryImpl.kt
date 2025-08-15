@@ -44,7 +44,6 @@ class SettingsDataStoreRepositoryImpl @Inject constructor(
             AppTheme.Light.index -> AppTheme.Light
             AppTheme.Dark.index -> AppTheme.Dark
             else -> AppTheme.Dark
-            // else -> AppTheme.Default
         }
     }.catch { e ->
         Timber.e("Get current app theme failed:")

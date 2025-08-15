@@ -5,17 +5,14 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
@@ -35,7 +32,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xeniac.chillclub.core.presentation.common.ui.components.NotificationPermissionDialog
 import com.xeniac.chillclub.core.presentation.common.ui.components.SwipeableSnackbar
 import com.xeniac.chillclub.core.presentation.common.ui.components.showShortSnackbar
-import com.xeniac.chillclub.core.presentation.common.ui.utils.getStatusBarHeightDp
 import com.xeniac.chillclub.core.presentation.common.utils.ObserverAsEvent
 import com.xeniac.chillclub.core.presentation.common.utils.UiEvent
 import com.xeniac.chillclub.core.presentation.common.utils.findActivity
@@ -61,14 +57,16 @@ fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    val settingsState by viewModel.settingsState.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     var isPostNotificationsPermissionGranted by remember {
         mutableStateOf(
-            when (ActivityCompat.checkSelfPermission(
-                /* context = */ context,
-                /* permission = */ Manifest.permission.POST_NOTIFICATIONS
-            )) {
+            when (
+                ActivityCompat.checkSelfPermission(
+                    /* context = */ context,
+                    /* permission = */ Manifest.permission.POST_NOTIFICATIONS
+                )
+            ) {
                 PackageManager.PERMISSION_GRANTED -> true
                 PackageManager.PERMISSION_DENIED -> false
                 else -> false
@@ -88,20 +86,6 @@ fun SettingsScreen(
             )
         )
     }
-
-    NotificationPermissionDialog(
-        activity = activity,
-        isVisible = settingsState.isPermissionDialogVisible,
-        permissionQueue = settingsState.permissionDialogQueue,
-        onConfirmClick = {
-            postNotificationPermissionResultLauncher.launch(
-                Manifest.permission.POST_NOTIFICATIONS
-            )
-        },
-        onDismiss = { permission ->
-            viewModel.onAction(SettingsAction.DismissPermissionDialog(permission))
-        }
-    )
 
     ObserverAsEvent(flow = viewModel.setAppThemeEventChannel) { event ->
         when (event) {
@@ -129,18 +113,7 @@ fun SettingsScreen(
     Scaffold(
         snackbarHost = { SwipeableSnackbar(hostState = snackbarHostState) },
         topBar = {
-            SettingsTopAppBar(
-                onBackClick = onNavigateUp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(
-                        start = 24.dp,
-                        end = 24.dp,
-                        top = 28.dp + getStatusBarHeightDp(),
-                        bottom = 28.dp
-                    )
-            )
+            SettingsTopAppBar(onBackClick = onNavigateUp)
         },
         modifier = Modifier
             .fillMaxSize()
@@ -155,7 +128,7 @@ fun SettingsScreen(
                 .padding(top = 4.dp)
         ) {
             GeneralSettings(
-                settingsState = settingsState,
+                state = state,
                 isPostNotificationsPermissionGranted = isPostNotificationsPermissionGranted,
                 onPlayInBackgroundClick = {
                     postNotificationPermissionResultLauncher.launch(
@@ -173,15 +146,25 @@ fun SettingsScreen(
                 onShareClick = { context.sendShareMessage() }
             )
 
-            SupportSection(
-                openUrlInInAppBrowser = { url ->
-                    context.openLinkInInAppBrowser(urlString = url)
-                }
-            )
+            SupportSection()
 
             Spacer(modifier = Modifier.weight(1f))
 
             AppVersionSection()
         }
     }
+
+    NotificationPermissionDialog(
+        activity = activity,
+        isVisible = state.isPermissionDialogVisible,
+        permissionQueue = state.permissionDialogQueue,
+        onConfirmClick = {
+            postNotificationPermissionResultLauncher.launch(
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        },
+        onDismiss = { permission ->
+            viewModel.onAction(SettingsAction.DismissPermissionDialog(permission))
+        }
+    )
 }

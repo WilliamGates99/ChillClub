@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -27,20 +29,20 @@ class SettingsViewModel @Inject constructor(
     private val settingsUseCases: SettingsUseCases
 ) : ViewModel() {
 
-    private val _settingsState = MutableStateFlow(SettingsState())
-    val settingsState = combine(
-        flow = _settingsState,
+    private val _state = MutableStateFlow(SettingsState())
+    val state = combine(
+        flow = _state,
         flow2 = settingsUseCases.getCurrentAppThemeUseCase.get()(),
         flow3 = settingsUseCases.getIsPlayInBackgroundEnabledUseCase.get()()
-    ) { settingsState, appTheme, isPlayInBackgroundEnabled ->
-        settingsState.copy(
+    ) { state, appTheme, isPlayInBackgroundEnabled ->
+        state.copy(
             currentAppTheme = appTheme,
             isPlayInBackgroundEnabled = isPlayInBackgroundEnabled
         )
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(stopTimeout = 5.seconds),
-        initialValue = SettingsState()
+        started = SharingStarted.WhileSubscribed(stopTimeout = 30.seconds),
+        initialValue = _state.value
     )
 
     private val _setAppThemeEventChannel = Channel<Event>()
@@ -61,44 +63,57 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    private fun storeCurrentAppTheme(newAppTheme: AppTheme) = viewModelScope.launch {
-        val shouldUpdateAppTheme = newAppTheme != settingsState.value.currentAppTheme
+    private fun storeCurrentAppTheme(
+        newAppTheme: AppTheme
+    ) {
+        val shouldUpdateAppTheme = newAppTheme != _state.value.currentAppTheme
         if (shouldUpdateAppTheme) {
-            when (val result = settingsUseCases.storeCurrentAppThemeUseCase.get()(newAppTheme)) {
-                is Result.Success -> {
-                    _setAppThemeEventChannel.send(SettingsUiEvent.UpdateAppTheme(newAppTheme))
+            settingsUseCases.storeCurrentAppThemeUseCase.get()(
+                newAppTheme = newAppTheme
+            ).onEach { result ->
+                when (result) {
+                    is Result.Success -> {
+                        _setAppThemeEventChannel.send(
+                            SettingsUiEvent.UpdateAppTheme(newAppTheme = newAppTheme)
+                        )
+                    }
+                    is Result.Error -> {
+                        _setAppThemeEventChannel.send(
+                            UiEvent.ShowShortSnackbar(result.error.asUiText())
+                        )
+                    }
                 }
+            }.launchIn(scope = viewModelScope)
+        }
+    }
+
+    private fun storeNotificationSoundSwitch(
+        isEnabled: Boolean
+    ) {
+        settingsUseCases.storeIsPlayInBackgroundEnabledUseCase.get()(
+            isEnabled = isEnabled
+        ).onEach { result ->
+            when (result) {
+                is Result.Success -> Unit
                 is Result.Error -> {
-                    _setAppThemeEventChannel.send(
+                    _setPlayInBackgroundEventChannel.send(
                         UiEvent.ShowShortSnackbar(result.error.asUiText())
                     )
                 }
             }
-        }
-    }
-
-    private fun storeNotificationSoundSwitch(isEnabled: Boolean) = viewModelScope.launch {
-        when (val result =
-            settingsUseCases.storeIsPlayInBackgroundEnabledUseCase.get()(isEnabled)) {
-            is Result.Success -> Unit
-            is Result.Error -> {
-                _setPlayInBackgroundEventChannel.send(
-                    UiEvent.ShowShortSnackbar(result.error.asUiText())
-                )
-            }
-        }
+        }.launchIn(scope = viewModelScope)
     }
 
     private fun onPermissionResult(
         permission: String,
         isGranted: Boolean
-    ) {
-        val shouldAskForPermission = settingsState.value.run {
+    ) = viewModelScope.launch {
+        val shouldAskForPermission = _state.value.run {
             !permissionDialogQueue.contains(permission) && !isGranted
         }
 
         if (shouldAskForPermission) {
-            _settingsState.update {
+            _state.update {
                 it.copy(
                     permissionDialogQueue = listOf(permission),
                     isPermissionDialogVisible = true
@@ -107,12 +122,14 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    private fun dismissPermissionDialog(permission: String) {
-        _settingsState.update {
+    private fun dismissPermissionDialog(
+        permission: String
+    ) = viewModelScope.launch {
+        _state.update {
             it.copy(
                 permissionDialogQueue = it.permissionDialogQueue.toMutableList().apply {
                     remove(permission)
-                }.toList(),
+                },
                 isPermissionDialogVisible = false
             )
         }

@@ -29,17 +29,21 @@ fun MusicPlayerBackground(
         R.raw.gif_9,
         R.raw.gif_10,
         R.raw.gif_11
-    ),
-    contentScale: ContentScale = ContentScale.Crop
+    )
 ) {
     val backgroundIndex by rememberSaveable {
-        mutableIntStateOf(Random.nextInt(from = 0, until = backgroundGifs.size))
+        mutableIntStateOf(
+            Random.nextInt(
+                from = 0,
+                until = backgroundGifs.size
+            )
+        )
     }
 
     SubcomposeAsyncImage(
         model = remember { backgroundGifs[backgroundIndex] },
         contentDescription = null,
-        contentScale = contentScale,
+        contentScale = ContentScale.Crop,
         loading = {
             Box(modifier = Modifier.shimmerEffect())
         },

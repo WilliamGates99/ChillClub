@@ -27,8 +27,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.xeniac.chillclub.core.presentation.common.ui.utils.getNavigationBarHeightDp
 import com.xeniac.chillclub.core.presentation.common.ui.components.shimmerEffect
+import com.xeniac.chillclub.core.presentation.common.ui.utils.getNavigationBarHeightDp
 import kotlin.random.Random
 
 @Composable
@@ -40,7 +40,7 @@ fun RadioStationsLoading(
         userScrollEnabled = false,
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(bottom = navigationBarHeight),
-        modifier = modifier
+        modifier = modifier.fillMaxWidth()
     ) {
         items(count = 6) {
             RadioStationItemLoading()
@@ -50,15 +50,18 @@ fun RadioStationsLoading(
 
 @Composable
 private fun RadioStationItemLoading(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(
+        horizontal = 20.dp,
+        vertical = 14.dp
+    )
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(
-            horizontal = 20.dp,
-            vertical = 14.dp
-        )
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(contentPadding)
     ) {
         RadioStationCoverLoading()
 
@@ -69,12 +72,12 @@ private fun RadioStationItemLoading(
 @Composable
 private fun RadioStationCoverLoading(
     modifier: Modifier = Modifier,
-    coverSize: Dp = 48.dp,
+    size: Dp = 48.dp,
     shape: Shape = RoundedCornerShape(14.dp)
 ) {
     Box(
         modifier = modifier
-            .size(coverSize)
+            .size(size)
             .clip(shape)
             .shimmerEffect()
     )
@@ -136,7 +139,12 @@ private fun RadioStationTagsLoading(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth()
     ) {
-        items(Random.nextInt(from = 1, until = 5)) {
+        items(
+            count = Random.nextInt(
+                from = 1,
+                until = 5
+            )
+        ) {
             RadioStationTagLoading()
         }
     }
@@ -146,6 +154,10 @@ private fun RadioStationTagsLoading(
 private fun RadioStationTagLoading(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(4.dp),
+    contentPadding: PaddingValues = PaddingValues(
+        horizontal = 4.dp,
+        vertical = 2.dp
+    ),
     tagFontSize: TextUnit = 14.sp,
     tagLineHeight: TextUnit = 14.sp,
     tagFontWeight: FontWeight = FontWeight.Bold,
@@ -168,9 +180,6 @@ private fun RadioStationTagLoading(
         modifier = modifier
             .clip(shape)
             .shimmerEffect()
-            .padding(
-                horizontal = 4.dp,
-                vertical = 2.dp
-            )
+            .padding(contentPadding)
     )
 }

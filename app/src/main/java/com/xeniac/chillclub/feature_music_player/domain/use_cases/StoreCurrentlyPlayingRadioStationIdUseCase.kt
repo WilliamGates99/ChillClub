@@ -1,19 +1,23 @@
 package com.xeniac.chillclub.feature_music_player.domain.use_cases
 
-import com.xeniac.chillclub.core.domain.repositories.MusicPlayerDataStoreRepository
 import com.xeniac.chillclub.core.domain.models.Result
-import com.xeniac.chillclub.feature_music_player.domain.utils.CurrentRadioStationError
+import com.xeniac.chillclub.core.domain.repositories.MusicPlayerDataStoreRepository
+import com.xeniac.chillclub.feature_music_player.domain.errors.StoreCurrentlyPlayingRadioStationIdError
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class StoreCurrentlyPlayingRadioStationIdUseCase(
     private val musicPlayerDataStoreRepository: MusicPlayerDataStoreRepository
 ) {
-    suspend operator fun invoke(
+    operator fun invoke(
         radioStationId: Long
-    ): Result<Unit, CurrentRadioStationError> = try {
-        musicPlayerDataStoreRepository.storeCurrentlyPlayingRadioStationId(id = radioStationId)
-        Result.Success(Unit)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        Result.Error(CurrentRadioStationError.SomethingWentWrong)
+    ): Flow<Result<Unit, StoreCurrentlyPlayingRadioStationIdError>> = flow {
+        return@flow try {
+            musicPlayerDataStoreRepository.storeCurrentlyPlayingRadioStationId(id = radioStationId)
+            emit(Result.Success(Unit))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(Result.Error(StoreCurrentlyPlayingRadioStationIdError.SomethingWentWrong))
+        }
     }
 }

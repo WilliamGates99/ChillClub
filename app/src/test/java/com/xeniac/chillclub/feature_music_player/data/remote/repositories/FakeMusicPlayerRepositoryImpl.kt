@@ -11,8 +11,8 @@ import com.xeniac.chillclub.core.domain.models.Result
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadioStationsResponseDto
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
-import com.xeniac.chillclub.feature_music_player.domain.utils.AdjustVolumeError
-import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadioStationsError
+import com.xeniac.chillclub.feature_music_player.domain.errors.AdjustVolumeError
+import com.xeniac.chillclub.feature_music_player.domain.errors.GetRadioStationsError
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.mock.MockEngine

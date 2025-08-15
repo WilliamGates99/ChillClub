@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,7 +54,7 @@ import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayer
 
 @Composable
 fun MusicPlayerMediaControls(
-    musicPlayerState: MusicPlayerState,
+    state: MusicPlayerState,
     modifier: Modifier = Modifier,
     onAction: (action: MusicPlayerAction) -> Unit
 ) {
@@ -63,50 +64,53 @@ fun MusicPlayerMediaControls(
             alignment = Alignment.Start
         ),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        modifier = modifier.fillMaxWidth()
     ) {
         PlayPauseButton(
-            musicPlayerState = musicPlayerState,
+            state = state,
             onAction = onAction
         )
 
         VolumeControlButton(
-            musicPlayerState = musicPlayerState,
+            state = state,
             onAction = onAction
         )
     }
 }
 
 @Composable
-fun PlayPauseButton(
-    musicPlayerState: MusicPlayerState,
+private fun PlayPauseButton(
+    state: MusicPlayerState,
     modifier: Modifier = Modifier,
-    icon: Painter = if (musicPlayerState.isMusicPlaying) painterResource(
-        R.drawable.ic_music_player_pause
-    ) else painterResource(R.drawable.ic_music_player_play),
-    contentDescription: String = if (musicPlayerState.isMusicPlaying) stringResource(
-        id = R.string.music_player_btn_pause
-    ) else stringResource(id = R.string.music_player_btn_play),
+    icon: Painter = when (state.isMusicPlaying) {
+        true -> painterResource(id = R.drawable.ic_music_player_pause)
+        false -> painterResource(id = R.drawable.ic_music_player_play)
+    },
+    contentDescription: String = when (state.isMusicPlaying) {
+        true -> stringResource(id = R.string.music_player_btn_pause)
+        false -> stringResource(id = R.string.music_player_btn_play)
+    },
     onAction: (action: MusicPlayerAction) -> Unit
 ) {
     CustomIconButton(
-        isLoading = musicPlayerState.isMusicBuffering || musicPlayerState.youtubePlayer == null,
+        isLoading = state.isMusicBuffering || state.youtubePlayer == null,
         icon = icon,
         contentDescription = contentDescription,
         onClick = {
-            if (musicPlayerState.isMusicPlaying) {
-                onAction(MusicPlayerAction.PauseMusic)
-            } else onAction(MusicPlayerAction.ResumeMusic)
+            when (state.isMusicPlaying) {
+                true -> onAction(MusicPlayerAction.PauseMusic)
+                false -> onAction(MusicPlayerAction.ResumeMusic)
+            }
         },
         modifier = modifier
     )
 }
 
 @Composable
-fun VolumeControlButton(
-    musicPlayerState: MusicPlayerState,
+private fun VolumeControlButton(
+    state: MusicPlayerState,
     modifier: Modifier = Modifier,
-    icon: Painter = musicPlayerState.musicVolumePercentage.getVolumeIcon(),
+    icon: Painter = state.musicVolumePercentage.getVolumeIcon(),
     contentDescription: String = stringResource(id = R.string.music_player_btn_volume_control),
     volumeSliderWidth: Dp = 48.dp,
     volumeSliderHeight: Dp = 148.dp,
@@ -140,7 +144,7 @@ fun VolumeControlButton(
         modifier = modifier
     ) {
         AnimatedVisibility(
-            visible = musicPlayerState.isVolumeSliderVisible,
+            visible = state.isVolumeSliderVisible,
             enter = scaleIn(
                 animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
                 transformOrigin = TransformOrigin(pivotFractionX = 0.5f, pivotFractionY = 1f)
@@ -152,11 +156,10 @@ fun VolumeControlButton(
             modifier = Modifier.layoutId("volumeSlider")
         ) {
             VolumeSlider(
-                musicPlayerState = musicPlayerState,
+                state = state,
                 sliderWidth = volumeSliderWidth,
                 sliderHeight = volumeSliderHeight,
-                onAction = onAction,
-                modifier = Modifier.fillMaxSize()
+                onAction = onAction
             )
         }
 
@@ -164,7 +167,7 @@ fun VolumeControlButton(
             icon = icon,
             contentDescription = contentDescription,
             onClick = {
-                if (musicPlayerState.isVolumeSliderVisible) {
+                if (state.isVolumeSliderVisible) {
                     onAction(MusicPlayerAction.HideVolumeSlider)
                 } else onAction(MusicPlayerAction.ShowVolumeSlider)
             },
@@ -175,8 +178,8 @@ fun VolumeControlButton(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VolumeSlider(
-    musicPlayerState: MusicPlayerState,
+private fun VolumeSlider(
+    state: MusicPlayerState,
     sliderWidth: Dp,
     sliderHeight: Dp,
     modifier: Modifier = Modifier,
@@ -187,7 +190,7 @@ fun VolumeSlider(
     var startVolumeSliderAnimation by remember { mutableStateOf(false) }
     val animatedVolumeSliderPosition by animateFloatAsState(
         targetValue = if (startVolumeSliderAnimation) {
-            musicPlayerState.musicVolumePercentage
+            state.musicVolumePercentage
         } else 0f,
         animationSpec = spring(stiffness = Spring.StiffnessLow),
         label = "animatedVolumeSliderPosition"
@@ -199,6 +202,7 @@ fun VolumeSlider(
 
     Box(
         modifier = modifier
+            .fillMaxSize()
             .semantics { this.popup() }
             .clip(volumeSliderShape)
             .background(volumeSliderBackground)

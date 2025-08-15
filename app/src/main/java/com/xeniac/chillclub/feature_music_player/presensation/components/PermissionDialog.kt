@@ -13,17 +13,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.xeniac.chillclub.core.presentation.common.ui.components.NotificationPermissionDialog
 import com.xeniac.chillclub.core.presentation.common.utils.findActivity
+import com.xeniac.chillclub.feature_music_player.presensation.MusicPlayerAction
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
 
 @Composable
 fun PostNotificationPermissionHandler(
-    musicPlayerState: MusicPlayerState,
+    state: MusicPlayerState,
     modifier: Modifier = Modifier,
     isRunningAndroid13OrNewer: Boolean = remember {
         derivedStateOf { Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU }
     }.value,
-    onPermissionResult: (permission: String, isGranted: Boolean) -> Unit,
-    onDismiss: (permission: String) -> Unit
+    onAction: (action: MusicPlayerAction) -> Unit
 ) {
     @SuppressLint("InlinedApi")
     if (isRunningAndroid13OrNewer) {
@@ -33,9 +33,11 @@ fun PostNotificationPermissionHandler(
         val postNotificationPermissionResultLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission()
         ) { isGranted ->
-            onPermissionResult(
-                Manifest.permission.POST_NOTIFICATIONS,
-                isGranted
+            onAction(
+                MusicPlayerAction.OnPermissionResult(
+                    permission = Manifest.permission.POST_NOTIFICATIONS,
+                    isGranted = isGranted
+                )
             )
         }
 
@@ -45,14 +47,16 @@ fun PostNotificationPermissionHandler(
 
         NotificationPermissionDialog(
             activity = activity,
-            isVisible = musicPlayerState.isPermissionDialogVisible,
-            permissionQueue = musicPlayerState.permissionDialogQueue,
+            isVisible = state.isPermissionDialogVisible,
+            permissionQueue = state.permissionDialogQueue,
             onConfirmClick = {
                 postNotificationPermissionResultLauncher.launch(
                     Manifest.permission.POST_NOTIFICATIONS
                 )
             },
-            onDismiss = onDismiss,
+            onDismiss = { permission ->
+                onAction(MusicPlayerAction.DismissPermissionDialog(permission))
+            },
             modifier = modifier
         )
     }

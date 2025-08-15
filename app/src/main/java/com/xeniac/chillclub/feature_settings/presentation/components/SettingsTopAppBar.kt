@@ -1,10 +1,14 @@
 package com.xeniac.chillclub.feature_settings.presentation.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,10 +27,18 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xeniac.chillclub.R
+import com.xeniac.chillclub.core.presentation.common.ui.utils.getStatusBarHeightDp
 
 @Composable
 fun SettingsTopAppBar(
     modifier: Modifier = Modifier,
+    background: Color = MaterialTheme.colorScheme.surface,
+    contentPadding: PaddingValues = PaddingValues(
+        start = 24.dp,
+        end = 24.dp,
+        top = 28.dp + getStatusBarHeightDp(),
+        bottom = 28.dp
+    ),
     title: String = stringResource(id = R.string.settings_app_bar_title),
     titleFontSize: TextUnit = 32.sp,
     titleFontWeight: FontWeight = FontWeight.Black,
@@ -39,6 +51,9 @@ fun SettingsTopAppBar(
     Column(
         verticalArrangement = Arrangement.spacedBy(space = 18.dp),
         modifier = modifier
+            .fillMaxWidth()
+            .background(background)
+            .padding(contentPadding)
     ) {
         Image(
             painter = backIcon,
@@ -46,8 +61,8 @@ fun SettingsTopAppBar(
             modifier = Modifier
                 .size(backIconSize)
                 .clickable(
-                    onClick = onBackClick,
                     role = Role.Button,
+                    onClick = onBackClick,
                     interactionSource = remember { MutableInteractionSource() },
                     indication = ripple(bounded = false)
                 )

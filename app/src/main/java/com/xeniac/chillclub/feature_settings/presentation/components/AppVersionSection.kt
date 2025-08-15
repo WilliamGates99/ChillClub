@@ -20,7 +20,7 @@ import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray40
 @Composable
 fun AppVersionSection(
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues = PaddingValues(
+    contentPadding: PaddingValues = PaddingValues(
         start = 16.dp,
         end = 16.dp,
         bottom = 8.dp
@@ -43,6 +43,6 @@ fun AppVersionSection(
         maxLines = maxLines,
         modifier = modifier
             .fillMaxWidth()
-            .padding(paddingValues)
+            .padding(contentPadding)
     )
 }

@@ -7,6 +7,7 @@ import com.xeniac.chillclub.core.presentation.common.utils.UiText
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
 
 data class MusicPlayerState(
+    val shouldCreateYouTubePlayer: Boolean = false,
     val isRadioStationsLoading: Boolean = false,
     val radioStations: List<RadioStation> = emptyList(),
     val currentRadioStationId: Long? = null,
