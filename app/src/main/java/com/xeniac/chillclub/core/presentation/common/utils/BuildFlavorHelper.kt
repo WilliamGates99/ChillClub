@@ -1,3 +1,5 @@
+@file:Suppress("KotlinConstantConditions")
+
 package com.xeniac.chillclub.core.presentation.common.utils
 
 import com.xeniac.chillclub.BuildConfig

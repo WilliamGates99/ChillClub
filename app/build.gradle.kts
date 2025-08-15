@@ -145,38 +145,6 @@ android {
                 value = "\"\""
             )
         }
-
-        create("cafeBazaar") {
-            dimension = "market"
-
-            buildConfigField(
-                type = "String",
-                name = "URL_APP_STORE",
-                value = "\"https://cafebazaar.ir/app/com.xeniac.chillclub\""
-            )
-
-            buildConfigField(
-                type = "String",
-                name = "PACKAGE_NAME_APP_STORE",
-                value = "\"com.farsitel.bazaar\""
-            )
-        }
-
-        create("myket") {
-            dimension = "market"
-
-            buildConfigField(
-                type = "String",
-                name = "URL_APP_STORE",
-                value = "\"https://myket.ir/app/com.xeniac.chillclub\""
-            )
-
-            buildConfigField(
-                type = "String",
-                name = "PACKAGE_NAME_APP_STORE",
-                value = "\"ir.mservices.market\""
-            )
-        }
     }
 
     buildFeatures {
@@ -238,8 +206,6 @@ androidComponents {
             variantBuilder.productFlavors.let {
                 variantBuilder.enable = when {
                     it.containsAll(listOf("build" to "dev", "market" to "gitHub")) -> false
-                    it.containsAll(listOf("build" to "dev", "market" to "cafeBazaar")) -> false
-                    it.containsAll(listOf("build" to "dev", "market" to "myket")) -> false
                     it.containsAll(listOf("build" to "prod")) -> false
                     else -> true
                 }
