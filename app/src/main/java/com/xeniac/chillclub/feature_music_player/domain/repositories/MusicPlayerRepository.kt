@@ -18,7 +18,7 @@ interface MusicPlayerRepository {
 
     sealed class EndPoints(val url: String) {
         data object GetRadioStations : EndPoints(
-            url = "${BuildConfig.KTOR_HTTP_BASE_URL}/radio.json"
+            url = "${BuildConfig.HTTP_BASE_URL}/radio.json"
         )
     }
 }
