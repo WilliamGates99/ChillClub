@@ -35,10 +35,14 @@ class SettingsViewModel @Inject constructor(
         flow2 = settingsUseCases.getCurrentAppThemeUseCase.get()(),
         flow3 = settingsUseCases.getIsPlayInBackgroundEnabledUseCase.get()()
     ) { state, appTheme, isPlayInBackgroundEnabled ->
-        state.copy(
-            currentAppTheme = appTheme,
-            isPlayInBackgroundEnabled = isPlayInBackgroundEnabled
-        )
+        _state.update {
+            state.copy(
+                currentAppTheme = appTheme,
+                isPlayInBackgroundEnabled = isPlayInBackgroundEnabled
+            )
+        }
+
+        _state.value
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(stopTimeout = 30.seconds),

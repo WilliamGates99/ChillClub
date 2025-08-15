@@ -47,12 +47,16 @@ class MusicPlayerViewModel @Inject constructor(
         flow4 = musicPlayerUseCases.getIsPlayInBackgroundEnabledUseCase.get()(),
         flow5 = musicPlayerUseCases.getNotificationPermissionCountUseCase.get()()
     ) { state, currentlyPlayingRadioStationId, musicVolumePercentage, isPlayInBackgroundEnabled, notificationPermissionCount ->
-        state.copy(
-            currentRadioStationId = currentlyPlayingRadioStationId,
-            musicVolumePercentage = musicVolumePercentage,
-            isPlayInBackgroundEnabled = isPlayInBackgroundEnabled,
-            notificationPermissionCount = notificationPermissionCount
-        )
+        _state.update {
+            state.copy(
+                currentRadioStationId = currentlyPlayingRadioStationId,
+                musicVolumePercentage = musicVolumePercentage,
+                isPlayInBackgroundEnabled = isPlayInBackgroundEnabled,
+                notificationPermissionCount = notificationPermissionCount
+            )
+        }
+
+        _state.value
     }.onStart {
         observeIsPlayInBackgroundEnabled()
         observeCurrentRadioStationId()
