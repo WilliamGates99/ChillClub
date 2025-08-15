@@ -165,7 +165,7 @@ android {
             jvmTarget = JvmTarget.fromTarget(target = "17")
 
             // Enable Context-Sensitive Resolution in Kotlin 2.2
-            freeCompilerArgs.add("-Xcontext-sensetive-resolution")
+            freeCompilerArgs.add("-Xcontext-sensitive-resolution")
         }
     }
 
