@@ -3,14 +3,15 @@ package com.xeniac.chillclub.core.data.repositories
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
+import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
+import com.xeniac.chillclub.core.domain.models.MusicPlayerPreferences
+import com.xeniac.chillclub.core.domain.models.MusicPlayerPreferencesSerializer
 import com.xeniac.chillclub.core.domain.repositories.MusicPlayerDataStoreRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
@@ -41,9 +42,11 @@ class MusicPlayerDataStoreRepositoryImplTest {
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
     private val testScope: TestScope = TestScope(context = testDispatcher)
 
-    private val testDataStore: DataStore<Preferences> = PreferenceDataStoreFactory.create(
+    private val testDataStore: DataStore<MusicPlayerPreferences> = DataStoreFactory.create(
+        serializer = MusicPlayerPreferencesSerializer,
+        corruptionHandler = ReplaceFileCorruptionHandler { MusicPlayerPreferences() },
         scope = testScope.backgroundScope,
-        produceFile = { context.preferencesDataStoreFile(name = "MusicPlayer-Test") }
+        produceFile = { context.preferencesDataStoreFile(name = "MusicPlayer-Test.pb") }
     )
 
     private val testRepository: MusicPlayerDataStoreRepository = MusicPlayerDataStoreRepositoryImpl(
@@ -53,7 +56,7 @@ class MusicPlayerDataStoreRepositoryImplTest {
     @Before
     fun setUp() {
         testScope.launch {
-            testDataStore.edit { it.clear() }
+            testDataStore.updateData { MusicPlayerPreferences() }
         }
     }
 

@@ -1,20 +1,52 @@
 package com.xeniac.chillclub.core.di
 
-import com.xeniac.chillclub.feature_music_player.data.repositories.MusicPlayerRepositoryImpl
-import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
+import com.xeniac.chillclub.core.data.repositories.ConnectivityObserverImpl
+import com.xeniac.chillclub.core.data.repositories.MiscellaneousDataStoreRepositoryImpl
+import com.xeniac.chillclub.core.data.repositories.MusicPlayerDataStoreRepositoryImpl
+import com.xeniac.chillclub.core.data.repositories.PermissionsDataStoreRepositoryImpl
+import com.xeniac.chillclub.core.data.repositories.SettingsDataStoreRepositoryImpl
+import com.xeniac.chillclub.core.domain.repositories.ConnectivityObserver
+import com.xeniac.chillclub.core.domain.repositories.MiscellaneousDataStoreRepository
+import com.xeniac.chillclub.core.domain.repositories.MusicPlayerDataStoreRepository
+import com.xeniac.chillclub.core.domain.repositories.PermissionsDataStoreRepository
+import com.xeniac.chillclub.core.domain.repositories.SettingsDataStoreRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.scopes.ViewModelScoped
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
 
     @Binds
-    @ViewModelScoped
-    abstract fun bindMusicPlayerRepository(
-        musicPlayerRepositoryImpl: MusicPlayerRepositoryImpl
-    ): MusicPlayerRepository
+    @Singleton
+    abstract fun bindConnectivityObserver(
+        connectivityObserverImpl: ConnectivityObserverImpl
+    ): ConnectivityObserver
+
+    @Binds
+    @Singleton
+    abstract fun bindPermissionsDataStoreRepository(
+        permissionsDataStoreRepositoryImpl: PermissionsDataStoreRepositoryImpl
+    ): PermissionsDataStoreRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSettingsDataStoreRepository(
+        settingsDataStoreRepositoryImpl: SettingsDataStoreRepositoryImpl
+    ): SettingsDataStoreRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMiscellaneousPreferencesRepository(
+        miscellaneousDataStoreRepositoryImpl: MiscellaneousDataStoreRepositoryImpl
+    ): MiscellaneousDataStoreRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMusicPlayerDataStoreRepository(
+        musicPlayerDataStoreRepositoryImpl: MusicPlayerDataStoreRepositoryImpl
+    ): MusicPlayerDataStoreRepository
 }

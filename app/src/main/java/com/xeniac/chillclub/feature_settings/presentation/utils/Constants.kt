@@ -2,7 +2,7 @@ package com.xeniac.chillclub.feature_settings.presentation.utils
 
 object Constants {
 
-    const val EMAIL_CONTACT_US = "xeniacteam@gmail.com"
+    const val EMAIL_CONTACT_US = "hello@xeniac.ir"
 
     // Web URLs
     const val URL_ABOUT_US = "https://xeniac.ir"

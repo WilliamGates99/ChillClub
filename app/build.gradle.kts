@@ -1,13 +1,14 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
-    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
@@ -16,22 +17,22 @@ plugins {
     alias(libs.plugins.firebase.perf)
 }
 
-val properties = gradleLocalProperties(rootDir, providers)
+val properties = gradleLocalProperties(
+    projectRootDir = rootDir,
+    providers = providers
+)
 
 android {
     namespace = "com.xeniac.chillclub"
-    compileSdk = 35
-    buildToolsVersion = "35.0.0"
+    compileSdk = 36
+    buildToolsVersion = "36.0.0"
 
     defaultConfig {
         applicationId = "com.xeniac.chillclub"
-        minSdk = 21
-        targetSdk = 35
-        versionCode = 2
-        versionName = "1.0.1"
-
-        // Keeps language resources for only the locales specified below.
-        resourceConfigurations.addAll(listOf("en-rUS"))
+        minSdk = 23
+        targetSdk = 36
+        versionCode = 3
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "com.xeniac.chillclub.HiltTestRunner"
 
@@ -41,14 +42,16 @@ android {
 
         buildConfigField(
             type = "String",
-            name = "KTOR_HTTP_BASE_URL",
-            value = properties.getProperty("KTOR_HTTP_BASE_URL")
+            name = "HTTP_BASE_URL",
+            value = properties.getProperty("HTTP_BASE_URL")
         )
     }
 
-    sourceSets {
-        // Adds room exported schema location as test app assets
-        getByName("androidTest").assets.srcDirs("$projectDir/roomSchemas")
+    androidResources {
+        generateLocaleConfig = true
+
+        // Keeps language resources for only the locales specified below.
+        localeFilters.addAll(listOf("en-rUS"))
     }
 
     signingConfigs {
@@ -75,14 +78,13 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
+            ndk.debugSymbolLevel = "FULL" // Include native debug symbols file in app bundle
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-
-            signingConfig = signingConfigs.getByName("release")
-
-            ndk.debugSymbolLevel = "FULL" // Include native debug symbols file in app bundle
         }
     }
 
@@ -143,38 +145,6 @@ android {
                 value = "\"\""
             )
         }
-
-        create("cafeBazaar") {
-            dimension = "market"
-
-            buildConfigField(
-                type = "String",
-                name = "URL_APP_STORE",
-                value = "\"https://cafebazaar.ir/app/com.xeniac.chillclub\""
-            )
-
-            buildConfigField(
-                type = "String",
-                name = "PACKAGE_NAME_APP_STORE",
-                value = "\"com.farsitel.bazaar\""
-            )
-        }
-
-        create("myket") {
-            dimension = "market"
-
-            buildConfigField(
-                type = "String",
-                name = "URL_APP_STORE",
-                value = "\"https://myket.ir/app/com.xeniac.chillclub\""
-            )
-
-            buildConfigField(
-                type = "String",
-                name = "PACKAGE_NAME_APP_STORE",
-                value = "\"ir.mservices.market\""
-            )
-        }
     }
 
     buildFeatures {
@@ -186,16 +156,26 @@ android {
         // Java 8+ API Desugaring Support
         isCoreLibraryDesugaringEnabled = true
 
-        sourceCompatibility = JavaVersion.VERSION_22
-        targetCompatibility = JavaVersion.VERSION_22
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "22"
+    kotlin {
+        compilerOptions {
+            jvmTarget = JvmTarget.fromTarget(target = "17")
+
+            // Enable Context-Sensitive Resolution in Kotlin 2.2
+            freeCompilerArgs.add("-Xcontext-sensetive-resolution")
+        }
     }
 
     room {
-        schemaDirectory("$projectDir/roomSchemas")
+        schemaDirectory(path = "$projectDir/roomSchemas")
+    }
+
+    sourceSets {
+        // Adds room exported schema location as test app assets
+        getByName("androidTest").assets.srcDirs("$projectDir/roomSchemas")
     }
 
     packaging {
@@ -226,8 +206,6 @@ androidComponents {
             variantBuilder.productFlavors.let {
                 variantBuilder.enable = when {
                     it.containsAll(listOf("build" to "dev", "market" to "gitHub")) -> false
-                    it.containsAll(listOf("build" to "dev", "market" to "cafeBazaar")) -> false
-                    it.containsAll(listOf("build" to "dev", "market" to "myket")) -> false
                     it.containsAll(listOf("build" to "prod")) -> false
                     else -> true
                 }
@@ -249,65 +227,35 @@ dependencies {
     // Java 8+ API Desugaring Support
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.core.splashscreen)
-    implementation(libs.kotlinx.serialization.json) // Kotlin JSON Serialization Library
-    implementation(libs.kotlinx.datetime) // Kotlin DateTime
+    implementation(libs.bundles.essentials)
 
     // Jetpack Compose
     implementation(platform(libs.compose.bom))
-    implementation(libs.compose.ui)
-    implementation(libs.compose.material3) // Material Design 3
-    implementation(libs.compose.runtime.livedata) // Compose Integration with LiveData
-    implementation(libs.compose.ui.tooling.preview) // Android Studio Compose Preview Support
-    debugImplementation(libs.compose.ui.tooling) // Android Studio Compose Preview Support
-    implementation(libs.activity.compose) // Compose Integration with Activities
-    implementation(libs.constraintlayout.compose) // Compose Constraint Layout
-    implementation(libs.navigation.compose) // Compose Navigation
-    implementation(libs.hilt.navigation.compose) // Compose Navigation Integration with Hilt
+    implementation(libs.bundles.compose)
+
+    // Architectural Components
+    implementation(libs.bundles.architectural.components)
 
     // Dagger - Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
-    // Architectural Components
-    implementation(libs.lifecycle.viewmodel.ktx) // ViewModel
-    implementation(libs.lifecycle.viewmodel.compose) // ViewModel Utilities for Compose
-    implementation(libs.lifecycle.runtime.ktx) // Lifecycles Only (without ViewModel or LiveData)
-    implementation(libs.lifecycle.runtime.compose) // Lifecycle Utilities for Compose
-
     // Coroutines
-    implementation(libs.kotlinx.coroutines.android)
-
-    // Coroutines Support for Firebase
-    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.bundles.coroutines)
 
     // Ktor Client Library
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.okhttp) // Ktor OkHttp Engine
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.logging)
+    implementation(libs.bundles.ktor)
 
     // Room Library
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx) // Kotlin Extensions and Coroutines support for Room
+    implementation(libs.bundles.room)
     ksp(libs.room.compiler)
 
     // Preferences DataStore
     implementation(libs.datastore.preferences)
 
-    // Firebase BoM and Analytics
+    // Firebase
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics.ktx)
-
-    // Firebase Cloud Messaging
-    implementation(libs.firebase.messaging.ktx)
-
-    // Firebase Release & Monitor
-    implementation(libs.firebase.crashlytics.ktx)
-    implementation(libs.firebase.perf.ktx)
+    implementation(libs.bundles.firebase)
 
     // In-App Browser
     implementation(libs.browser)
@@ -320,48 +268,24 @@ dependencies {
 
     // Coil Library
     implementation(platform(libs.coil.bom))
-    implementation(libs.coil.compose)
-    implementation(libs.coil.svg)
-    implementation(libs.coil.gif)
+    implementation(libs.bundles.coil)
 
     // YouTube Player Library
     implementation(libs.youtube.player)
 
-    // Google Play In-App Reviews API
-    implementation(libs.play.review.ktx)
-
-    // Google Play In-App Reviews API
-    implementation(libs.play.review.ktx)
-
-    // Google Play In-App Updates API
-    implementation(libs.play.app.update.ktx)
+    // Google Play In-App APIs
+    implementation(libs.bundles.google.play.inapp.apis)
 
     // Local Unit Test Libraries
-    testImplementation(libs.truth)
-    testImplementation(libs.junit)
-    testImplementation(libs.arch.core.testing) // Test Helpers for Architectural Components
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.ktor.client.mock)
+    testImplementation(libs.bundles.local.unit.tests)
 
     // Instrumentation Test Libraries
-    androidTestImplementation(libs.truth)
-    androidTestImplementation(libs.junit)
-    androidTestImplementation(libs.test.ext.junit) // JUnit Extension for Android Test
-    androidTestImplementation(libs.arch.core.testing) // Test Helpers for Architectural Components
-    androidTestImplementation(libs.kotlinx.coroutines.test)
-    androidTestImplementation(libs.test.core)
-    androidTestImplementation(libs.test.runner) // Android JUnit4 Test Runner
-    androidTestImplementation(libs.test.rules) // Android JUnit Test Rules
-    androidTestImplementation(libs.ktor.client.mock)
-    androidTestImplementation(libs.room.testing)
-    androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.bundles.instrumentation.tests)
     kspAndroidTest(libs.hilt.android.compiler)
 
     // UI Test Libraries
-    androidTestImplementation(libs.espresso.core)
-    androidTestImplementation(libs.espresso.intents)
+    androidTestImplementation(libs.bundles.ui.tests)
     androidTestImplementation(platform(libs.compose.bom))
-    androidTestImplementation(libs.compose.ui.test.junit4)
     debugImplementation(libs.compose.ui.test.manifest)
 }
 
@@ -418,8 +342,7 @@ tasks.register<Copy>("copyReleaseApk") {
 
 tasks.register<Copy>("copyReleaseBundle") {
     val playStoreBundleFile = "app-prod-playStore-release.aab"
-    val playStoreBundleSourceDir =
-        "${releaseRootDir}/prodPlayStore/release/${playStoreBundleFile}"
+    val playStoreBundleSourceDir = "${releaseRootDir}/prodPlayStore/release/${playStoreBundleFile}"
 
     from(playStoreBundleSourceDir)
     into(bundleDestDir)

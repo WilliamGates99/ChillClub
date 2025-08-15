@@ -3,14 +3,13 @@ package com.xeniac.chillclub.feature_firebase_cloud_messaging.services
 import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Bitmap
-import android.os.Build
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.xeniac.chillclub.BaseApplication
 import com.xeniac.chillclub.R
-import com.xeniac.chillclub.core.ui.theme.PurpleNotificationLight
+import com.xeniac.chillclub.core.presentation.common.ui.theme.PurpleNotificationLight
 import com.xeniac.chillclub.feature_firebase_cloud_messaging.di.entrypoints.requireNotificationManager
 import com.xeniac.chillclub.feature_firebase_cloud_messaging.services.utils.getBitmapFromUrl
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,8 +31,7 @@ class FirebaseCloudMessagingService : FirebaseMessagingService() {
             /* context = */ this,
             /* requestCode = */ 0,
             /* intent = */ Intent(/* action = */ ""),
-            /* flags = */ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                PendingIntent.FLAG_IMMUTABLE else 0
+            /* flags = */ PendingIntent.FLAG_IMMUTABLE
         )
 
         val notification = NotificationCompat.Builder(

@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xeniac.chillclub.R
+import com.xeniac.chillclub.core.presentation.common.utils.openLinkInInAppBrowser
 import com.xeniac.chillclub.feature_settings.presentation.utils.Constants
 
 @Composable
@@ -27,10 +29,15 @@ fun SupportSection(
     title: String = stringResource(id = R.string.settings_support_title).uppercase(),
     titleFontSize: TextUnit = 20.sp,
     titleLineHeight: TextUnit = 20.sp,
-    titleFontWeight: FontWeight = FontWeight.Normal,
-    openUrlInInAppBrowser: (url: String) -> Unit,
+    titleFontWeight: FontWeight = FontWeight.Normal
 ) {
-    Column(modifier = modifier.background(background)) {
+    val context = LocalContext.current
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(background)
+    ) {
         Text(
             text = title,
             fontSize = titleFontSize,
@@ -50,7 +57,7 @@ fun SupportSection(
         SettingsClickableItem(
             icon = painterResource(id = R.drawable.ic_settings_ask_question),
             title = stringResource(id = R.string.settings_support_ask_question_title),
-            onClick = { openUrlInInAppBrowser(Constants.URL_ASK_QUESTION) }
+            onClick = { context.openLinkInInAppBrowser(urlString = Constants.URL_ASK_QUESTION) }
         )
 
         SettingsHorizontalDivider()
@@ -58,7 +65,7 @@ fun SupportSection(
         SettingsClickableItem(
             icon = painterResource(id = R.drawable.ic_settings_privacy_policy),
             title = stringResource(id = R.string.settings_support_privacy_policy_title),
-            onClick = { openUrlInInAppBrowser(Constants.URL_PRIVACY_POLICY) }
+            onClick = { context.openLinkInInAppBrowser(urlString = Constants.URL_PRIVACY_POLICY) }
         )
     }
 }

@@ -1,57 +1,36 @@
 package com.xeniac.chillclub.feature_music_player.data.remote.repositories
 
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.xeniac.chillclub.core.data.local.entities.RadioStationEntity
-import com.xeniac.chillclub.core.data.utils.scaleToUnitInterval
+import com.xeniac.chillclub.core.data.mappers.toRadioStation
+import com.xeniac.chillclub.core.data.mappers.toRadioStationDto
+import com.xeniac.chillclub.core.data.mappers.toRadioStationEntity
+import com.xeniac.chillclub.core.data.utils.createKtorTestClient
 import com.xeniac.chillclub.core.domain.models.Channel
 import com.xeniac.chillclub.core.domain.models.RadioStation
+import com.xeniac.chillclub.core.domain.models.Result
 import com.xeniac.chillclub.core.domain.models.SocialLinks
-import com.xeniac.chillclub.core.domain.utils.Result
 import com.xeniac.chillclub.feature_music_player.data.remote.dto.GetRadioStationsResponseDto
+import com.xeniac.chillclub.feature_music_player.domain.errors.GetRadioStationsError
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicPlayerRepository
-import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
-import com.xeniac.chillclub.feature_music_player.domain.utils.AdjustVolumeError
-import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadioStationsError
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
-import io.ktor.client.plugins.DefaultRequest
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
 import io.ktor.http.headersOf
-import io.ktor.serialization.kotlinx.KotlinxSerializationConverter
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepository {
 
     private var isNetworkAvailable = true
     private var getRadioStationsHttpStatusCode = HttpStatusCode.OK
 
-    private var minVolume = 0
-    private var maxVolume = 15
-    private var currentMusicVolume = 7
-    private var musicVolumePercentage = SnapshotStateList<MusicVolumePercentage>().apply {
-        add(
-            currentMusicVolume.scaleToUnitInterval(
-                minValue = minVolume,
-                maxValue = maxVolume
-            )
-        )
-    }
     private var radioStationEntities = SnapshotStateList<RadioStationEntity>()
 
     fun isNetworkAvailable(isAvailable: Boolean) {
@@ -83,41 +62,6 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
         }
     }
 
-    override fun observeMusicVolumeChanges(): Flow<MusicVolumePercentage> = snapshotFlow {
-        musicVolumePercentage.first()
-    }
-
-    override fun adjustMusicVolume(
-        newPercentage: MusicVolumePercentage,
-        currentPercentage: MusicVolumePercentage
-    ): Flow<Result<Unit, AdjustVolumeError>> = callbackFlow {
-        try {
-            // Calculate the percentage difference
-            val deltaPercentage = newPercentage - currentPercentage
-
-            // Calculate how much to adjust the music volume
-            val volumeRange = maxVolume - minVolume
-            val deltaVolume = (deltaPercentage * volumeRange).roundToInt()
-
-            musicVolumePercentage.apply {
-                currentMusicVolume += deltaVolume
-                val newMusicVolumePercentage = (currentMusicVolume).scaleToUnitInterval(
-                    minValue = minVolume,
-                    maxValue = maxVolume
-                )
-
-                clear()
-                add(newMusicVolumePercentage)
-            }
-
-            send(Result.Success(Unit))
-        } catch (e: Exception) {
-            send(Result.Error(AdjustVolumeError.SomethingWentWrong))
-        }
-
-        awaitClose {}
-    }
-
     override fun getRadioStations(
         fetchFromRemote: Boolean
     ): Flow<Result<List<RadioStation>, GetRadioStationsError>> = flow {
@@ -138,8 +82,7 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
                 addDummyRadioStations()
                 GetRadioStationsResponseDto(
                     version = 1,
-                    radioStationDtos = radioStationEntities.map { it.toRadioStationDto() },
-                )
+                    radioStationDtos = radioStationEntities.map { it.toRadioStationDto() })
             } else {
                 GetRadioStationsResponseDto(
                     version = 1,
@@ -157,36 +100,15 @@ class FakeMusicPlayerRepositoryImpl @Inject constructor() : MusicPlayerRepositor
             )
         }
 
-        val testClient = HttpClient(engine = mockEngine) {
-            install(ContentNegotiation) {
-                register(
-                    contentType = ContentType.Text.Plain,
-                    converter = KotlinxSerializationConverter(Json {
-                        ignoreUnknownKeys = true
-                        prettyPrint = true
-                        coerceInputValues = true
-                        isLenient = true
-                    })
-                )
-                json(Json {
-                    ignoreUnknownKeys = true
-                    prettyPrint = true
-                    coerceInputValues = true
-                    isLenient = true
-                })
-            }
-            install(DefaultRequest) {
-                contentType(ContentType.Application.Json)
-            }
-        }
-
-        val response = testClient.get(
+        val httpResponse = createKtorTestClient(mockEngine = mockEngine).get(
             urlString = MusicPlayerRepository.EndPoints.GetRadioStations.url
         )
 
-        when (response.status) {
+        return@flow when (httpResponse.status) {
             HttpStatusCode.OK -> {
-                val remoteRadioDtos = response.body<GetRadioStationsResponseDto>().radioStationDtos
+                val remoteRadioDtos = httpResponse
+                    .body<GetRadioStationsResponseDto>()
+                    .radioStationDtos
 
                 radioStationEntities.clear()
                 radioStationEntities.addAll(remoteRadioDtos.map { it.toRadioStationEntity() })

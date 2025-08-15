@@ -3,12 +3,11 @@ package com.xeniac.chillclub.feature_music_player.services
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.xeniac.chillclub.BaseApplication.Companion.NOTIFICATION_CHANNEL_ID_MUSIC_PLAYER_SERVICE
 import com.xeniac.chillclub.R
-import com.xeniac.chillclub.core.presentation.MainActivity
+import com.xeniac.chillclub.core.presentation.main_activity.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -65,8 +64,7 @@ class YouTubePlayerService : Service() {
                 /* context = */ this@YouTubePlayerService,
                 /* requestCode = */ 0,
                 /* intent = */ launchMainActivityIntent,
-                /* flags = */ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                    PendingIntent.FLAG_IMMUTABLE else 0
+                /* flags = */ PendingIntent.FLAG_IMMUTABLE
             )
 
             setAutoCancel(false)

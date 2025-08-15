@@ -3,6 +3,7 @@ package com.xeniac.chillclub.feature_settings.presentation.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -24,10 +25,14 @@ import com.xeniac.chillclub.feature_settings.presentation.utils.TestTags
 
 @Composable
 fun GeneralSettings(
-    settingsState: SettingsState,
+    state: SettingsState,
     isPostNotificationsPermissionGranted: Boolean,
     modifier: Modifier = Modifier,
     background: Color = MaterialTheme.colorScheme.surface,
+    contentPadding: PaddingValues = PaddingValues(
+        horizontal = 20.dp,
+        vertical = 16.dp
+    ),
     title: String = stringResource(id = R.string.settings_general_title).uppercase(),
     titleFontSize: TextUnit = 20.sp,
     titleLineHeight: TextUnit = 20.sp,
@@ -38,11 +43,9 @@ fun GeneralSettings(
     Column(
         verticalArrangement = Arrangement.spacedBy(space = 16.dp),
         modifier = modifier
+            .fillMaxWidth()
             .background(background)
-            .padding(
-                horizontal = 20.dp,
-                vertical = 16.dp
-            )
+            .padding(contentPadding)
     ) {
         Text(
             text = title,
@@ -55,7 +58,7 @@ fun GeneralSettings(
         SettingsSwitchRow(
             icon = painterResource(id = R.drawable.ic_settings_theme),
             title = stringResource(id = R.string.settings_general_theme_title),
-            isChecked = when (settingsState.currentAppTheme) {
+            isChecked = when (state.currentAppTheme) {
                 AppTheme.Dark -> true
                 AppTheme.Light -> false
                 null -> null
@@ -74,7 +77,7 @@ fun GeneralSettings(
             icon = painterResource(id = R.drawable.ic_settings_background_player),
             title = stringResource(id = R.string.settings_general_background_player_title),
             description = stringResource(id = R.string.settings_general_background_play_description),
-            isChecked = isPostNotificationsPermissionGranted && settingsState.isPlayInBackgroundEnabled == true,
+            isChecked = isPostNotificationsPermissionGranted && state.isPlayInBackgroundEnabled == true,
             testTag = TestTags.SWITCH_BACKGROUND_PLAYER,
             onCheckedChange = { isChecked ->
                 onAction(SettingsAction.StorePlayInBackgroundSwitch(isChecked))

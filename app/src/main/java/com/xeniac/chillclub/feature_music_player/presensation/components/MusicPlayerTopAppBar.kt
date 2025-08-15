@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -33,32 +34,43 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xeniac.chillclub.R
-import com.xeniac.chillclub.core.presentation.utils.TestTags
-import com.xeniac.chillclub.core.ui.theme.White
-import com.xeniac.chillclub.core.ui.theme.WhiteAlpha64
+import com.xeniac.chillclub.core.presentation.common.ui.theme.White
+import com.xeniac.chillclub.core.presentation.common.ui.theme.WhiteAlpha64
+import com.xeniac.chillclub.core.presentation.common.ui.utils.getStatusBarHeightDp
+import com.xeniac.chillclub.core.presentation.common.utils.TestTags
 
 @Composable
 fun MusicPlayerTopAppBar(
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(
+        start = 24.dp,
+        end = 24.dp,
+        top = 20.dp + getStatusBarHeightDp(),
+        bottom = 20.dp
+    ),
     welcome: String = stringResource(id = R.string.music_player_app_bar_title_welcome),
-    welcomeFontSize: TextUnit = 12.sp,
-    welcomeLineHeight: TextUnit = 8.sp,
-    welcomeLetterSpacing: TextUnit = 0.sp,
-    welcomeFontWeight: FontWeight = FontWeight.Medium,
-    welcomeColor: Color = WhiteAlpha64,
+    welcomeStyle: TextStyle = LocalTextStyle.current.copy(
+        fontSize = 12.sp,
+        lineHeight = 8.sp,
+        letterSpacing = 0.sp,
+        fontWeight = FontWeight.Medium,
+        color = WhiteAlpha64
+    ),
     welcomeMaxLines: Int = 1,
     appName: String = stringResource(id = R.string.app_name).uppercase(),
-    appNameFontSize: TextUnit = 14.sp,
-    appNameLineHeight: TextUnit = 8.sp,
-    appNameLetterSpacing: TextUnit = 0.sp,
-    appNameFontWeight: FontWeight = FontWeight.Black,
-    appNameColor: Color = White,
+    appNameStyle: TextStyle = LocalTextStyle.current.copy(
+        fontSize = 14.sp,
+        lineHeight = 8.sp,
+        letterSpacing = 0.sp,
+        fontWeight = FontWeight.Black,
+        color = White
+    ),
     appNameMaxLines: Int = 1,
     onSettingsClick: () -> Unit
 ) {
@@ -66,6 +78,8 @@ fun MusicPlayerTopAppBar(
         horizontalArrangement = Arrangement.spacedBy(space = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
+            .fillMaxWidth()
+            .padding(contentPadding)
     ) {
         MusicPlayerAppBarImage()
 
@@ -75,11 +89,7 @@ fun MusicPlayerTopAppBar(
         ) {
             Text(
                 text = welcome,
-                fontSize = welcomeFontSize,
-                lineHeight = welcomeLineHeight,
-                fontWeight = welcomeFontWeight,
-                letterSpacing = welcomeLetterSpacing,
-                color = welcomeColor,
+                style = welcomeStyle,
                 maxLines = welcomeMaxLines,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -88,11 +98,7 @@ fun MusicPlayerTopAppBar(
 
             Text(
                 text = appName,
-                fontSize = appNameFontSize,
-                lineHeight = appNameLineHeight,
-                fontWeight = appNameFontWeight,
-                letterSpacing = appNameLetterSpacing,
-                color = appNameColor,
+                style = appNameStyle,
                 maxLines = appNameMaxLines,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -110,7 +116,7 @@ fun MusicPlayerTopAppBar(
 private fun MusicPlayerAppBarImage(
     modifier: Modifier = Modifier,
     image: Painter = painterResource(id = R.drawable.ic_music_player_app_bar),
-    imageSize: Dp = 32.dp,
+    size: Dp = 32.dp,
     rotationDegree: Float = -8f,
     shape: Shape = RoundedCornerShape(8.dp),
     borderStroke: BorderStroke = BorderStroke(
@@ -123,14 +129,13 @@ private fun MusicPlayerAppBarImage(
         contentDescription = null,
         contentScale = ContentScale.Crop,
         modifier = modifier
-            .size(imageSize)
+            .size(size)
             .rotate(degrees = rotationDegree)
             .clip(shape)
             .border(
                 border = borderStroke,
                 shape = shape
             )
-
     )
 }
 
@@ -141,7 +146,7 @@ private fun MusicPlayerAppSettingsButton(
     contentDescription: String = stringResource(id = R.string.music_player_btn_settings),
     color: Color = White,
     size: Dp = 28.dp,
-    paddingValues: PaddingValues = PaddingValues(all = 4.dp),
+    contentValues: PaddingValues = PaddingValues(all = 4.dp),
     onClick: () -> Unit
 ) {
     Box(
@@ -149,20 +154,19 @@ private fun MusicPlayerAppSettingsButton(
         modifier = modifier
             .size(size)
             .clickable(
-                onClick = onClick,
                 role = Role.Button,
+                onClick = onClick,
                 interactionSource = remember { MutableInteractionSource() },
                 indication = ripple(bounded = false)
             )
+            .padding(contentValues)
             .testTag(TestTags.BTN_SETTINGS)
     ) {
         Icon(
             painter = icon,
             contentDescription = contentDescription,
             tint = color,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+            modifier = Modifier.fillMaxSize()
         )
     }
 }

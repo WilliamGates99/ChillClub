@@ -6,11 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.xeniac.chillclub.core.domain.models.RadioStation
-import com.xeniac.chillclub.core.domain.repositories.ConnectivityObserver
-import com.xeniac.chillclub.core.domain.utils.Result
-import com.xeniac.chillclub.core.presentation.utils.Event
-import com.xeniac.chillclub.core.presentation.utils.NetworkObserverHelper
-import com.xeniac.chillclub.core.presentation.utils.UiEvent
+import com.xeniac.chillclub.core.domain.models.Result
+import com.xeniac.chillclub.core.presentation.common.utils.Event
+import com.xeniac.chillclub.core.presentation.common.utils.NetworkObserverHelper.hasNetworkConnection
+import com.xeniac.chillclub.core.presentation.common.utils.UiEvent
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
 import com.xeniac.chillclub.feature_music_player.domain.use_cases.MusicPlayerUseCases
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
@@ -21,8 +20,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -32,31 +31,37 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
     private val musicPlayerUseCases: MusicPlayerUseCases
 ) : ViewModel() {
 
-    private val _musicPlayerState = MutableStateFlow(MusicPlayerState())
-    val musicPlayerState = combine(
-        flow = _musicPlayerState,
+    private val _state = MutableStateFlow(MusicPlayerState())
+    val state = combine(
+        flow = _state,
         flow2 = musicPlayerUseCases.getCurrentlyPlayingRadioStationIdUseCase.get()(),
         flow3 = musicPlayerUseCases.observeMusicVolumeChangesUseCase.get()(),
         flow4 = musicPlayerUseCases.getIsPlayInBackgroundEnabledUseCase.get()(),
         flow5 = musicPlayerUseCases.getNotificationPermissionCountUseCase.get()()
-    ) { musicPlayerState, currentlyPlayingRadioStationId, musicVolumePercentage, isPlayInBackgroundEnabled, notificationPermissionCount ->
-        musicPlayerState.copy(
-            currentRadioStationId = currentlyPlayingRadioStationId,
-            musicVolumePercentage = musicVolumePercentage,
-            isPlayInBackgroundEnabled = isPlayInBackgroundEnabled,
-            notificationPermissionCount = notificationPermissionCount
-        )
+    ) { state, currentlyPlayingRadioStationId, musicVolumePercentage, isPlayInBackgroundEnabled, notificationPermissionCount ->
+        _state.update {
+            state.copy(
+                currentRadioStationId = currentlyPlayingRadioStationId,
+                musicVolumePercentage = musicVolumePercentage,
+                isPlayInBackgroundEnabled = isPlayInBackgroundEnabled,
+                notificationPermissionCount = notificationPermissionCount
+            )
+        }
+
+        _state.value
+    }.onStart {
+        observeCurrentRadioStationId()
+        getRadioStations()
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(stopTimeout = 5.seconds),
-        initialValue = MusicPlayerState()
+        started = SharingStarted.Eagerly,
+        initialValue = _state.value
     )
 
     private val _playMusicEventChannel = Channel<Event>()
@@ -65,8 +70,15 @@ class MusicPlayerViewModel @Inject constructor(
     private val _adjustMusicVolumeEventChannel = Channel<UiEvent>()
     val adjustMusicVolumeEventChannel = _adjustMusicVolumeEventChannel.receiveAsFlow()
 
-    init {
-        getRadioStations()
+    override fun onCleared() {
+        val continuePlayingInBackground = with(_state.value) {
+            isMusicPlaying && isPlayInBackgroundEnabled == true
+        }
+        if (continuePlayingInBackground) {
+            return
+        }
+
+        super.onCleared()
     }
 
     fun onAction(action: MusicPlayerAction) {
@@ -91,40 +103,46 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
+    private fun observeCurrentRadioStationId() {
+        _state.distinctUntilChangedBy {
+            it.currentRadioStationId
+        }.onEach {
+            getCurrentRadioStation()
+        }.launchIn(scope = viewModelScope)
+    }
+
     private fun getRadioStations() {
         musicPlayerUseCases.getRadioStationsUseCase.get()(
-            fetchFromRemote = NetworkObserverHelper.networkStatus.value == ConnectivityObserver.Status.AVAILABLE
+            fetchFromRemote = hasNetworkConnection()
         ).onStart {
-            _musicPlayerState.update {
+            _state.update {
                 it.copy(isRadioStationsLoading = true)
             }
-        }.onEach { getRadioStationsResult ->
-            when (getRadioStationsResult) {
+        }.onEach { result ->
+            when (result) {
                 is Result.Success -> {
-                    getRadioStationsResult.data.let { radioStations ->
-                        _musicPlayerState.update {
-                            it.copy(
-                                radioStations = radioStations,
-                                isRadioStationsLoading = false
-                            )
-                        }
+                    _state.update {
+                        it.copy(
+                            radioStations = result.data,
+                            isRadioStationsLoading = false
+                        )
                     }
                 }
                 is Result.Error -> {
-                    _musicPlayerState.update {
-                        it.copy(errorMessage = getRadioStationsResult.error.asUiText())
+                    _state.update {
+                        it.copy(errorMessage = result.error.asUiText())
                     }
                 }
             }
         }.onCompletion { throwable ->
             if (throwable == null) {
-                _musicPlayerState.update {
+                _state.update {
                     it.copy(isRadioStationsLoading = false)
                 }
             }
 
             if (throwable is CancellationException) {
-                _musicPlayerState.update {
+                _state.update {
                     it.copy(isRadioStationsLoading = false)
                 }
             }
@@ -133,49 +151,48 @@ class MusicPlayerViewModel @Inject constructor(
 
     private fun getCurrentRadioStation() {
         musicPlayerUseCases.getCurrentlyPlayingRadioStationUseCase.get()(
-            radioStationId = musicPlayerState.value.currentRadioStationId
+            radioStationId = _state.value.currentRadioStationId
         ).onEach { radioStation ->
-            _musicPlayerState.update {
-                it.copy(
-                    currentRadioStation = radioStation
-                )
+            _state.update {
+                it.copy(currentRadioStation = radioStation)
             }
         }.launchIn(scope = viewModelScope)
     }
 
-    private fun playMusic(radiosStation: RadioStation?) = viewModelScope.launch {
+    private fun playMusic(
+        radiosStation: RadioStation?
+    ) {
         radiosStation?.id?.let { id ->
-            when (val result = musicPlayerUseCases.storeCurrentlyPlayingRadioStationIdUseCase.get()(
+            musicPlayerUseCases.storeCurrentlyPlayingRadioStationIdUseCase.get()(
                 radioStationId = id
-            )) {
-                is Result.Success -> {
-                    _playMusicEventChannel.send(MusicPlayerUiEvent.StartYouTubePlayerService)
+            ).onEach { result ->
+                when (result) {
+                    is Result.Success -> {
+                        _playMusicEventChannel.send(MusicPlayerUiEvent.StartYouTubePlayerService)
 
-                    musicPlayerState.value.youtubePlayer?.loadVideo(
-                        videoId = radiosStation.youtubeVideoId,
-                        startSeconds = 0f
-                    )
-                }
-                is Result.Error -> {
-                    _musicPlayerState.update {
-                        it.copy(
-                            errorMessage = result.error.asUiText()
+                        _state.value.youtubePlayer?.loadVideo(
+                            videoId = radiosStation.youtubeVideoId,
+                            startSeconds = 0f
                         )
                     }
+                    is Result.Error -> {
+                        _state.update {
+                            it.copy(errorMessage = result.error.asUiText())
+                        }
+                    }
                 }
-            }
+            }.launchIn(scope = viewModelScope)
         }
     }
 
     private fun resumeMusic() = viewModelScope.launch {
         _playMusicEventChannel.send(MusicPlayerUiEvent.StartYouTubePlayerService)
 
-        musicPlayerState.value.apply {
-            if (isMusicCued) {
-                musicPlayerState.value.youtubePlayer?.play()
-            } else {
-                musicPlayerState.value.youtubePlayer?.loadVideo(
-                    videoId = currentRadioStation!!.youtubeVideoId,
+        with(_state.value) {
+            when {
+                isMusicCued -> youtubePlayer?.play()
+                else -> youtubePlayer?.loadVideo(
+                    videoId = currentRadioStation?.youtubeVideoId.orEmpty(),
                     startSeconds = 0f
                 )
             }
@@ -184,31 +201,35 @@ class MusicPlayerViewModel @Inject constructor(
 
     private fun pauseMusic() = viewModelScope.launch {
         _playMusicEventChannel.send(MusicPlayerUiEvent.StopYouTubePlayerService)
-        musicPlayerState.value.youtubePlayer?.pause()
+        _state.value.youtubePlayer?.pause()
     }
 
     private fun showVolumeSlider() = viewModelScope.launch {
-        _musicPlayerState.update {
+        _state.update {
             it.copy(isVolumeSliderVisible = true)
         }
     }
 
     private fun hideVolumeSlider() = viewModelScope.launch {
-        _musicPlayerState.update {
+        _state.update {
             it.copy(isVolumeSliderVisible = false)
         }
     }
 
-    private fun setVolumeSliderBounds(bounds: Rect) = viewModelScope.launch {
-        _musicPlayerState.update {
+    private fun setVolumeSliderBounds(
+        bounds: Rect
+    ) = viewModelScope.launch {
+        _state.update {
             it.copy(volumeSliderBounds = bounds)
         }
     }
 
-    private fun adjustMusicVolume(newPercentage: MusicVolumePercentage) {
+    private fun adjustMusicVolume(
+        newPercentage: MusicVolumePercentage
+    ) {
         musicPlayerUseCases.adjustMusicVolumeUseCase.get()(
             newPercentage = newPercentage,
-            currentPercentage = musicPlayerState.value.musicVolumePercentage
+            currentPercentage = _state.value.musicVolumePercentage
         ).onEach { result ->
             when (result) {
                 is Result.Success -> Unit
@@ -221,8 +242,10 @@ class MusicPlayerViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun initializeYouTubePlayer(player: YouTubePlayer) = viewModelScope.launch {
-        _musicPlayerState.update {
+    private fun initializeYouTubePlayer(
+        player: YouTubePlayer
+    ) = viewModelScope.launch {
+        _state.update {
             it.copy(
                 youtubePlayer = player,
                 errorMessage = null
@@ -234,7 +257,7 @@ class MusicPlayerViewModel @Inject constructor(
         error: PlayerConstants.PlayerError
     ) = viewModelScope.launch {
         _playMusicEventChannel.send(MusicPlayerUiEvent.StopYouTubePlayerService)
-        _musicPlayerState.update {
+        _state.update {
             it.copy(
                 isMusicBuffering = false,
                 isMusicPlaying = false,
@@ -248,7 +271,7 @@ class MusicPlayerViewModel @Inject constructor(
     ) = viewModelScope.launch {
         when (state) {
             PlayerConstants.PlayerState.VIDEO_CUED -> {
-                _musicPlayerState.update {
+                _state.update {
                     it.copy(
                         isMusicCued = true,
                         isMusicBuffering = false,
@@ -257,7 +280,7 @@ class MusicPlayerViewModel @Inject constructor(
                 }
             }
             PlayerConstants.PlayerState.UNSTARTED -> {
-                _musicPlayerState.update {
+                _state.update {
                     it.copy(
                         isMusicCued = true,
                         isMusicBuffering = true,
@@ -267,7 +290,7 @@ class MusicPlayerViewModel @Inject constructor(
                 }
             }
             PlayerConstants.PlayerState.BUFFERING -> {
-                _musicPlayerState.update {
+                _state.update {
                     it.copy(
                         isMusicBuffering = false,
                         isMusicPlaying = false,
@@ -276,7 +299,7 @@ class MusicPlayerViewModel @Inject constructor(
                 }
             }
             PlayerConstants.PlayerState.PLAYING -> {
-                _musicPlayerState.update {
+                _state.update {
                     it.copy(
                         isMusicBuffering = false,
                         isMusicPlaying = true,
@@ -285,7 +308,7 @@ class MusicPlayerViewModel @Inject constructor(
                 }
             }
             PlayerConstants.PlayerState.PAUSED -> {
-                _musicPlayerState.update {
+                _state.update {
                     it.copy(
                         isMusicBuffering = false,
                         isMusicPlaying = false
@@ -293,7 +316,7 @@ class MusicPlayerViewModel @Inject constructor(
                 }
             }
             PlayerConstants.PlayerState.ENDED -> {
-                _musicPlayerState.update {
+                _state.update {
                     it.copy(
                         isMusicBuffering = false,
                         isMusicPlaying = false
@@ -301,7 +324,7 @@ class MusicPlayerViewModel @Inject constructor(
                 }
             }
             PlayerConstants.PlayerState.UNKNOWN -> {
-                _musicPlayerState.update {
+                _state.update {
                     it.copy(
                         isMusicBuffering = false,
                         isMusicPlaying = false
@@ -315,12 +338,12 @@ class MusicPlayerViewModel @Inject constructor(
         permission: String,
         isGranted: Boolean
     ) = viewModelScope.launch {
-        val shouldAskForPermission = musicPlayerState.value.run {
+        val shouldAskForPermission = _state.value.run {
             notificationPermissionCount < 1 && !permissionDialogQueue.contains(permission) && !isGranted
         }
 
         if (shouldAskForPermission) {
-            _musicPlayerState.update {
+            _state.update {
                 it.copy(
                     permissionDialogQueue = listOf(permission),
                     isPermissionDialogVisible = true
@@ -329,15 +352,18 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
-    private fun dismissPermissionDialog(permission: String) = viewModelScope.launch {
+    private fun dismissPermissionDialog(
+        permission: String
+    ) = viewModelScope.launch {
         musicPlayerUseCases.storeNotificationPermissionCountUseCase.get()(
-            count = musicPlayerState.value.notificationPermissionCount.plus(1)
+            count = _state.value.notificationPermissionCount.plus(other = 1)
         )
 
-        _musicPlayerState.update {
+        _state.update {
             it.copy(
-                permissionDialogQueue = musicPlayerState.value.permissionDialogQueue.toMutableList()
-                    .apply { remove(permission) }.toList(),
+                permissionDialogQueue = _state.value.permissionDialogQueue.toMutableList().apply {
+                    remove(permission)
+                },
                 isPermissionDialogVisible = false
             )
         }

@@ -37,6 +37,6 @@ class GetCurrentlyPlayingRadioStationIdUseCaseTest {
     @Test
     fun getCurrentlyPlayingRadioStationId_returnsCurrentlyPlayingRadioStationId() = runTest {
         val radioStationId = getCurrentlyPlayingRadioStationIdUseCase().first()
-        assertThat(radioStationId).isEqualTo(fakeMusicPlayerDataStoreRepository.currentlyPlayingRadioStationId)
+        assertThat(radioStationId).isEqualTo(fakeMusicPlayerDataStoreRepository.currentlyPlayingRadioStationId.first())
     }
 }

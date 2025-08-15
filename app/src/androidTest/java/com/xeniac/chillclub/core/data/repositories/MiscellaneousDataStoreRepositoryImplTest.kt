@@ -3,14 +3,15 @@ package com.xeniac.chillclub.core.data.repositories
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
+import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
+import com.xeniac.chillclub.core.domain.models.MiscellaneousPreferences
+import com.xeniac.chillclub.core.domain.models.MiscellaneousPreferencesSerializer
 import com.xeniac.chillclub.core.domain.models.RateAppOption
 import com.xeniac.chillclub.core.domain.repositories.MiscellaneousDataStoreRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,20 +43,20 @@ class MiscellaneousDataStoreRepositoryImplTest {
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
     private val testScope: TestScope = TestScope(context = testDispatcher)
 
-    private val testDataStore: DataStore<Preferences> = PreferenceDataStoreFactory.create(
+    private val testDataStore: DataStore<MiscellaneousPreferences> = DataStoreFactory.create(
+        serializer = MiscellaneousPreferencesSerializer,
+        corruptionHandler = ReplaceFileCorruptionHandler { MiscellaneousPreferences() },
         scope = testScope.backgroundScope,
-        produceFile = { context.preferencesDataStoreFile(name = "Miscellaneous-Test") }
+        produceFile = { context.preferencesDataStoreFile(name = "Miscellaneous-Test.pb") }
     )
 
     private val testRepository: MiscellaneousDataStoreRepository =
-        MiscellaneousDataStoreRepositoryImpl(
-            dataStore = testDataStore
-        )
+        MiscellaneousDataStoreRepositoryImpl(dataStore = testDataStore)
 
     @Before
     fun setUp() {
         testScope.launch {
-            testDataStore.edit { it.clear() }
+            testDataStore.updateData { MiscellaneousPreferences() }
         }
     }
 
@@ -73,18 +74,17 @@ class MiscellaneousDataStoreRepositoryImplTest {
      */
     @Test
     fun fetchInitialPreferences() = testScope.runTest {
-        val initialAppUpdateDialogShowCount = testRepository.getAppUpdateDialogShowCount().first()
-        val initialIsAppUpdateDialogShownToday = testRepository
-            .isAppUpdateDialogShownToday().first()
-        val initialSelectedRateAppOption = testRepository
-            .getSelectedRateAppOption().first()
-        val initialPreviousRateAppRequestTime = testRepository
-            .getPreviousRateAppRequestTimeInMs().first()
+        with(testRepository) {
+            val initialAppUpdateDialogShowCount = getAppUpdateDialogShowCount().first()
+            val initialIsAppUpdateDialogShownToday = isAppUpdateDialogShownToday().first()
+            val initialSelectedRateAppOption = getSelectedRateAppOption().first()
+            val initialPreviousRateAppRequestDateTime = getPreviousRateAppRequestDateTime().first()
 
-        assertThat(initialAppUpdateDialogShowCount).isEqualTo(0)
-        assertThat(initialIsAppUpdateDialogShownToday).isFalse()
-        assertThat(initialSelectedRateAppOption).isEqualTo(RateAppOption.NOT_SHOWN_YET)
-        assertThat(initialPreviousRateAppRequestTime).isNull()
+            assertThat(initialAppUpdateDialogShowCount).isEqualTo(0)
+            assertThat(initialIsAppUpdateDialogShownToday).isFalse()
+            assertThat(initialSelectedRateAppOption).isEqualTo(RateAppOption.NOT_SHOWN_YET)
+            assertThat(initialPreviousRateAppRequestDateTime).isNull()
+        }
     }
 
     @Test
@@ -97,21 +97,21 @@ class MiscellaneousDataStoreRepositoryImplTest {
     }
 
     @Test
-    fun writeAppUpdateDialogShowEpochDays() = testScope.runTest {
-        testRepository.storeAppUpdateDialogShowEpochDays()
+    fun writeAppUpdateDialogShowDateTime() = testScope.runTest {
+        testRepository.storeAppUpdateDialogShowDateTime()
 
         val isAppUpdateDialogShownTodayBefore = testRepository.isAppUpdateDialogShownToday().first()
         assertThat(isAppUpdateDialogShownTodayBefore).isTrue()
     }
 
     @Test
-    fun removeAppUpdateDialogShowEpochDays() = testScope.runTest {
-        testRepository.storeAppUpdateDialogShowEpochDays()
+    fun removeAppUpdateDialogShowDateTime() = testScope.runTest {
+        testRepository.storeAppUpdateDialogShowDateTime()
 
         val isAppUpdateDialogShownTodayBefore = testRepository.isAppUpdateDialogShownToday().first()
         assertThat(isAppUpdateDialogShownTodayBefore).isTrue()
 
-        testRepository.removeAppUpdateDialogShowEpochDays()
+        testRepository.removeAppUpdateDialogShowDateTime()
 
         val isAppUpdateDialogShownTodayAfter = testRepository.isAppUpdateDialogShownToday().first()
         assertThat(isAppUpdateDialogShownTodayAfter).isFalse()
@@ -127,10 +127,10 @@ class MiscellaneousDataStoreRepositoryImplTest {
     }
 
     @Test
-    fun writePreviousRateAppRequestTimeInMs() = testScope.runTest {
-        testRepository.storePreviousRateAppRequestTimeInMs()
+    fun writePreviousRateAppRequestDateTime() = testScope.runTest {
+        testRepository.storePreviousRateAppRequestDateTime()
 
-        val previousRateAppRequestTime = testRepository.getPreviousRateAppRequestTimeInMs().first()
+        val previousRateAppRequestTime = testRepository.getPreviousRateAppRequestDateTime().first()
         assertThat(previousRateAppRequestTime).isNotNull()
     }
 }

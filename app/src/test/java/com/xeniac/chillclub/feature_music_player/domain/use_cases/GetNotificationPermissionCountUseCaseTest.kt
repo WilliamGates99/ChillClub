@@ -3,7 +3,7 @@ package com.xeniac.chillclub.feature_music_player.domain.use_cases
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
-import com.xeniac.chillclub.core.data.repositories.FakeSettingsDataStoreRepositoryImpl
+import com.xeniac.chillclub.core.data.repositories.FakePermissionsDataStoreRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -23,20 +23,20 @@ class GetNotificationPermissionCountUseCaseTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
-    private lateinit var fakeSettingsDataStoreRepository: FakeSettingsDataStoreRepositoryImpl
+    private lateinit var fakePermissionsDataStoreRepository: FakePermissionsDataStoreRepositoryImpl
     private lateinit var getNotificationPermissionCountUseCase: GetNotificationPermissionCountUseCase
 
     @Before
     fun setUp() {
-        fakeSettingsDataStoreRepository = FakeSettingsDataStoreRepositoryImpl()
+        fakePermissionsDataStoreRepository = FakePermissionsDataStoreRepositoryImpl()
         getNotificationPermissionCountUseCase = GetNotificationPermissionCountUseCase(
-            settingsDataStoreRepository = fakeSettingsDataStoreRepository
+            permissionsDataStoreRepository = fakePermissionsDataStoreRepository
         )
     }
 
     @Test
     fun getNotificationPermissionCount_returnsCurrentNotificationPermissionCountValue() = runTest {
         val currentNotificationPermissionCount = getNotificationPermissionCountUseCase().first()
-        assertThat(currentNotificationPermissionCount).isEqualTo(fakeSettingsDataStoreRepository.notificationPermissionCount)
+        assertThat(currentNotificationPermissionCount).isEqualTo(fakePermissionsDataStoreRepository.notificationPermissionCount)
     }
 }

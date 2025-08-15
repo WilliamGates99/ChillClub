@@ -1,11 +1,11 @@
 package com.xeniac.chillclub.feature_music_player.domain.use_cases
 
-import com.xeniac.chillclub.core.domain.repositories.SettingsDataStoreRepository
+import com.xeniac.chillclub.core.domain.repositories.PermissionsDataStoreRepository
 
 class StoreNotificationPermissionCountUseCase(
-    private val settingsDataStoreRepository: SettingsDataStoreRepository
+    private val permissionsDataStoreRepository: PermissionsDataStoreRepository
 ) {
     suspend operator fun invoke(
         count: Int
-    ) = settingsDataStoreRepository.storeNotificationPermissionCount(count)
+    ) = permissionsDataStoreRepository.storeNotificationPermissionCount(count)
 }

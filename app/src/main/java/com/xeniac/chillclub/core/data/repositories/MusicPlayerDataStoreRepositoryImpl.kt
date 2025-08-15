@@ -1,12 +1,9 @@
 package com.xeniac.chillclub.core.data.repositories
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.longPreferencesKey
-import com.xeniac.chillclub.core.di.MusicPlayerDataStoreQualifier
+import com.xeniac.chillclub.core.domain.models.MusicPlayerPreferences
+import com.xeniac.chillclub.core.domain.models.RadioStationId
 import com.xeniac.chillclub.core.domain.repositories.MusicPlayerDataStoreRepository
-import com.xeniac.chillclub.core.domain.repositories.RadioStationId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -14,43 +11,32 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class MusicPlayerDataStoreRepositoryImpl @Inject constructor(
-    @MusicPlayerDataStoreQualifier private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<MusicPlayerPreferences>
 ) : MusicPlayerDataStoreRepository {
 
-    private object PreferencesKeys {
-        val CURRENTLY_PLAYING_RADIO_STATION_ID = longPreferencesKey(
-            name = "currentlyPlayingRadioStationId"
-        )
+    override fun getCurrentlyPlayingRadioStationId(): Flow<RadioStationId?> = dataStore.data.map {
+        it.currentlyPlayingRadioStationId
+    }.catch { e ->
+        Timber.e("Get currently playing radio station ID failed:")
+        e.printStackTrace()
     }
-
-    override fun getCurrentlyPlayingRadioStationId(): Flow<RadioStationId?> =
-        dataStore.data.map {
-            it[PreferencesKeys.CURRENTLY_PLAYING_RADIO_STATION_ID]
-        }.catch { e ->
-            Timber.e("getNotificationPermissionCount failed:")
-            e.printStackTrace()
-        }
 
     override suspend fun storeCurrentlyPlayingRadioStationId(id: Long) {
         try {
-            dataStore.edit { preferences ->
-                preferences[PreferencesKeys.CURRENTLY_PLAYING_RADIO_STATION_ID] = id
-                Timber.i("Currently playing radio station id edited to $id")
-            }
+            dataStore.updateData { it.copy(currentlyPlayingRadioStationId = id) }
+            Timber.i("Currently playing radio station ID edited to $id")
         } catch (e: Exception) {
-            Timber.e("storeCurrentlyPlayingRadioStationId failed:")
+            Timber.e("Store currently playing radio station ID failed:")
             e.printStackTrace()
         }
     }
 
     override suspend fun removeCurrentlyPlayingRadioStationId() {
         try {
-            dataStore.edit { preferences ->
-                preferences.remove(PreferencesKeys.CURRENTLY_PLAYING_RADIO_STATION_ID)
-                Timber.i("Currently playing radio station id removed")
-            }
+            dataStore.updateData { it.copy(currentlyPlayingRadioStationId = null) }
+            Timber.i("Currently playing radio station ID removed")
         } catch (e: Exception) {
-            Timber.e("removeCurrentlyPlayingRadioStationId failed:")
+            Timber.e("Remove currently playing radio station ID failed:")
             e.printStackTrace()
         }
     }

@@ -3,10 +3,8 @@ package com.xeniac.chillclub.core.data.local.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.xeniac.chillclub.core.data.remote.dto.RadioStationDto
-import com.xeniac.chillclub.core.data.utils.DateHelper
 import com.xeniac.chillclub.core.domain.models.Channel
-import com.xeniac.chillclub.core.domain.models.RadioStation
+import com.xeniac.chillclub.core.domain.utils.DateHelper
 
 @Entity(tableName = "radio_stations")
 data class RadioStationEntity(
@@ -20,21 +18,4 @@ data class RadioStationEntity(
     val createdAt: Long = DateHelper.getCurrentTimeInSeconds(),
     @PrimaryKey(autoGenerate = true)
     val id: Long? = null
-) {
-    fun toRadioStationDto(): RadioStationDto = RadioStationDto(
-        youtubeVideoId = youtubeVideoId,
-        title = title,
-        channelDto = channel.toChannelDto(),
-        category = category,
-        tags = tags
-    )
-
-    fun toRadioStation(): RadioStation = RadioStation(
-        youtubeVideoId = youtubeVideoId,
-        title = title,
-        channel = channel,
-        category = category,
-        tags = tags,
-        id = id
-    )
-}
+)

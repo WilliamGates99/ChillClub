@@ -3,12 +3,14 @@ package com.xeniac.chillclub.feature_music_player.domain.use_cases
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
-import com.xeniac.chillclub.core.domain.utils.Result
+import com.xeniac.chillclub.core.domain.models.Result
 import com.xeniac.chillclub.feature_music_player.data.remote.repositories.FakeMusicPlayerRepositoryImpl
-import com.xeniac.chillclub.feature_music_player.domain.utils.GetRadioStationsError
+import com.xeniac.chillclub.feature_music_player.domain.errors.GetRadioStationsError
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -84,10 +86,12 @@ class GetRadioStationStationsUseCaseTest {
     @Test
     fun getRadioStationsWithFetchFromRemoteWhenOnlineHttpStatusCodeOtherThanOk_returnsError() =
         runTest {
-            fakeMusicPlayerRepository.setGetRadioStationsHttpStatusCode(HttpStatusCode.RequestTimeout)
+            fakeMusicPlayerRepository.setGetRadioStationsHttpStatusCode(
+                httpStatusCode = HttpStatusCode.RequestTimeout
+            )
 
-            val result = getRadioStationsUseCase(fetchFromRemote = true).first()
-
-            assertThat(result).isInstanceOf(Result.Error::class.java)
+            getRadioStationsUseCase(fetchFromRemote = true).onEach { result ->
+                assertThat(result).isInstanceOf(Result.Error::class.java)
+            }.launchIn(scope = this)
         }
 }

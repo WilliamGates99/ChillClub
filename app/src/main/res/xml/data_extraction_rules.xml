@@ -9,26 +9,16 @@
     -->
 
     <cloud-backup>
-        <include
-            domain="sharedpref"
-            path="." />
-        <include
-            domain="database"
-            path="." />
-
+        <exclude domain="sharedpref" />
+        <exclude domain="database" />
         <exclude domain="root" />
         <exclude domain="file" />
         <exclude domain="external" />
     </cloud-backup>
 
     <device-transfer>
-        <include
-            domain="sharedpref"
-            path="." />
-        <include
-            domain="database"
-            path="." />
-
+        <exclude domain="sharedpref" />
+        <exclude domain="database" />
         <exclude domain="root" />
         <exclude domain="file" />
         <exclude domain="external" />

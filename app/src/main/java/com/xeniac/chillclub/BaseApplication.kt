@@ -8,25 +8,28 @@ import android.app.NotificationManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.toArgb
-import coil.ImageLoader
-import coil.ImageLoaderFactory
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
-import coil.decode.SvgDecoder
-import coil.disk.DiskCache
-import coil.memory.MemoryCache
-import coil.request.CachePolicy
-import coil.util.DebugLogger
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.SingletonImageLoader
+import coil3.disk.DiskCache
+import coil3.disk.directory
+import coil3.gif.AnimatedImageDecoder
+import coil3.gif.GifDecoder
+import coil3.memory.MemoryCache
+import coil3.request.CachePolicy
+import coil3.request.crossfade
+import coil3.svg.SvgDecoder
+import coil3.util.DebugLogger
 import com.xeniac.chillclub.core.domain.models.AppTheme
-import com.xeniac.chillclub.core.ui.theme.PurpleNotificationLight
+import com.xeniac.chillclub.core.domain.repositories.ConnectivityObserver
+import com.xeniac.chillclub.core.presentation.common.ui.theme.PurpleNotificationLight
+import com.xeniac.chillclub.core.presentation.common.utils.NetworkObserverHelper
 import dagger.hilt.android.HiltAndroidApp
-import okhttp3.Dispatcher
-import okhttp3.OkHttpClient
 import timber.log.Timber
 import javax.inject.Inject
 
 @HiltAndroidApp
-class BaseApplication : Application(), ImageLoaderFactory {
+class BaseApplication : Application(), SingletonImageLoader.Factory {
 
     companion object {
         const val NOTIFICATION_CHANNEL_GROUP_ID_FCM = "group_fcm"
@@ -42,11 +45,15 @@ class BaseApplication : Application(), ImageLoaderFactory {
     @Inject
     lateinit var notificationManager: NotificationManager
 
+    @Inject
+    lateinit var connectivityObserver: ConnectivityObserver
+
     override fun onCreate() {
         super.onCreate()
 
         setupTimber()
         setAppTheme()
+        observeNetworkConnection()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createFcmNotificationChannelGroup()
@@ -60,6 +67,10 @@ class BaseApplication : Application(), ImageLoaderFactory {
     private fun setupTimber() = Timber.plant(Timber.DebugTree())
 
     private fun setAppTheme() = currentAppTheme.setAppTheme()
+
+    private fun observeNetworkConnection() {
+        NetworkObserverHelper.observeNetworkConnection(connectivityObserver)
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createFcmNotificationChannelGroup() {
@@ -112,44 +123,39 @@ class BaseApplication : Application(), ImageLoaderFactory {
         notificationManager.createNotificationChannel(channel)
     }
 
-    override fun newImageLoader(): ImageLoader = ImageLoader(context = this).newBuilder().apply {
+    override fun newImageLoader(
+        context: PlatformContext
+    ): ImageLoader = ImageLoader.Builder(context).apply {
         components {
-            add(factory = SvgDecoder.Factory())
-            add(
-                factory = if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)) {
-                    ImageDecoderDecoder.Factory()
-                } else {
-                    GifDecoder.Factory()
-                }
-            )
+            add(factory = SvgDecoder.Factory()) // SVGs
+            when { // GIFs
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> add(factory = AnimatedImageDecoder.Factory())
+                else -> add(factory = GifDecoder.Factory())
+            }
         }
+
         crossfade(enable = true)
-        // Ignore the network cache headers and always read from/write to the disk cache.
-        respectCacheHeaders(enable = false)
+
+        networkCachePolicy(policy = CachePolicy.ENABLED)
         memoryCachePolicy(policy = CachePolicy.ENABLED)
         diskCachePolicy(policy = CachePolicy.ENABLED)
-        memoryCache {
-            MemoryCache.Builder(this@BaseApplication)
-                // Set the max size to 25% of the app's available memory.
-                .maxSizePercent(percent = 0.25)
-                .build()
-        }
-        diskCache {
-            DiskCache.Builder()
-                // Set cache directory folder name
-                .directory(cacheDir.resolve("image_cache"))
-                .maxSizePercent(percent = 0.03)
-                .build()
-        }
-        okHttpClient {
-            // Don't limit concurrent network requests by host.
-            val dispatcher = Dispatcher().apply { maxRequestsPerHost = maxRequests }
 
-            // Lazily create the OkHttpClient that is used for network operations.
-            OkHttpClient.Builder()
-                .dispatcher(dispatcher)
-                .build()
+        memoryCache {
+            MemoryCache.Builder().apply {
+                maxSizePercent( // Set the max size to 25% of the app's available memory.
+                    context = context,
+                    percent = 0.25
+                )
+            }.build()
         }
+
+        diskCache {
+            DiskCache.Builder().apply {
+                directory(cacheDir.resolve(relative = "image_cache")) // Set cache directory folder name
+                maxSizePercent(percent = 0.03) // Set the max size to 3% of the device's free disk space.
+            }.build()
+        }
+
         if (BuildConfig.DEBUG) logger(logger = DebugLogger())
     }.build()
 }

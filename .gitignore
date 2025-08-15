@@ -8,12 +8,16 @@
 /captures
 .externalNativeBuild
 .cxx
+/app/debug
 /app/release
 /app/prodPlayStore
 /app/prodGitHub
 /app/prodCafeBazaar
 /app/prodMyket
 /app/devPlayStore
+/app/devGitHub
+/app/devCafeBazaar
+/app/devMyket
 /app/obfuscation
 google-services.json
 .safedk

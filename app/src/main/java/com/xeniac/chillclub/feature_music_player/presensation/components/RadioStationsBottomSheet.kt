@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -44,37 +46,33 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.domain.models.RadioStation
-import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeight
-import com.xeniac.chillclub.core.presentation.utils.getNavigationBarHeightDp
+import com.xeniac.chillclub.core.presentation.common.ui.utils.getNavigationBarHeight
+import com.xeniac.chillclub.core.presentation.common.ui.utils.getNavigationBarHeightDp
+import com.xeniac.chillclub.feature_music_player.presensation.MusicPlayerAction
 import com.xeniac.chillclub.feature_music_player.presensation.states.MusicPlayerState
 import com.xeniac.chillclub.feature_music_player.presensation.utils.TestTags
+import kotlinx.coroutines.launch
 
 @Composable
 fun RadioStationsBottomSheet(
-    musicPlayerState: MusicPlayerState,
+    state: MusicPlayerState,
     sheetState: SheetState,
     modifier: Modifier = Modifier,
-    navigationBarHeightPx: Int = getNavigationBarHeight(),
     navigationBarHeight: Dp = getNavigationBarHeightDp(),
     onHeaderHeightCalculated: (heightPx: Int) -> Unit,
     onHeaderClick: () -> Unit,
-    onRadioStationClick: (radioStation: RadioStation) -> Unit
+    onAction: (action: MusicPlayerAction) -> Unit
 ) {
-    Column(modifier = modifier) {
+    val scope = rememberCoroutineScope()
+
+    Column(modifier = modifier.fillMaxWidth()) {
         BottomSheetHeader(
             sheetState = sheetState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(
-                    onClick = onHeaderClick,
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                )
-                .onSizeChanged { size ->
-                    onHeaderHeightCalculated(size.height + navigationBarHeightPx)
-                }
+            onHeaderHeightCalculated = onHeaderHeightCalculated,
+            onClick = onHeaderClick
         )
 
         if (sheetState.targetValue != SheetValue.Expanded) {
@@ -82,9 +80,23 @@ fun RadioStationsBottomSheet(
         }
 
         RadioStations(
-            musicPlayerState = musicPlayerState,
-            onRadioStationClick = onRadioStationClick,
-            modifier = Modifier.fillMaxWidth()
+            state = state,
+            onRadioStationClick = { radioStation ->
+                scope.launch {
+                    sheetState.partialExpand()
+                }
+
+                when (state.youtubePlayer) {
+                    null -> {
+                        onAction(
+                            MusicPlayerAction.ShowYouTubePlayerError(
+                                error = PlayerConstants.PlayerError.VIDEO_NOT_FOUND
+                            )
+                        )
+                    }
+                    else -> onAction(MusicPlayerAction.PlayMusic(radioStation))
+                }
+            }
         )
     }
 }
@@ -93,6 +105,13 @@ fun RadioStationsBottomSheet(
 private fun BottomSheetHeader(
     sheetState: SheetState,
     modifier: Modifier = Modifier,
+    navigationBarHeightPx: Int = getNavigationBarHeight(),
+    contentPadding: PaddingValues = PaddingValues(
+        start = 36.dp,
+        end = 36.dp,
+        top = 32.dp,
+        bottom = 18.dp // 32 - 14 (from radio station item) = 18.dp
+    ),
     title: AnnotatedString = AnnotatedString.fromHtml(
         htmlString = stringResource(id = R.string.music_player_radio_stations_sheet_title)
     ).toUpperCase(),
@@ -107,7 +126,9 @@ private fun BottomSheetHeader(
     arrowContentDescriptionHide: String = stringResource(R.string.music_player_radio_stations_sheet_content_description_hide),
     arrowContentDescriptionShow: String = stringResource(R.string.music_player_radio_stations_sheet_content_description_show),
     animatedRotateDegreesDuration: Int = 500,
-    animatedRotateDegreesDelay: Int = 0
+    animatedRotateDegreesDelay: Int = 0,
+    onHeaderHeightCalculated: (heightPx: Int) -> Unit,
+    onClick: () -> Unit
 ) {
     val animatedRotateDegrees by animateFloatAsState(
         targetValue = when (sheetState.targetValue) {
@@ -125,12 +146,16 @@ private fun BottomSheetHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .padding(
-                start = 36.dp,
-                end = 36.dp,
-                top = 32.dp,
-                bottom = 18.dp // 32 - 14 (from radio station item) = 18.dp
+            .fillMaxWidth()
+            .clickable(
+                onClick = onClick,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
             )
+            .onSizeChanged { size ->
+                onHeaderHeightCalculated(size.height + navigationBarHeightPx)
+            }
+            .padding(contentPadding)
             .testTag(TestTags.BOTTOM_SHEET_HEADER)
     ) {
         Text(
@@ -158,25 +183,25 @@ private fun BottomSheetHeader(
 
 @Composable
 private fun RadioStations(
-    musicPlayerState: MusicPlayerState,
+    state: MusicPlayerState,
     modifier: Modifier = Modifier,
     onRadioStationClick: (radioStation: RadioStation) -> Unit
 ) {
     AnimatedContent(
-        targetState = musicPlayerState.isRadioStationsLoading,
+        targetState = state.isRadioStationsLoading,
         transitionSpec = {
             fadeIn().togetherWith(exit = fadeOut())
         },
         label = "radioStationsAnimatedContent",
-        modifier = modifier.testTag(TestTags.BOTTOM_SHEET_RADIO_STATIONS)
+        modifier = modifier
+            .fillMaxWidth()
+            .testTag(TestTags.BOTTOM_SHEET_RADIO_STATIONS)
     ) { isLoading ->
-        if (isLoading) {
-            RadioStationsLoading(modifier = modifier)
-        } else {
-            RadioStationsList(
-                radioStations = musicPlayerState.radioStations,
-                onRadioStationClick = onRadioStationClick,
-                modifier = modifier
+        when {
+            isLoading -> RadioStationsLoading()
+            else -> RadioStationsList(
+                radioStations = state.radioStations,
+                onRadioStationClick = onRadioStationClick
             )
         }
     }

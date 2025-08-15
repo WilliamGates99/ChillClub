@@ -26,8 +26,9 @@ internal object SettingsModule {
     @ViewModelScoped
     fun provideGetIsPlayInBackgroundEnabledUseCase(
         settingsDataStoreRepository: SettingsDataStoreRepository
-    ): GetIsPlayInBackgroundEnabledUseCase =
-        GetIsPlayInBackgroundEnabledUseCase(settingsDataStoreRepository)
+    ): GetIsPlayInBackgroundEnabledUseCase = GetIsPlayInBackgroundEnabledUseCase(
+        settingsDataStoreRepository
+    )
 
     @Provides
     @ViewModelScoped
@@ -39,8 +40,9 @@ internal object SettingsModule {
     @ViewModelScoped
     fun provideStoreIsPlayInBackgroundEnabledUseCase(
         settingsDataStoreRepository: SettingsDataStoreRepository
-    ): StoreIsPlayInBackgroundEnabledUseCase =
-        StoreIsPlayInBackgroundEnabledUseCase(settingsDataStoreRepository)
+    ): StoreIsPlayInBackgroundEnabledUseCase = StoreIsPlayInBackgroundEnabledUseCase(
+        settingsDataStoreRepository
+    )
 
     @Provides
     @ViewModelScoped

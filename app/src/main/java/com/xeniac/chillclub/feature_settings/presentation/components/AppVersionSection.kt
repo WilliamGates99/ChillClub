@@ -1,6 +1,7 @@
 package com.xeniac.chillclub.feature_settings.presentation.components
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,12 +15,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xeniac.chillclub.BuildConfig
 import com.xeniac.chillclub.R
-import com.xeniac.chillclub.core.ui.theme.Gray40
+import com.xeniac.chillclub.core.presentation.common.ui.theme.Gray40
 
 @Composable
 fun AppVersionSection(
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues = PaddingValues(
+    contentPadding: PaddingValues = PaddingValues(
         start = 16.dp,
         end = 16.dp,
         bottom = 8.dp
@@ -40,6 +41,8 @@ fun AppVersionSection(
         textAlign = textAlign,
         color = color,
         maxLines = maxLines,
-        modifier = modifier.padding(paddingValues)
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(contentPadding)
     )
 }

@@ -1,9 +1,13 @@
 /build
+/debug
 /release
 /prodPlayStore
 /prodGitHub
 /prodCafeBazaar
 /prodMyket
 /devPlayStore
+/devGitHub
+/devCafeBazaar
+/devMyket
 /obfuscation
 google-services.json
