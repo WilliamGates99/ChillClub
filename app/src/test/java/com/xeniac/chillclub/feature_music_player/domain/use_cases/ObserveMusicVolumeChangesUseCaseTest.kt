@@ -3,7 +3,7 @@ package com.xeniac.chillclub.feature_music_player.domain.use_cases
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
-import com.xeniac.chillclub.feature_music_player.data.remote.repositories.FakeMusicPlayerRepositoryImpl
+import com.xeniac.chillclub.feature_music_player.data.remote.repositories.FakeMusicVolumeRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -23,14 +23,14 @@ class ObserveMusicVolumeChangesUseCaseTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
-    private lateinit var fakeMusicPlayerRepositoryImpl: FakeMusicPlayerRepositoryImpl
+    private lateinit var musicVolumeRepository: FakeMusicVolumeRepositoryImpl
     private lateinit var observeMusicVolumeChangesUseCase: ObserveMusicVolumeChangesUseCase
 
     @Before
     fun setUp() {
-        fakeMusicPlayerRepositoryImpl = FakeMusicPlayerRepositoryImpl()
+        musicVolumeRepository = FakeMusicVolumeRepositoryImpl()
         observeMusicVolumeChangesUseCase = ObserveMusicVolumeChangesUseCase(
-            musicPlayerRepository = fakeMusicPlayerRepositoryImpl
+            musicVolumeRepository = musicVolumeRepository
         )
     }
 
@@ -38,7 +38,7 @@ class ObserveMusicVolumeChangesUseCaseTest {
     fun observeMusicVolumeChanges_returnsCurrentMusicVolume() = runTest {
         val currentMusicVolumePercentage = observeMusicVolumeChangesUseCase().first()
         assertThat(currentMusicVolumePercentage).isEqualTo(
-            fakeMusicPlayerRepositoryImpl.musicVolumePercentage.first()
+            musicVolumeRepository.musicVolumePercentage.first()
         )
     }
 }

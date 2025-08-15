@@ -12,14 +12,6 @@ fun RadioStationDto.toRadioStationEntity(): RadioStationEntity = RadioStationEnt
     tags = tags
 )
 
-fun RadioStationDto.toRadioStation(): RadioStation = RadioStation(
-    youtubeVideoId = youtubeVideoId,
-    title = title,
-    channel = channelDto.toChannel(),
-    category = category,
-    tags = tags
-)
-
 fun RadioStationEntity.toRadioStationDto(): RadioStationDto = RadioStationDto(
     youtubeVideoId = youtubeVideoId,
     title = title,
@@ -35,21 +27,4 @@ fun RadioStationEntity.toRadioStation(): RadioStation = RadioStation(
     category = category,
     tags = tags,
     id = id
-)
-
-fun RadioStation.toRadioStationEntity(): RadioStationEntity = RadioStationEntity(
-    youtubeVideoId = youtubeVideoId,
-    title = title,
-    channel = channel,
-    category = category,
-    tags = tags,
-    id = id
-)
-
-fun RadioStation.toRadioStationDto(): RadioStationDto = RadioStationDto(
-    youtubeVideoId = youtubeVideoId,
-    title = title,
-    channelDto = channel.toChannelDto(),
-    category = category,
-    tags = tags
 )

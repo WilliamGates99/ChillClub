@@ -37,6 +37,6 @@ class GetCurrentAppThemeUseCaseTest {
     @Test
     fun getCurrentAppTheme_returnsCurrentAppTheme() = runTest {
         val currentAppTheme = getCurrentAppThemeUseCase().first()
-        assertThat(currentAppTheme).isEqualTo(fakeSettingsDataStoreRepository.currentAppTheme)
+        assertThat(currentAppTheme).isEqualTo(fakeSettingsDataStoreRepository.currentAppTheme.first())
     }
 }

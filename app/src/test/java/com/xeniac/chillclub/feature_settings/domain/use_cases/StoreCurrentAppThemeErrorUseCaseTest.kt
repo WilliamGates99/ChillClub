@@ -8,6 +8,8 @@ import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.models.Result
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -43,16 +45,21 @@ class StoreCurrentAppThemeErrorUseCaseTest {
     @Test
     fun setCurrentAppTheme_returnsSuccess() = runTest {
         val testValue = AppTheme.Light
-        val result = storeCurrentAppThemeUseCase(testValue)
-        assertThat(result).isInstanceOf(Result.Success::class.java)
+        storeCurrentAppThemeUseCase(
+            newAppTheme = testValue
+        ).onEach { result ->
+            assertThat(result).isInstanceOf(Result.Success::class.java)
+        }.launchIn(scope = this)
     }
 
     @Test
     fun setCurrentAppTheme_returnsNewAppTheme() = runTest {
         val testValue = AppTheme.Light
-        storeCurrentAppThemeUseCase(testValue)
-
-        val appTheme = getCurrentAppThemeUseCase().first()
-        assertThat(appTheme).isEqualTo(testValue)
+        storeCurrentAppThemeUseCase(
+            newAppTheme = testValue
+        ).onEach {
+            val appTheme = getCurrentAppThemeUseCase().first()
+            assertThat(appTheme).isEqualTo(testValue)
+        }.launchIn(scope = this)
     }
 }

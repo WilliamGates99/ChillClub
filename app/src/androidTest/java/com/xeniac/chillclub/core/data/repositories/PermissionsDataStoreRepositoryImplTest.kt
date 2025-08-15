@@ -10,9 +10,9 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
-import com.xeniac.chillclub.core.domain.models.MusicPlayerPreferences
-import com.xeniac.chillclub.core.domain.models.MusicPlayerPreferencesSerializer
-import com.xeniac.chillclub.core.domain.repositories.MusicPlayerDataStoreRepository
+import com.xeniac.chillclub.core.domain.models.PermissionsPreferences
+import com.xeniac.chillclub.core.domain.models.PermissionsPreferencesSerializer
+import com.xeniac.chillclub.core.domain.repositories.PermissionsDataStoreRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
@@ -29,7 +29,7 @@ import org.junit.runner.RunWith
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
-class MusicPlayerDataStoreRepositoryImplTest {
+class PermissionsDataStoreRepositoryImplTest {
 
     @get:Rule
     var instanceTaskExecutorRule = InstantTaskExecutorRule()
@@ -42,21 +42,21 @@ class MusicPlayerDataStoreRepositoryImplTest {
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
     private val testScope: TestScope = TestScope(context = testDispatcher)
 
-    private val testDataStore: DataStore<MusicPlayerPreferences> = DataStoreFactory.create(
-        serializer = MusicPlayerPreferencesSerializer,
-        corruptionHandler = ReplaceFileCorruptionHandler { MusicPlayerPreferences() },
+    private val testDataStore: DataStore<PermissionsPreferences> = DataStoreFactory.create(
+        serializer = PermissionsPreferencesSerializer,
+        corruptionHandler = ReplaceFileCorruptionHandler { PermissionsPreferences() },
         scope = testScope.backgroundScope,
-        produceFile = { context.preferencesDataStoreFile(name = "MusicPlayer-Test.pb") }
+        produceFile = { context.preferencesDataStoreFile(name = "Permissions-Test.pb") }
     )
 
-    private val testRepository: MusicPlayerDataStoreRepository = MusicPlayerDataStoreRepositoryImpl(
+    private val testRepository: PermissionsDataStoreRepository = PermissionsDataStoreRepositoryImpl(
         dataStore = testDataStore
     )
 
     @Before
     fun setUp() {
         testScope.launch {
-            testDataStore.updateData { MusicPlayerPreferences() }
+            testDataStore.updateData { PermissionsPreferences() }
         }
     }
 
@@ -67,38 +67,22 @@ class MusicPlayerDataStoreRepositoryImplTest {
 
     /*
     Fetch Initial Preferences Test Cases:
-    getCurrentlyPlayingRadioStationId -> null
+    getNotificationPermissionCount -> 0
      */
     @Test
     fun fetchInitialPreferences() = testScope.runTest {
-        val initialCurrentlyPlayingRadioStationId = testRepository
-            .getCurrentlyPlayingRadioStationId().first()
+        val initialNotificationPermissionCount = testRepository
+            .getNotificationPermissionCount().first()
 
-        assertThat(initialCurrentlyPlayingRadioStationId).isNull()
+        assertThat(initialNotificationPermissionCount).isEqualTo(0)
     }
 
     @Test
-    fun writeCurrentlyPlayingRadioStationId() = testScope.runTest {
-        val testValue = 5L
-        testRepository.storeCurrentlyPlayingRadioStationId(testValue)
+    fun writeNotificationPermissionCount() = testScope.runTest {
+        val testValue = 2
+        testRepository.storeNotificationPermissionCount(count = testValue)
 
-        val notificationPermissionCount = testRepository.getCurrentlyPlayingRadioStationId().first()
+        val notificationPermissionCount = testRepository.getNotificationPermissionCount().first()
         assertThat(notificationPermissionCount).isEqualTo(testValue)
-    }
-
-    @Test
-    fun removeCurrentlyPlayingRadioStationId() = testScope.runTest {
-        val testValue = 5L
-        testRepository.storeCurrentlyPlayingRadioStationId(testValue)
-
-        val notificationPermissionCountBefore = testRepository
-            .getCurrentlyPlayingRadioStationId().first()
-        assertThat(notificationPermissionCountBefore).isEqualTo(testValue)
-
-        testRepository.removeCurrentlyPlayingRadioStationId()
-
-        val notificationPermissionCountAfter = testRepository
-            .getCurrentlyPlayingRadioStationId().first()
-        assertThat(notificationPermissionCountAfter).isNull()
     }
 }

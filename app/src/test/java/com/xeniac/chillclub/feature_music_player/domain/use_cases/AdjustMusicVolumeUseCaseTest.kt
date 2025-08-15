@@ -4,7 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
 import com.xeniac.chillclub.core.domain.models.Result
-import com.xeniac.chillclub.feature_music_player.data.remote.repositories.FakeMusicPlayerRepositoryImpl
+import com.xeniac.chillclub.feature_music_player.data.remote.repositories.FakeMusicVolumeRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -24,21 +24,20 @@ class AdjustMusicVolumeUseCaseTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
-    private lateinit var fakeMusicPlayerRepositoryImpl: FakeMusicPlayerRepositoryImpl
+    private lateinit var musicVolumeRepository: FakeMusicVolumeRepositoryImpl
     private lateinit var adjustMusicVolumeUseCase: AdjustMusicVolumeUseCase
 
     @Before
     fun setUp() {
-        fakeMusicPlayerRepositoryImpl = FakeMusicPlayerRepositoryImpl()
+        musicVolumeRepository = FakeMusicVolumeRepositoryImpl()
         adjustMusicVolumeUseCase = AdjustMusicVolumeUseCase(
-            musicPlayerRepository = fakeMusicPlayerRepositoryImpl
+            musicVolumeRepository = musicVolumeRepository
         )
     }
 
     @Test
     fun decreaseMusicVolume_returnsSuccess() = runTest {
-        val currentMusicVolumePercentage = fakeMusicPlayerRepositoryImpl
-            .musicVolumePercentage.first()
+        val currentMusicVolumePercentage = musicVolumeRepository.musicVolumePercentage.first()
         val newMusicVolumePercentage = currentMusicVolumePercentage - 0.2f
 
         val result = adjustMusicVolumeUseCase(
@@ -50,9 +49,8 @@ class AdjustMusicVolumeUseCaseTest {
 
     @Test
     fun decreaseMusicVolume_decreasesCurrentMusicVolumeByOne() = runTest {
-        val musicVolumeBefore = fakeMusicPlayerRepositoryImpl.currentMusicVolume
-        val musicVolumePercentageBefore = fakeMusicPlayerRepositoryImpl
-            .musicVolumePercentage.first()
+        val musicVolumeBefore = musicVolumeRepository.currentMusicVolume
+        val musicVolumePercentageBefore = musicVolumeRepository.musicVolumePercentage.first()
         val newMusicVolumePercentage = musicVolumePercentageBefore - 0.2f
 
         val result = adjustMusicVolumeUseCase(
@@ -61,8 +59,8 @@ class AdjustMusicVolumeUseCaseTest {
         ).first()
         assertThat(result).isInstanceOf(Result.Success::class.java)
 
-        val musicVolumeAfter = fakeMusicPlayerRepositoryImpl.currentMusicVolume
-        val musicVolumePercentageAfter = fakeMusicPlayerRepositoryImpl.musicVolumePercentage.first()
+        val musicVolumeAfter = musicVolumeRepository.currentMusicVolume
+        val musicVolumePercentageAfter = musicVolumeRepository.musicVolumePercentage.first()
 
         assertThat(musicVolumeAfter).isAtMost(musicVolumeBefore)
         assertThat(musicVolumePercentageAfter).isAtMost(musicVolumePercentageBefore)
@@ -70,8 +68,7 @@ class AdjustMusicVolumeUseCaseTest {
 
     @Test
     fun increaseMusicVolume_returnsSuccess() = runTest {
-        val currentMusicVolumePercentage = fakeMusicPlayerRepositoryImpl
-            .musicVolumePercentage.first()
+        val currentMusicVolumePercentage = musicVolumeRepository.musicVolumePercentage.first()
         val newMusicVolumePercentage = currentMusicVolumePercentage + 0.2f
 
         val result = adjustMusicVolumeUseCase(
@@ -83,9 +80,8 @@ class AdjustMusicVolumeUseCaseTest {
 
     @Test
     fun increaseMusicVolume_increasesCurrentMusicVolumeByOne() = runTest {
-        val musicVolumeBefore = fakeMusicPlayerRepositoryImpl.currentMusicVolume
-        val musicVolumePercentageBefore = fakeMusicPlayerRepositoryImpl
-            .musicVolumePercentage.first()
+        val musicVolumeBefore = musicVolumeRepository.currentMusicVolume
+        val musicVolumePercentageBefore = musicVolumeRepository.musicVolumePercentage.first()
         val newMusicVolumePercentage = musicVolumePercentageBefore + 0.2f
 
         val result = adjustMusicVolumeUseCase(
@@ -94,8 +90,8 @@ class AdjustMusicVolumeUseCaseTest {
         ).first()
         assertThat(result).isInstanceOf(Result.Success::class.java)
 
-        val musicVolumeAfter = fakeMusicPlayerRepositoryImpl.currentMusicVolume
-        val musicVolumePercentageAfter = fakeMusicPlayerRepositoryImpl.musicVolumePercentage.first()
+        val musicVolumeAfter = musicVolumeRepository.currentMusicVolume
+        val musicVolumePercentageAfter = musicVolumeRepository.musicVolumePercentage.first()
 
         assertThat(musicVolumeAfter).isAtLeast(musicVolumeBefore)
         assertThat(musicVolumePercentageAfter).isAtLeast(musicVolumePercentageBefore)

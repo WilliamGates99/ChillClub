@@ -9,6 +9,8 @@ import com.xeniac.chillclub.feature_music_player.domain.errors.GetRadioStationsE
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -84,10 +86,12 @@ class GetRadioStationStationsUseCaseTest {
     @Test
     fun getRadioStationsWithFetchFromRemoteWhenOnlineHttpStatusCodeOtherThanOk_returnsError() =
         runTest {
-            fakeMusicPlayerRepository.setGetRadioStationsHttpStatusCode(HttpStatusCode.RequestTimeout)
+            fakeMusicPlayerRepository.setGetRadioStationsHttpStatusCode(
+                httpStatusCode = HttpStatusCode.RequestTimeout
+            )
 
-            val result = getRadioStationsUseCase(fetchFromRemote = true).first()
-
-            assertThat(result).isInstanceOf(Result.Error::class.java)
+            getRadioStationsUseCase(fetchFromRemote = true).onEach { result ->
+                assertThat(result).isInstanceOf(Result.Error::class.java)
+            }.launchIn(scope = this)
         }
 }

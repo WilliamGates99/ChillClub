@@ -15,7 +15,7 @@ class FakeConnectivityObserverImpl @Inject constructor() : ConnectivityObserver 
         isNetworkAvailable = isAvailable
     }
 
-    override fun observe(): Flow<ConnectivityObserver.Status> = callbackFlow {
+    override fun observeNetworkConnection(): Flow<ConnectivityObserver.Status> = callbackFlow {
         if (isNetworkAvailable) {
             send(ConnectivityObserver.Status.AVAILABLE)
         } else {

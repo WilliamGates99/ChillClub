@@ -14,10 +14,10 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.rule.IntentsRule
 import androidx.test.rule.GrantPermissionRule
 import com.xeniac.chillclub.R
-import com.xeniac.chillclub.core.presentation.main_activity.MainActivity
 import com.xeniac.chillclub.core.presentation.common.ui.navigation.MusicPlayerScreen
 import com.xeniac.chillclub.core.presentation.common.ui.navigation.nav_graph.SetupRootNavGraph
 import com.xeniac.chillclub.core.presentation.common.ui.theme.ChillClubTheme
+import com.xeniac.chillclub.core.presentation.main_activity.MainActivity
 import com.xeniac.chillclub.feature_music_player.presensation.utils.TestTags
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

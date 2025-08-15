@@ -7,6 +7,8 @@ import com.xeniac.chillclub.core.data.repositories.FakeSettingsDataStoreReposito
 import com.xeniac.chillclub.core.domain.models.Result
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -42,16 +44,21 @@ class StoreIsPlayInBackgroundEnabledUseCaseTest {
     @Test
     fun setsPlayInBackgroundEnabled_returnsSuccess() = runTest {
         val testValue = false
-        val result = storeIsPlayInBackgroundEnabledUseCase(testValue)
-        assertThat(result).isInstanceOf(Result.Success::class.java)
+        storeIsPlayInBackgroundEnabledUseCase(
+            isEnabled = testValue
+        ).onEach { result ->
+            assertThat(result).isInstanceOf(Result.Success::class.java)
+        }.launchIn(scope = this)
     }
 
     @Test
     fun setsPlayInBackgroundEnabled_returnsNewIsPlayInBackgroundEnabled() = runTest {
         val testValue = false
-        storeIsPlayInBackgroundEnabledUseCase(testValue)
-
-        val isPlayInBackgroundEnabled = getIsPlayInBackgroundEnabledUseCase().first()
-        assertThat(isPlayInBackgroundEnabled).isEqualTo(testValue)
+        storeIsPlayInBackgroundEnabledUseCase(
+            isEnabled = testValue
+        ).onEach {
+            val isPlayInBackgroundEnabled = getIsPlayInBackgroundEnabledUseCase().first()
+            assertThat(isPlayInBackgroundEnabled).isEqualTo(testValue)
+        }.launchIn(scope = this)
     }
 }

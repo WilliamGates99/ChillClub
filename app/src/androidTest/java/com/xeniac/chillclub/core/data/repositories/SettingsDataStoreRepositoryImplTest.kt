@@ -3,9 +3,8 @@ package com.xeniac.chillclub.core.data.repositories
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
+import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -13,6 +12,8 @@ import com.google.common.truth.Truth.assertThat
 import com.xeniac.chillclub.MainCoroutineRule
 import com.xeniac.chillclub.core.domain.models.AppLocale
 import com.xeniac.chillclub.core.domain.models.AppTheme
+import com.xeniac.chillclub.core.domain.models.SettingsPreferences
+import com.xeniac.chillclub.core.domain.models.SettingsPreferencesSerializer
 import com.xeniac.chillclub.core.domain.repositories.SettingsDataStoreRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
@@ -43,9 +44,11 @@ class SettingsDataStoreRepositoryImplTest {
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
     private val testScope: TestScope = TestScope(context = testDispatcher)
 
-    private val testDataStore: DataStore<Preferences> = PreferenceDataStoreFactory.create(
+    private val testDataStore: DataStore<SettingsPreferences> = DataStoreFactory.create(
+        serializer = SettingsPreferencesSerializer,
+        corruptionHandler = ReplaceFileCorruptionHandler { SettingsPreferences() },
         scope = testScope.backgroundScope,
-        produceFile = { context.preferencesDataStoreFile(name = "Settings-Test") }
+        produceFile = { context.preferencesDataStoreFile(name = "Settings-Test.pb") }
     )
 
     private val testRepository: SettingsDataStoreRepository = SettingsDataStoreRepositoryImpl(
@@ -55,7 +58,7 @@ class SettingsDataStoreRepositoryImplTest {
     @Before
     fun setUp() {
         testScope.launch {
-            testDataStore.edit { it.clear() }
+            testDataStore.updateData { SettingsPreferences() }
         }
     }
 
@@ -65,12 +68,11 @@ class SettingsDataStoreRepositoryImplTest {
     }
 
     /*
-  Fetch Initial Preferences Test Cases:
-  getCurrentAppThemeSynchronously -> AppTheme.Dark
-  getCurrentAppTheme -> AppTheme.Dark
-  getCurrentAppLocale -> AppLocale.Default
-  isPlayInBackgroundEnabled -> true
-  getNotificationPermissionCount -> 0
+    Fetch Initial Preferences Test Cases:
+    getCurrentAppThemeSynchronously -> AppTheme.Dark
+    getCurrentAppTheme -> AppTheme.Dark
+    getCurrentAppLocale -> AppLocale.Default
+    isPlayInBackgroundEnabled -> true
    */
     @Test
     fun fetchInitialPreferences() = testScope.runTest {
@@ -79,14 +81,11 @@ class SettingsDataStoreRepositoryImplTest {
         val initialAppLocale = testRepository.getCurrentAppLocale()
         val initialIsPlayInBackgroundEnabled = testRepository
             .isPlayInBackgroundEnabled().first()
-        val initialNotificationPermissionCount = testRepository
-            .getNotificationPermissionCount().first()
 
         assertThat(initialAppThemeSynchronously).isEqualTo(AppTheme.Dark)
         assertThat(initialAppTheme).isEqualTo(AppTheme.Dark)
         assertThat(initialAppLocale).isEqualTo(AppLocale.Default)
         assertThat(initialIsPlayInBackgroundEnabled).isTrue()
-        assertThat(initialNotificationPermissionCount).isEqualTo(0)
     }
 
     @Test
@@ -105,14 +104,5 @@ class SettingsDataStoreRepositoryImplTest {
 
         val isPlayInBackgroundEnabled = testRepository.isPlayInBackgroundEnabled().first()
         assertThat(isPlayInBackgroundEnabled).isEqualTo(testValue)
-    }
-
-    @Test
-    fun writeNotificationPermissionCount() = testScope.runTest {
-        val testValue = 2
-        testRepository.storeNotificationPermissionCount(testValue)
-
-        val notificationPermissionCount = testRepository.getNotificationPermissionCount().first()
-        assertThat(notificationPermissionCount).isEqualTo(testValue)
     }
 }

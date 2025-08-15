@@ -6,6 +6,8 @@ import com.xeniac.chillclub.MainCoroutineRule
 import com.xeniac.chillclub.core.data.repositories.FakeMusicPlayerDataStoreRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -41,9 +43,12 @@ class StoreCurrentlyPlayingRadioStationIdUseCaseTest {
     @Test
     fun storeCurrentlyPlayingRadioStationId_returnsNewCurrentlyPlayingRadioStationId() = runTest {
         val testValue = 5L
-        storeCurrentlyPlayingRadioStationIdUseCase(testValue)
 
-        val radioStationId = getCurrentlyPlayingRadioStationIdUseCase().first()
-        assertThat(radioStationId).isEqualTo(testValue)
+        storeCurrentlyPlayingRadioStationIdUseCase(
+            radioStationId = testValue
+        ).onEach {
+            val radioStationId = getCurrentlyPlayingRadioStationIdUseCase().first()
+            assertThat(radioStationId).isEqualTo(testValue)
+        }.launchIn(scope = this)
     }
 }
