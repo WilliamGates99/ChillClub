@@ -319,25 +319,13 @@ tasks.register<Copy>("copyDevPreviewApk") {
 
 tasks.register<Copy>("copyReleaseApk") {
     val gitHubApkFile = "app-prod-gitHub-release.apk"
-    val cafeBazaarApkFile = "app-prod-cafeBazaar-release.apk"
-    val myketApkFile = "app-prod-myket-release.apk"
 
     val gitHubApkSourceDir = "${releaseRootDir}/prodGitHub/release/${gitHubApkFile}"
-    val cafeBazaarApkSourceDir = "${releaseRootDir}/prodCafeBazaar/release/${cafeBazaarApkFile}"
-    val myketApkSourceDir = "${releaseRootDir}/prodMyket/release/${myketApkFile}"
 
     from(gitHubApkSourceDir)
     into(apkDestDir)
 
-    from(cafeBazaarApkSourceDir)
-    into(apkDestDir)
-
-    from(myketApkSourceDir)
-    into(apkDestDir)
-
     rename(gitHubApkFile, "$renamedFileName - GitHub.apk")
-    rename(cafeBazaarApkFile, "$renamedFileName - CafeBazaar.apk")
-    rename(myketApkFile, "$renamedFileName - Myket.apk")
 }
 
 tasks.register<Copy>("copyReleaseBundle") {
