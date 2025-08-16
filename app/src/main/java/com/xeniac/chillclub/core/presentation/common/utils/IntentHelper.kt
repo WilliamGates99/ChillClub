@@ -96,7 +96,7 @@ fun Context.sendEmail() {
             Build.MODEL
         )
         val androidVersion = getString(
-            R.string.settings_support_contact_us_email_device_model,
+            R.string.settings_support_contact_us_email_android_version,
             Build.VERSION.RELEASE
         )
         val appVersion = getString(
