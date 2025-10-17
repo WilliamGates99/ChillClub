@@ -50,6 +50,7 @@
     <string name="music_player_notification_message">Now Playing: %s</string>
     <string name="music_player_error_video_not_found">There was a problem loading this radio. Please select another one.</string>
     <string name="music_player_error_video_not_playable">There was a problem loading this radio. Please select another one.</string>
+    <string name="music_player_error_missing_http_referer">There was a problem loading this radio. Please select another one.</string>
     <string name="music_player_error_invalid_parameter">There was a problem loading this radio. Please select another one.</string>
     <string name="music_player_error_html_5">There was a problem loading this radio. Please select another one.</string>
     <string name="music_player_error_unknown">There was a problem loading this radio. Please select another one.</string>

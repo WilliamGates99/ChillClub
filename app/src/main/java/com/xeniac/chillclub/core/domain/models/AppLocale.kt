@@ -13,7 +13,7 @@ sealed class AppLocale(
     val localeString: String?,
     val layoutDirectionCompose: LayoutDirection,
     val layoutDirection: Int,
-    @StringRes val localeTitleId: Int
+    @param:StringRes val localeTitleId: Int
 ) : Parcelable {
     data object Default : AppLocale(
         index = 0,

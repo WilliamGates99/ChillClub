@@ -33,17 +33,13 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var connectivityObserver: ConnectivityObserver
-
     private val viewModel: MainViewModel by viewModels()
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdgeWindow()
         splashScreen()
-        observeNetworkConnection(connectivityObserver)
+        enableEdgeToEdgeWindow()
 
         setContent {
             val context = LocalContext.current
