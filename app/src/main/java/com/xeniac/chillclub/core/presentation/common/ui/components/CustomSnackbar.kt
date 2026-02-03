@@ -1,6 +1,7 @@
 package com.xeniac.chillclub.core.presentation.common.ui.components
 
 import android.content.Context
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -11,6 +12,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.xeniac.chillclub.R
 import com.xeniac.chillclub.core.presentation.common.utils.UiText
@@ -24,11 +26,15 @@ fun SwipeableSnackbar(
 ) {
     val dismissSnackbarState = rememberSwipeToDismissBoxState()
 
-    LaunchedEffect(
-        key1 = hostState.currentSnackbarData
-    ) {
+    LaunchedEffect(key1 = hostState.currentSnackbarData) {
         if (dismissSnackbarState.currentValue != SwipeToDismissBoxValue.Settled) {
             dismissSnackbarState.reset()
+        }
+    }
+
+    LaunchedEffect(key1 = dismissSnackbarState.currentValue) {
+        if (dismissSnackbarState.currentValue != SwipeToDismissBoxValue.Settled) {
+            hostState.currentSnackbarData?.dismiss()
         }
     }
 
@@ -37,7 +43,12 @@ fun SwipeableSnackbar(
         backgroundContent = {},
         modifier = modifier.fillMaxWidth()
     ) {
-        SnackbarHost(hostState = hostState)
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            SnackbarHost(hostState = hostState)
+        }
     }
 }
 

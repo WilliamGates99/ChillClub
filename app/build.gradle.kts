@@ -1,11 +1,10 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
@@ -31,8 +30,8 @@ android {
         applicationId = "com.xeniac.chillclub"
         minSdk = 23
         targetSdk = 36
-        versionCode = 5
-        versionName = "1.1.2"
+        versionCode = 6
+        versionName = "1.1.3"
 
         testInstrumentationRunner = "com.xeniac.chillclub.HiltTestRunner"
 
@@ -80,6 +79,16 @@ android {
             isShrinkResources = true
             signingConfig = signingConfigs.getByName("release")
             ndk.debugSymbolLevel = "FULL" // Include native debug symbols file in app bundle
+
+            configure<CrashlyticsExtension> {
+                /*
+                Enable processing and uploading of native symbols to Firebase servers.
+                By default, this is disabled to improve build speeds.
+                This flag must be enabled to see properly-symbolicated native
+                stack traces in the Crashlytics dashboard.
+                 */
+                nativeSymbolUploadEnabled = true
+            }
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -150,6 +159,7 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+        resValues = true
     }
 
     compileOptions {
@@ -160,22 +170,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin {
-        compilerOptions {
-            jvmTarget = JvmTarget.fromTarget(target = "17")
-
-            // Enable Context-Sensitive Resolution in Kotlin 2.2
-            freeCompilerArgs.add("-Xcontext-sensitive-resolution")
-        }
-    }
-
-    room {
-        schemaDirectory(path = "$projectDir/roomSchemas")
-    }
-
     sourceSets {
         // Adds room exported schema location as test app assets
-        getByName("androidTest").assets.srcDirs("$projectDir/roomSchemas")
+        getByName("androidTest").assets.directories += "$projectDir/roomSchemas"
     }
 
     packaging {
@@ -195,8 +192,19 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        // Enable Context-Sensitive Resolution in Kotlin 2.2
+        freeCompilerArgs.add("-Xcontext-sensitive-resolution")
+    }
+}
+
 hilt {
     enableAggregatingTask = true
+}
+
+room {
+    schemaDirectory(path = "$projectDir/roomSchemas")
 }
 
 androidComponents {
@@ -297,7 +305,7 @@ val obfuscationDestDir: String = properties.getProperty("OBFUSCATION_DESTINATION
 val versionName = "${android.defaultConfig.versionName}"
 val renamedFileName = "Chill Club $versionName"
 
-tasks.register<Copy>("copyDevPreviewBundle") {
+tasks.register<Copy>(name = "copyDevPreviewBundle") {
     val bundleFile = "app-dev-playStore-release.aab"
     val bundleSourceDir = "${releaseRootDir}/devPlayStore/release/${bundleFile}"
 
@@ -307,7 +315,7 @@ tasks.register<Copy>("copyDevPreviewBundle") {
     rename(bundleFile, "$renamedFileName (Developer Preview).aab")
 }
 
-tasks.register<Copy>("copyDevPreviewApk") {
+tasks.register<Copy>(name = "copyDevPreviewApk") {
     val apkFile = "app-dev-playStore-release.apk"
     val apkSourceDir = "${releaseRootDir}/devPlayStore/release/${apkFile}"
 
@@ -317,7 +325,7 @@ tasks.register<Copy>("copyDevPreviewApk") {
     rename(apkFile, "$renamedFileName (Developer Preview).aab")
 }
 
-tasks.register<Copy>("copyReleaseApk") {
+tasks.register<Copy>(name = "copyReleaseApk") {
     val gitHubApkFile = "app-prod-gitHub-release.apk"
 
     val gitHubApkSourceDir = "${releaseRootDir}/prodGitHub/release/${gitHubApkFile}"
@@ -328,7 +336,7 @@ tasks.register<Copy>("copyReleaseApk") {
     rename(gitHubApkFile, "$renamedFileName - GitHub.apk")
 }
 
-tasks.register<Copy>("copyReleaseBundle") {
+tasks.register<Copy>(name = "copyReleaseBundle") {
     val playStoreBundleFile = "app-prod-playStore-release.aab"
     val playStoreBundleSourceDir = "${releaseRootDir}/prodPlayStore/release/${playStoreBundleFile}"
 
@@ -338,7 +346,7 @@ tasks.register<Copy>("copyReleaseBundle") {
     rename(playStoreBundleFile, "${renamedFileName}.aab")
 }
 
-tasks.register<Copy>("copyObfuscationFolder") {
+tasks.register<Copy>(name = "copyObfuscationFolder") {
     val obfuscationSourceDir = "${rootDir}/app/obfuscation"
 
     from(obfuscationSourceDir)

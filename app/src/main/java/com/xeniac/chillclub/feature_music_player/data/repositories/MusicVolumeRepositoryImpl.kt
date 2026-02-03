@@ -8,22 +8,22 @@ import android.media.AudioManager
 import android.os.Build
 import com.xeniac.chillclub.core.domain.models.Result
 import com.xeniac.chillclub.core.domain.utils.scaleToUnitInterval
-import com.xeniac.chillclub.feature_music_player.domain.errors.AdjustVolumeError
 import com.xeniac.chillclub.feature_music_player.di.MUSIC_STREAM_TYPE
+import com.xeniac.chillclub.feature_music_player.domain.errors.AdjustVolumeError
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumePercentage
 import com.xeniac.chillclub.feature_music_player.domain.repositories.MusicVolumeRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.coroutines.coroutineContext
 import kotlin.math.roundToInt
 
 class MusicVolumeRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val audioManager: AudioManager,
     private val musicStreamType: MUSIC_STREAM_TYPE
 ) : MusicVolumeRepository {
@@ -103,7 +103,7 @@ class MusicVolumeRepositoryImpl @Inject constructor(
 
             Result.Success(Unit)
         } catch (e: Exception) {
-            coroutineContext.ensureActive()
+            currentCoroutineContext().ensureActive()
             Timber.e("Adjust music volume failed:")
             e.printStackTrace()
             Result.Error(AdjustVolumeError.SomethingWentWrong)

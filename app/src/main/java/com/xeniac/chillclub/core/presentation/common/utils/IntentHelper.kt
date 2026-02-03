@@ -13,8 +13,12 @@ import com.xeniac.chillclub.feature_settings.presentation.utils.Constants
 import timber.log.Timber
 
 fun Context.openLinkInInAppBrowser(
-    urlString: String
+    urlString: String?
 ) {
+    if (urlString.isNullOrBlank()) {
+        return
+    }
+
     try {
         val intent = CustomTabsIntent.Builder().build().apply {
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -27,14 +31,17 @@ fun Context.openLinkInInAppBrowser(
     } catch (e: ActivityNotFoundException) {
         Timber.e("Open link in in-app browser Exception:")
         e.printStackTrace()
-
-        openLinkInExternalBrowser(urlString)
+        openLinkInExternalBrowser(urlString = urlString)
     }
 }
 
 fun Context.openLinkInExternalBrowser(
-    urlString: String
+    urlString: String?
 ) {
+    if (urlString.isNullOrBlank()) {
+        return
+    }
+
     try {
         Intent().apply {
             action = Intent.ACTION_VIEW
@@ -44,7 +51,6 @@ fun Context.openLinkInExternalBrowser(
     } catch (e: ActivityNotFoundException) {
         Timber.e("Open link in external browser Exception:")
         e.printStackTrace()
-
         showIntentAppNotFoundToast()
     }
 }
@@ -64,7 +70,6 @@ fun Context.openAppPageInStore(
     } catch (e: ActivityNotFoundException) {
         Timber.e("Open app page in store Exception:")
         e.printStackTrace()
-
         openLinkInExternalBrowser(urlString = appStoreUrlString)
     }
 }
@@ -84,7 +89,6 @@ fun Context.openAppUpdatePageInStore() {
     } catch (e: ActivityNotFoundException) {
         Timber.e("Open app update page in store Exception:")
         e.printStackTrace()
-
         openLinkInExternalBrowser(urlString = appStoreUrl)
     }
 }
