@@ -1,11 +1,9 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
@@ -150,6 +148,7 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+        resValues = true
     }
 
     compileOptions {
@@ -160,22 +159,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin {
-        compilerOptions {
-            jvmTarget = JvmTarget.fromTarget(target = "17")
-
-            // Enable Context-Sensitive Resolution in Kotlin 2.2
-            freeCompilerArgs.add("-Xcontext-sensitive-resolution")
-        }
-    }
-
-    room {
-        schemaDirectory(path = "$projectDir/roomSchemas")
-    }
-
     sourceSets {
         // Adds room exported schema location as test app assets
-        getByName("androidTest").assets.srcDirs("$projectDir/roomSchemas")
+        getByName("androidTest").assets.directories += "$projectDir/roomSchemas"
     }
 
     packaging {
@@ -195,8 +181,19 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        // Enable Context-Sensitive Resolution in Kotlin 2.2
+        freeCompilerArgs.add("-Xcontext-sensitive-resolution")
+    }
+}
+
 hilt {
     enableAggregatingTask = true
+}
+
+room {
+    schemaDirectory(path = "$projectDir/roomSchemas")
 }
 
 androidComponents {
@@ -297,7 +294,7 @@ val obfuscationDestDir: String = properties.getProperty("OBFUSCATION_DESTINATION
 val versionName = "${android.defaultConfig.versionName}"
 val renamedFileName = "Chill Club $versionName"
 
-tasks.register<Copy>("copyDevPreviewBundle") {
+tasks.register<Copy>(name = "copyDevPreviewBundle") {
     val bundleFile = "app-dev-playStore-release.aab"
     val bundleSourceDir = "${releaseRootDir}/devPlayStore/release/${bundleFile}"
 
@@ -307,7 +304,7 @@ tasks.register<Copy>("copyDevPreviewBundle") {
     rename(bundleFile, "$renamedFileName (Developer Preview).aab")
 }
 
-tasks.register<Copy>("copyDevPreviewApk") {
+tasks.register<Copy>(name = "copyDevPreviewApk") {
     val apkFile = "app-dev-playStore-release.apk"
     val apkSourceDir = "${releaseRootDir}/devPlayStore/release/${apkFile}"
 
@@ -317,7 +314,7 @@ tasks.register<Copy>("copyDevPreviewApk") {
     rename(apkFile, "$renamedFileName (Developer Preview).aab")
 }
 
-tasks.register<Copy>("copyReleaseApk") {
+tasks.register<Copy>(name = "copyReleaseApk") {
     val gitHubApkFile = "app-prod-gitHub-release.apk"
 
     val gitHubApkSourceDir = "${releaseRootDir}/prodGitHub/release/${gitHubApkFile}"
@@ -328,7 +325,7 @@ tasks.register<Copy>("copyReleaseApk") {
     rename(gitHubApkFile, "$renamedFileName - GitHub.apk")
 }
 
-tasks.register<Copy>("copyReleaseBundle") {
+tasks.register<Copy>(name = "copyReleaseBundle") {
     val playStoreBundleFile = "app-prod-playStore-release.aab"
     val playStoreBundleSourceDir = "${releaseRootDir}/prodPlayStore/release/${playStoreBundleFile}"
 
@@ -338,7 +335,7 @@ tasks.register<Copy>("copyReleaseBundle") {
     rename(playStoreBundleFile, "${renamedFileName}.aab")
 }
 
-tasks.register<Copy>("copyObfuscationFolder") {
+tasks.register<Copy>(name = "copyObfuscationFolder") {
     val obfuscationSourceDir = "${rootDir}/app/obfuscation"
 
     from(obfuscationSourceDir)
