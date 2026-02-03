@@ -6,7 +6,6 @@ import android.app.NotificationChannel
 import android.app.NotificationChannelGroup
 import android.app.NotificationManager
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composer
 import androidx.compose.runtime.tooling.ComposeStackTraceMode
 import androidx.compose.ui.graphics.toArgb
@@ -58,13 +57,11 @@ class BaseApplication : Application(), SingletonImageLoader.Factory {
         observeNetworkConnection()
         enableComposeStackTraces()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createFcmNotificationChannelGroup()
-            createMiscellaneousFcmNotificationChannel()
+        createFcmNotificationChannelGroup()
+        createMiscellaneousFcmNotificationChannel()
 
-            createMusicPlayerNotificationChannelGroup()
-            createMusicPlayerServiceNotificationChannel()
-        }
+        createMusicPlayerNotificationChannelGroup()
+        createMusicPlayerServiceNotificationChannel()
     }
 
     private fun setupTimber() = Timber.plant(Timber.DebugTree())
@@ -79,55 +76,59 @@ class BaseApplication : Application(), SingletonImageLoader.Factory {
         Composer.setDiagnosticStackTraceMode(mode = ComposeStackTraceMode.Auto)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun createFcmNotificationChannelGroup() {
-        val notificationChannelGroup = NotificationChannelGroup(
-            /* id = */ NOTIFICATION_CHANNEL_GROUP_ID_FCM,
-            /* name = */ getString(R.string.notification_fcm_channel_group_name)
-        )
-
-        notificationManager.createNotificationChannelGroup(notificationChannelGroup)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannelGroup(
+                /* id = */ NOTIFICATION_CHANNEL_GROUP_ID_FCM,
+                /* name = */ getString(R.string.notification_fcm_channel_group_name)
+            ).also { fcmChannelGroup ->
+                notificationManager.createNotificationChannelGroup(fcmChannelGroup)
+            }
+        }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun createMiscellaneousFcmNotificationChannel() {
-        val miscellaneousNotificationChannel = NotificationChannel(
-            /* id = */ NOTIFICATION_CHANNEL_ID_FCM_MISCELLANEOUS,
-            /* name = */ getString(R.string.notification_fcm_channel_name_miscellaneous),
-            /* importance = */ NotificationManager.IMPORTANCE_DEFAULT
-        ).apply {
-            group = NOTIFICATION_CHANNEL_GROUP_ID_FCM
-            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-            lightColor = PurpleNotificationLight.toArgb()
-            enableLights(true)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel(
+                /* id = */ NOTIFICATION_CHANNEL_ID_FCM_MISCELLANEOUS,
+                /* name = */ getString(R.string.notification_fcm_channel_name_miscellaneous),
+                /* importance = */ NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                group = NOTIFICATION_CHANNEL_GROUP_ID_FCM
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+                lightColor = PurpleNotificationLight.toArgb()
+                enableLights(true)
+            }.also { miscellaneousChannel ->
+                notificationManager.createNotificationChannel(miscellaneousChannel)
+            }
         }
-
-        notificationManager.createNotificationChannel(miscellaneousNotificationChannel)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun createMusicPlayerNotificationChannelGroup() {
-        val notificationChannelGroup = NotificationChannelGroup(
-            /* id = */ NOTIFICATION_CHANNEL_GROUP_ID_MUSIC_PLAYER,
-            /* name = */ getString(R.string.notification_player_channel_group_name)
-        )
-
-        notificationManager.createNotificationChannelGroup(notificationChannelGroup)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannelGroup(
+                /* id = */ NOTIFICATION_CHANNEL_GROUP_ID_MUSIC_PLAYER,
+                /* name = */ getString(R.string.notification_player_channel_group_name)
+            ).also { playerChannelGroup ->
+                notificationManager.createNotificationChannelGroup(playerChannelGroup)
+            }
+        }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun createMusicPlayerServiceNotificationChannel() {
-        val channel = NotificationChannel(
-            /* id = */ NOTIFICATION_CHANNEL_ID_MUSIC_PLAYER_SERVICE,
-            /* name = */ getString(R.string.notification_player_channel_name_service),
-            /* importance = */ NotificationManager.IMPORTANCE_LOW
-        ).apply {
-            group = NOTIFICATION_CHANNEL_GROUP_ID_MUSIC_PLAYER
-            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-            enableLights(false)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel(
+                /* id = */ NOTIFICATION_CHANNEL_ID_MUSIC_PLAYER_SERVICE,
+                /* name = */ getString(R.string.notification_player_channel_name_service),
+                /* importance = */ NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                group = NOTIFICATION_CHANNEL_GROUP_ID_MUSIC_PLAYER
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+                enableLights(false)
+            }.also { playerServiceChannel ->
+                notificationManager.createNotificationChannel(playerServiceChannel)
+            }
         }
-
-        notificationManager.createNotificationChannel(channel)
     }
 
     override fun newImageLoader(
