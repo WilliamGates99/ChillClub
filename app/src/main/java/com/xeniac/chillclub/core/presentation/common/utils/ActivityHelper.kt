@@ -1,9 +1,11 @@
 package com.xeniac.chillclub.core.presentation.common.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.provider.Settings
 import androidx.compose.runtime.Composable
@@ -35,7 +37,6 @@ fun Activity.openAppSettings() {
     } catch (e: Exception) {
         Timber.e("Open app settings Exception:")
         e.printStackTrace()
-
         showIntentAppNotFoundToast()
     }
 }
@@ -48,4 +49,13 @@ fun Activity.restartActivity() {
         finish()
         startActivity(it)
     }
+}
+
+@SuppressLint("SourceLockedOrientationActivity")
+fun Activity.setScreenOrientationToPortrait() {
+    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+}
+
+fun Activity.revertScreenOrientation() {
+    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 }
