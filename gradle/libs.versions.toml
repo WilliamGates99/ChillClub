@@ -97,6 +97,7 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" } # Analytics
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" } # Cloud Messaging
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" } # Crashlytics
+firebase-crashlytics-ndk = { group = "com.google.firebase", name = "firebase-crashlytics-ndk" } # Crashlytics NDK
 firebase-perf = { group = "com.google.firebase", name = "firebase-perf" } # Performance Monitor
 
 # In-App Browser
@@ -153,7 +154,7 @@ architectural-components = ["lifecycle-viewmodel-ktx", "lifecycle-viewmodel-comp
 coroutines = ["kotlinx-coroutines-android", "kotlinx-coroutines-play-services"]
 ktor = ["ktor-client-core", "ktor-client-okhttp", "ktor-client-content-negotiation", "ktor-serialization-kotlinx-json", "ktor-client-logging"]
 room = ["room-runtime", "room-ktx"]
-firebase = ["firebase-analytics", "firebase-messaging", "firebase-crashlytics", "firebase-perf"]
+firebase = ["firebase-analytics", "firebase-messaging", "firebase-crashlytics", "firebase-crashlytics-ndk", "firebase-perf"]
 coil = ["coil-compose", "coil-svg", "coil-gif", "coil-video", "coil-network-ktor", "coil-network-cache-control"]
 google-play-inapp-apis = ["play-review-ktx", "play-app-update-ktx"]
 

@@ -79,6 +79,16 @@ android {
             signingConfig = signingConfigs.getByName("release")
             ndk.debugSymbolLevel = "FULL" // Include native debug symbols file in app bundle
 
+            configure<CrashlyticsExtension> {
+                /*
+                Enable processing and uploading of native symbols to Firebase servers.
+                By default, this is disabled to improve build speeds.
+                This flag must be enabled to see properly-symbolicated native
+                stack traces in the Crashlytics dashboard.
+                 */
+                nativeSymbolUploadEnabled = true
+            }
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
