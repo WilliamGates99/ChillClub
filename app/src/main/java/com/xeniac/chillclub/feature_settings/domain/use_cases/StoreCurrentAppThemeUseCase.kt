@@ -4,10 +4,13 @@ import com.xeniac.chillclub.core.domain.models.AppTheme
 import com.xeniac.chillclub.core.domain.models.Result
 import com.xeniac.chillclub.core.domain.repositories.SettingsDataStoreRepository
 import com.xeniac.chillclub.feature_settings.domain.errors.StoreCurrentAppThemeError
+import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
-class StoreCurrentAppThemeUseCase(
+@ViewModelScoped
+class StoreCurrentAppThemeUseCase @Inject constructor(
     private val settingsDataStoreRepository: SettingsDataStoreRepository
 ) {
     operator fun invoke(

@@ -26,6 +26,7 @@ import io.ktor.client.statement.request
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
 import io.ktor.util.network.UnresolvedAddressException
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -36,7 +37,6 @@ import java.net.UnknownHostException
 import java.security.cert.CertPathValidatorException
 import javax.inject.Inject
 import javax.net.ssl.SSLHandshakeException
-import kotlin.coroutines.coroutineContext
 
 class MusicPlayerRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient,
@@ -154,7 +154,7 @@ class MusicPlayerRepositoryImpl @Inject constructor(
             e.printStackTrace()
             emit(Result.Error(GetRadioStationsError.Network.SSLHandshakeException))
         } catch (e: Exception) {
-            coroutineContext.ensureActive()
+            currentCoroutineContext().ensureActive()
             Timber.e("Get radio stations Exception:")
             e.printStackTrace()
 

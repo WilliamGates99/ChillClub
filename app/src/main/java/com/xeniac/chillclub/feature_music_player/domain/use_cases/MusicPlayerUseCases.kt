@@ -1,8 +1,11 @@
 package com.xeniac.chillclub.feature_music_player.domain.use_cases
 
 import dagger.Lazy
+import dagger.hilt.android.scopes.ViewModelScoped
+import javax.inject.Inject
 
-data class MusicPlayerUseCases(
+@ViewModelScoped
+data class MusicPlayerUseCases @Inject constructor(
     val getRadioStationsUseCase: Lazy<GetRadioStationsUseCase>,
     val getCurrentlyPlayingRadioStationUseCase: Lazy<GetCurrentlyPlayingRadioStationUseCase>,
     val observeMusicVolumeChangesUseCase: Lazy<ObserveMusicVolumeChangesUseCase>,

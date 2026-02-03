@@ -3,10 +3,13 @@ package com.xeniac.chillclub.feature_music_player.domain.use_cases
 import com.xeniac.chillclub.core.domain.models.Result
 import com.xeniac.chillclub.core.domain.repositories.MusicPlayerDataStoreRepository
 import com.xeniac.chillclub.feature_music_player.domain.errors.StoreCurrentlyPlayingRadioStationIdError
+import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
-class StoreCurrentlyPlayingRadioStationIdUseCase(
+@ViewModelScoped
+class StoreCurrentlyPlayingRadioStationIdUseCase @Inject constructor(
     private val musicPlayerDataStoreRepository: MusicPlayerDataStoreRepository
 ) {
     operator fun invoke(
