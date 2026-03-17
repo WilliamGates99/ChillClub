@@ -30,8 +30,8 @@ android {
         applicationId = "com.xeniac.chillclub"
         minSdk = 23
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.1.3"
+        versionCode = 7
+        versionName = "1.1.4"
 
         testInstrumentationRunner = "com.xeniac.chillclub.HiltTestRunner"
 
@@ -42,7 +42,7 @@ android {
         buildConfigField(
             type = "String",
             name = "HTTP_BASE_URL",
-            value = properties.getProperty("HTTP_BASE_URL")
+            value = "\"https://raw.githubusercontent.com/XeniacDev/ChillClubFmRadioList/main\""
         )
     }
 
@@ -177,16 +177,34 @@ android {
 
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += setOf(
+                "/META-INF/{AL2.0,LGPL2.1}",
+                "/META-INF/DEPENDENCIES",
+                "/META-INF/LICENSE",
+                "/META-INF/LICENSE.txt",
+                "/META-INF/NOTICE"
+            )
         }
     }
 
     bundle {
         language {
-            /*
-            Specifies that the app bundle should not support configuration APKs for language resources.
-            These resources are instead packaged with each base and dynamic feature APK.
-             */
+            // Disables splitting of language-specific resources (e.g., strings for different languages).
+            enableSplit = false
+        }
+
+        density {
+            // Disables splitting of density-specific resources (e.g., drawables for different screen densities).
+            enableSplit = false
+        }
+
+        countrySet {
+            // Disables splitting of country-specific resources (e.g., drawables for different countries).
+            enableSplit = false
+        }
+
+        abi {
+            // Disables splitting of ABI-specific resources (e.g., native libraries for different architectures).
             enableSplit = false
         }
     }
@@ -252,6 +270,7 @@ dependencies {
     implementation(libs.bundles.coroutines)
 
     // Ktor Client Library
+    implementation(platform(libs.ktor.bom))
     implementation(libs.bundles.ktor)
 
     // Room Library
@@ -285,9 +304,11 @@ dependencies {
     implementation(libs.bundles.google.play.inapp.apis)
 
     // Local Unit Test Libraries
+    testImplementation(platform(libs.ktor.bom))
     testImplementation(libs.bundles.local.unit.tests)
 
     // Instrumentation Test Libraries
+    androidTestImplementation(platform(libs.ktor.bom))
     androidTestImplementation(libs.bundles.instrumentation.tests)
     kspAndroidTest(libs.hilt.android.compiler)
 
