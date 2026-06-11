@@ -23,13 +23,13 @@ val properties = gradleLocalProperties(
 
 android {
     namespace = "com.xeniac.chillclub"
-    compileSdk = 36
-    buildToolsVersion = "36.0.0"
+    compileSdk = 37
+    buildToolsVersion = "37.0.0"
 
     defaultConfig {
         applicationId = "com.xeniac.chillclub"
         minSdk = 23
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 7
         versionName = "1.1.4"
 
