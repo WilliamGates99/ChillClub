@@ -330,6 +330,8 @@ val versionName = "${android.defaultConfig.versionName}"
 val renamedFileName = "Chill Club $versionName"
 
 tasks.register<Copy>(name = "copyDevPreviewBundle") {
+    description = "copyDevPreviewBundle"
+
     val bundleFile = "app-dev-playStore-release.aab"
     val bundleSourceDir = "${releaseRootDir}/devPlayStore/release/${bundleFile}"
 
@@ -340,6 +342,8 @@ tasks.register<Copy>(name = "copyDevPreviewBundle") {
 }
 
 tasks.register<Copy>(name = "copyDevPreviewApk") {
+    description = "copyDevPreviewApk"
+
     val apkFile = "app-dev-playStore-release.apk"
     val apkSourceDir = "${releaseRootDir}/devPlayStore/release/${apkFile}"
 
@@ -350,6 +354,8 @@ tasks.register<Copy>(name = "copyDevPreviewApk") {
 }
 
 tasks.register<Copy>(name = "copyReleaseApk") {
+    description = "copyReleaseApk"
+
     val gitHubApkFile = "app-prod-gitHub-release.apk"
 
     val gitHubApkSourceDir = "${releaseRootDir}/prodGitHub/release/${gitHubApkFile}"
@@ -361,6 +367,8 @@ tasks.register<Copy>(name = "copyReleaseApk") {
 }
 
 tasks.register<Copy>(name = "copyReleaseBundle") {
+    description = "copyReleaseBundle"
+
     val playStoreBundleFile = "app-prod-playStore-release.aab"
     val playStoreBundleSourceDir = "${releaseRootDir}/prodPlayStore/release/${playStoreBundleFile}"
 
@@ -371,6 +379,8 @@ tasks.register<Copy>(name = "copyReleaseBundle") {
 }
 
 tasks.register<Copy>(name = "copyObfuscationFolder") {
+    description = "copyObfuscationFolder"
+
     val obfuscationSourceDir = "${rootDir}/app/obfuscation"
 
     from(obfuscationSourceDir)
@@ -378,5 +388,7 @@ tasks.register<Copy>(name = "copyObfuscationFolder") {
 }
 
 tasks.register("copyReleaseFiles") {
+    description = "copyReleaseFiles"
+
     dependsOn("copyReleaseApk", "copyReleaseBundle", "copyObfuscationFolder")
 }
