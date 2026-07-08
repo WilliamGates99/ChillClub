@@ -30,8 +30,8 @@ android {
         applicationId = "com.xeniac.chillclub"
         minSdk = 23
         targetSdk = 37
-        versionCode = 8
-        versionName = "1.1.5"
+        versionCode = 9
+        versionName = "1.1.6"
 
         testInstrumentationRunner = "com.xeniac.chillclub.HiltTestRunner"
 
@@ -145,7 +145,7 @@ android {
             buildConfigField(
                 type = "String",
                 name = "URL_APP_STORE",
-                value = "\"https://github.com/WilliamGates99/ChillClub\""
+                value = "\"https://github.com/willliam99/ChillClub\""
             )
 
             buildConfigField(
